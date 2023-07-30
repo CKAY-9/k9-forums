@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Usergroup {
+  color         String
+  name          String
+  usergroup_id  BigInt  @id @unique @default(autoincrement())
+  permissions   BigInt
+  User          User?   @relation(fields: [userPublic_id], references: [public_id])
+  userPublic_id BigInt?
+}
+
+model Comment {
+  user          User?    @relation(fields: [userPublic_id], references: [public_id])
+  content       String
+  comment_id    BigInt   @id @unique @default(autoincrement())
+  posted_at     DateTime @default(now())
+  post          Post?    @relation(fields: [postPost_id], references: [post_id])
+  postPost_id   BigInt?
+  userPublic_id BigInt?
+}
+
+model Post {
+  initial_comment String
+  comments        Comment[]
+  first_posted    DateTime  @default(now())
+  last_updated    DateTime
+  closed          Boolean
+  pinned          Boolean
+  post_id         BigInt    @id @unique @default(autoincrement())
+  User            User?     @relation(fields: [userPublic_id], references: [public_id])
+  userPublic_id   BigInt?
+}
+
+model User {
+  username     String
+  email        String      @unique
+  password     String
+  time_created DateTime    @default(now())
+  last_online  DateTime
+  posts        Post[]
+  comments     Comment[]
+  public_id    BigInt      @id @unique @default(autoincrement())
+  token        String      @unique
+  reputation   BigInt
+  usergroups   Usergroup[]
+  profile_bio  String
+}
