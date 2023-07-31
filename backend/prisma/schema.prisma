@@ -7,23 +7,49 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Topic {
+  name                String
+  about               String
+  topic_id            Int       @id @unique @default(autoincrement())
+  posts               Post[]
+  Category            Category? @relation(fields: [categoryCategory_id], references: [category_id])
+  categoryCategory_id Int?
+}
+
+model Category {
+  name                String
+  about               String
+  color               String
+  category_id         Int     @id @unique @default(autoincrement())
+  topics              Topic[]
+  Forum               Forum?  @relation(fields: [forumCommunity_name], references: [community_name])
+  forumCommunity_name String?
+}
+
+model Forum {
+  community_name   String     @unique
+  community_logo   String
+  about            String
+  custom_redirects String[]
+  categories       Category[]
+  users            User[]
+}
+
 model Usergroup {
-  color         String
-  name          String
-  usergroup_id  BigInt  @id @unique @default(autoincrement())
-  permissions   BigInt
-  User          User?   @relation(fields: [userPublic_id], references: [public_id])
-  userPublic_id BigInt?
+  color        String
+  name         String
+  usergroup_id Int    @id @unique @default(autoincrement())
+  permissions  Int
 }
 
 model Comment {
   user          User?    @relation(fields: [userPublic_id], references: [public_id])
   content       String
-  comment_id    BigInt   @id @unique @default(autoincrement())
+  comment_id    Int      @id @unique @default(autoincrement())
   posted_at     DateTime @default(now())
   post          Post?    @relation(fields: [postPost_id], references: [post_id])
-  postPost_id   BigInt?
-  userPublic_id BigInt?
+  postPost_id   Int?
+  userPublic_id Int?
 }
 
 model Post {
@@ -33,22 +59,26 @@ model Post {
   last_updated    DateTime
   closed          Boolean
   pinned          Boolean
-  post_id         BigInt    @id @unique @default(autoincrement())
+  post_id         Int       @id @unique @default(autoincrement())
   User            User?     @relation(fields: [userPublic_id], references: [public_id])
-  userPublic_id   BigInt?
+  userPublic_id   Int?
+  Topic           Topic?    @relation(fields: [topicTopic_id], references: [topic_id])
+  topicTopic_id   Int?
 }
 
 model User {
-  username     String
-  email        String      @unique
-  password     String
-  time_created DateTime    @default(now())
-  last_online  DateTime
-  posts        Post[]
-  comments     Comment[]
-  public_id    BigInt      @id @unique @default(autoincrement())
-  token        String      @unique
-  reputation   BigInt
-  usergroups   Usergroup[]
-  profile_bio  String
+  username            String
+  email               String    @unique
+  password            String
+  time_created        DateTime  @default(now())
+  last_online         DateTime
+  posts               Post[]
+  comments            Comment[]
+  public_id           Int       @id @unique @default(autoincrement())
+  token               String    @unique
+  reputation          Int
+  usergroups          String[]
+  profile_bio         String
+  Forum               Forum?    @relation(fields: [forumCommunity_name], references: [community_name])
+  forumCommunity_name String?
 }

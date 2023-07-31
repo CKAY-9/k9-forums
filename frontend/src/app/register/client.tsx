@@ -6,6 +6,7 @@ import { BaseSyntheticEvent, useState } from "react";
 import axios from "axios";
 import { INTERNAL_API_URL } from "@/api/resources";
 import { SHA256 } from "crypto-js";
+import { setCookie } from "@/utils/cookie";
 
 const RegisterClient = () => {
     const [email, setEmail] = useState<string>("");
@@ -25,9 +26,8 @@ const RegisterClient = () => {
             }
         });
 
-        console.log(req.data);
-
-        if (req.status === 200) {
+        if (req.status === 200 && req.data.token !== null) {
+            setCookie("token", req.data.token, 365);
             window.location.href = "/";
         }
     }

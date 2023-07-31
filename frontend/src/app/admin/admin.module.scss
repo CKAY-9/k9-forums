@@ -1,0 +1,15 @@
+.usergroups {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    
+    .usergroup {
+        padding: 1rem 2rem;
+        background-color: rgb(var(--800));
+
+        .permissions {
+            display: flex;
+            flex-direction: column;
+        }
+    }
+}

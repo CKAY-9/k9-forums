@@ -1,0 +1,33 @@
+.header {
+    margin: 3rem 10rem;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+
+    section {
+        display: flex;
+        justify-content: space-between;
+        background-color: rgb(var(--accent));
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+    }
+
+    nav {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+
+        .navElement {
+            text-align: center;
+            width: fit-content;
+            padding: 1rem 2rem;
+            border-radius: 1rem;
+            background-color: rgb(var(--800));
+
+            &:hover {
+                background-color: rgb(var(--accent));
+            }
+        }
+    }
+}

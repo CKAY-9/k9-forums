@@ -6,8 +6,19 @@ const prisma = new PrismaClient();
 
 @Controller("forum")
 export class ForumController {
-    @Get("geninfo")
-    async GeneralInfoForum(): Promise<any> {
-        const forumInfo = await prisma
+    @Get("info")
+    async GeneralInfoForum(@Res() res: Response): Promise<any> {
+        let forumInfo = await prisma.forum.findFirst();
+        if (forumInfo === null) {
+            forumInfo = {
+                community_name: "K9 Forums",
+                community_logo: "",
+                about: "FOS Forum Software by CKAY9",
+                custom_redirects: []
+            } 
+
+            await prisma.forum.create({data: forumInfo});
+        }
+        return res.status(HttpStatus.OK).json(forumInfo);
     }
 }

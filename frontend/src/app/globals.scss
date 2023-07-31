@@ -5,6 +5,7 @@
 	--800: 23, 23, 27;
 	--700: 30, 30, 33;
 	--600: 34, 34, 37;
+	--accent: 220, 50, 60;
 
 	--text: 255, 255, 255;
 	--link: 255, 255, 255;
@@ -43,4 +44,10 @@ input {
 		cursor: pointer;
 		background-color: rgb(var(--600));
 	}
+}
+
+.container {
+	margin: 5rem 15rem;
+	display: flex;
+	flex-direction: column;
 }
