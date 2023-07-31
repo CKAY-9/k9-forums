@@ -1,9 +1,11 @@
 import { fetchAllGroups, fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { Usergroup, UsergroupFlags } from "@/api/admin/usergroup/interface";
+import { Usergroup, UsergroupFlagPretty, UsergroupFlags, usergroupFlagsPretty } from "@/api/admin/usergroup/interface";
 import { fetchForumInfo } from "@/api/forum/fetch";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "../admin.module.scss";
+import RolesClient from "./client";
+import Link from "next/link";
 
 const RolesPage = async () => {
 	const user = await fetchPersonalInformation();
@@ -28,44 +30,11 @@ const RolesPage = async () => {
 
     return (
         <>
+            <title>Usergroup Management - K9 Forums</title>
             <main className="container">
+                <Link href="/admin">Back</Link>
                 <h1>Usergroups</h1>
-                <div className={style.usergroups}>
-                    {groups?.map((group: Usergroup) => {
-                        return (
-                            <div className={style.usergroup}>
-                                <h2 style={{"color": `#${group.color}`}}>{group.name}</h2>
-                                <span>Color: #{group.color}</span>
-                                <section className={style.permissions}>
-                                    <div>
-                                        <h4>View Posts</h4>
-                                        {(perms & UsergroupFlags.VIEW_POSTS) == UsergroupFlags.VIEW_POSTS ?
-                                            <span>ON</span> : <span>OFF</span>
-                                        }
-                                    </div>
-                                    <div>
-                                        <h4>View Comments</h4>
-                                        {(perms & UsergroupFlags.VIEW_COMMENTS) == UsergroupFlags.VIEW_COMMENTS ?
-                                            <span>ON</span> : <span>OFF</span>
-                                        }
-                                    </div>
-                                    <div>
-                                        <h4>View Profiles</h4>
-                                        {(perms & UsergroupFlags.VIEW_PROFILES) == UsergroupFlags.VIEW_PROFILES ?
-                                            <span>ON</span> : <span>OFF</span>
-                                        }
-                                    </div>
-                                    <div>
-                                        <h4>Forum Management</h4>
-                                        {(perms & UsergroupFlags.FORUM_MANAGEMENT) == UsergroupFlags.FORUM_MANAGEMENT ?
-                                            <span>ON</span> : <span>OFF</span>
-                                        }
-                                    </div>
-                                </section>
-                            </div>
-                        )
-                    })}
-                </div>
+                <RolesClient groups={groups}></RolesClient>
             </main>
         </>
     );

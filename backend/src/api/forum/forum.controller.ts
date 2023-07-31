@@ -1,8 +1,6 @@
 import { Body, Controller, Get, Param, Res, HttpStatus } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
-
-const prisma = new PrismaClient();
+import { prisma } from "../../db/prisma";
 
 @Controller("forum")
 export class ForumController {

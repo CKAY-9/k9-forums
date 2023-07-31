@@ -1,27 +1,15 @@
 import { Controller, Get, Req, Res, HttpStatus, Param } from "@nestjs/common";
-import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
-
-const prisma = new PrismaClient();
+import { validateUser } from "./user.utils";
+import { prisma } from "../../db/prisma";
 
 @Controller("user")
 export class UserController {
     @Get("personal")
     async validateUserWithToken(@Req() req: Request, @Res() res: Response) {
-        const token = JSON.parse(JSON.stringify((req.headers as any)))["authorization"];
-
-        if (token === null) {
-            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "No token was provided"});
-        }
-
-        const user = await prisma.user.findUnique({
-            where: {
-                token: token
-            }
-        });
-
-        if (user === null) {
-            return res.status(HttpStatus.NOT_FOUND).json({"message": "This user is invalid"});
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
         }
 
         return res.status(HttpStatus.OK).json({"message": "Got personal details", "user": user});

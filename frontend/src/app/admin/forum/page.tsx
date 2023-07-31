@@ -1,12 +1,12 @@
-import { fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { UsergroupFlags } from "@/api/admin/usergroup/interface";
+import { fetchAllGroups, fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
+import { Usergroup, UsergroupFlagPretty, UsergroupFlags, usergroupFlagsPretty } from "@/api/admin/usergroup/interface";
 import { fetchForumInfo } from "@/api/forum/fetch";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
+import style from "../admin.module.scss";
 import Link from "next/link";
-import style from "./admin.module.scss";
 
-const Admin = async () => {
+const RolesPage = async () => {
 	const user = await fetchPersonalInformation();
 	const forum = await fetchForumInfo();
 	let perms: number = 0;
@@ -25,21 +25,27 @@ const Admin = async () => {
         )
     }
 
+    const groups = await fetchAllGroups();
+
     return (
         <>
-            <title>Forums Admin - K9 Forums</title>
+            <title>Forum Management - K9 Forums</title>
             <main className="container">
-                <Link href="/">Home</Link>
-                <h1>K9 Forums Admin</h1>
+                <Link href="/admin">Back</Link>
+                <h1>Forum Config</h1>
                 <div className={style.management}>
-                    <nav style={{"display": "flex", "flexDirection": "column"}}>
-                        <Link href="/admin/forum">Forum Config</Link> 
-                        <Link href="/admin/roles">Usergroups</Link>
+                    <nav>
+                        <button>Information</button>
+                        <button>Custom Links</button>
+                        <button>Categories</button>
                     </nav>
+                    <div>
+
+                    </div>
                 </div>
             </main>
         </>
     );
 }
 
-export default Admin;
+export default RolesPage;

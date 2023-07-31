@@ -34,20 +34,50 @@ input {
 	color: rgb(var(--text));
 	background-color: rgb(var(--700));
 	border: none;
-	padding: 5px;
+	padding: 5px 10px;
 
 	&:focus {
 		outline: none;
 	}
-
+	
 	&[type="submit"]:hover {
 		cursor: pointer;
 		background-color: rgb(var(--600));
 	}
 }
 
+button {
+	border: none;
+}
+
+h1, h2, h3, h4 {
+	margin: 1rem 0;
+}
+
 .container {
 	margin: 5rem 15rem;
 	display: flex;
 	flex-direction: column;
+}
+
+@keyframes notiFadeIn {
+	0% { opacity: 0; }
+	100% { opacity: 1; }
+}
+
+.notifications {
+	display: flex;
+	flex-direction: column-reverse;
+	gap: 0.5rem;
+	position: fixed;
+	bottom: 1rem;
+	right: 1rem;
+
+	.noti {
+		animation: notiFadeIn 1s ease;
+		animation-fill-mode: forwards;
+		transition: 0.5s ease all;
+		padding: 1rem 2rem;
+		background-color: rgb(var(--800));
+	}
 }

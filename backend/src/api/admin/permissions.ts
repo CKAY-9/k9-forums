@@ -1,12 +1,5 @@
-export interface AllGroupsResponse {
-    message: string,
-    groups: Usergroup[]
-}
-
-export interface UpdateGroupResponse {
-    message: string,
-    group: Usergroup | undefined
-}
+import { Prisma, PrismaClient, User } from "@prisma/client";
+import { prisma } from "../../db/prisma";
 
 export type Usergroup = {
     name: string,
@@ -43,3 +36,17 @@ export const usergroupFlagsPretty: UsergroupFlagPretty[] = [
     {"flag": 0x08, "permission": "Post Management"},
     {"flag": 0x04, "permission": "Forum Management"},
 ];
+
+export const doesUserHavePermissionLevel = async (user: User, flag: UsergroupFlags) => {
+    for (let i = 0; i < user.usergroups.length; i++) {
+        const tempS = Number.parseInt(user.usergroups[i]);
+        const lookup = await prisma.usergroup.findUnique({
+            where: {
+                usergroup_id: tempS
+            }
+        });
+
+        if (lookup === null) continue;
+        return (lookup.permissions & flag) == flag;
+    }
+}

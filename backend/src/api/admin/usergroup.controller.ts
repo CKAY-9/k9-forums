@@ -1,8 +1,12 @@
-import { Controller, Get, Param, Res, HttpStatus, Query } from "@nestjs/common";
+import { Req, Controller, Get, Param, Res, HttpStatus, Query, Body, Post } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
-
-const prisma = new PrismaClient();
+import { UpdateGroupDTO } from "./update-group.dto";
+import { UserController } from "../user/user.controller";
+import { validateUser } from "../user/user.utils";
+import { UsergroupFlags, doesUserHavePermissionLevel } from "./permissions";
+import { prisma } from "../../db/prisma";
+import { NewGroupDTO } from "./new-group.dto";
 
 /*
     Permissions
@@ -58,5 +62,56 @@ export class UsergroupController {
     async getAllUserGroups(@Res() res: Response) {
         const usergroups = await prisma.usergroup.findMany();
         return res.status(HttpStatus.OK).json({"message": "Fetched all groups!", "groups": usergroups});
+    }
+
+    @Post("updateGroup")
+    async updateUsergroup(@Req() req: Request, @Res() res: Response, @Body() updateDTO: UpdateGroupDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        const existing = await prisma.usergroup.findUnique({
+            where: {
+                usergroup_id: updateDTO.usergroup_id
+            }
+        });
+
+        if (existing === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Failed to find usergroup"});
+        }
+
+        const update = await prisma.usergroup.update({where: {usergroup_id: updateDTO.usergroup_id}, data: {
+            "color": updateDTO.color,
+            "name": updateDTO.name,
+            "permissions": updateDTO.permissions,
+            "usergroup_id": updateDTO.new_usergroup_id
+        }});
+
+        return res.status(HttpStatus.OK).json({"message": "Updated usergroup", "group": update});
+    }
+
+    @Post("createGroup")
+    async createNewGroup(@Req() req: Request, @Res() res: Response, @Body() newDTO: NewGroupDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        const insert = await prisma.usergroup.create({data: {
+            color: newDTO.color,
+            name: newDTO.name,
+            permissions: newDTO.permissions
+        }});
+
+        return res.status(HttpStatus.OK).json({"message": "Successful creation of new group", group: insert});
     }
 }

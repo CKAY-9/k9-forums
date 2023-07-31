@@ -1,10 +1,9 @@
 import { Body, Controller, Post, Res, HttpStatus } from "@nestjs/common";
 import { Response } from "express";
 import { CreateUserK9Dto } from "./create-user.dto";
-import { PrismaClient, Prisma } from "@prisma/client";
+import { prisma } from "../../db/prisma";
 import { SHA256 } from "crypto-js";
-
-const prisma = new PrismaClient();
+import { Prisma } from "@prisma/client";
 
 @Controller("auth")
 export class AuthController {
