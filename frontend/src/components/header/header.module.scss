@@ -10,6 +10,7 @@
         background-color: rgb(var(--accent));
         padding: 1rem 2rem;
         border-radius: 1rem;
+        box-shadow: var(--shdw1);
     }
 
     nav {
@@ -23,6 +24,7 @@
             position: relative;
 
             .action {
+                box-shadow: var(--shdw1);
                 position: relative;
                 z-index: 1;
                 width: 10rem;
@@ -31,6 +33,7 @@
                 background-color: rgb(var(--800));
 
                 &:hover {
+                    cursor: pointer;
                     background-color: rgb(var(--accent));
                 }
             }

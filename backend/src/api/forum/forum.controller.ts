@@ -46,6 +46,8 @@ export class ForumController {
             }
         });
 
+        updateForum.categories = categories;
+
         return res.status(HttpStatus.OK).json(updateForum);
     }
 }

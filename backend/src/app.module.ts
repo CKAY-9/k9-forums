@@ -4,6 +4,7 @@ import { UsergroupController } from './api/admin/usergroup.controller';
 import { ForumController } from './api/forum/forum.controller';
 import { UserController } from './api/user/user.controller';
 import { CategoryController } from './api/admin/category.controller';
+import { TopicController } from './api/admin/topics.controller';
 
 @Module({
   imports: [],
@@ -12,7 +13,8 @@ import { CategoryController } from './api/admin/category.controller';
     UsergroupController, 
     ForumController, 
     UserController,
-    CategoryController
+    CategoryController,
+    TopicController
   ],
 })
 export class AppModule {}

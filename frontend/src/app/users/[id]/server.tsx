@@ -6,6 +6,7 @@ import { fetchPersonalInformation, fetchPublicProflie } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import axios from "axios";
 import Image from "next/image";
+import style from "./profile.module.scss";
 
 const ProfileServer = async (props: { params: { id: string } }) => {
 	const user = await fetchPersonalInformation();
@@ -20,6 +21,17 @@ const ProfileServer = async (props: { params: { id: string } }) => {
         userData = user;
     } else {
         userData = await fetchPublicProflie(props.params.id);
+    }
+
+    if (userData === undefined) {
+        return (
+            <>
+                <Header forum={forum} user={user} perms={perms}></Header>
+                <main className="container">
+                    <h1>This user doesn't exist!</h1>
+                </main>
+            </>
+        )
     }
 
     const groupsFinished = [];
@@ -39,26 +51,34 @@ const ProfileServer = async (props: { params: { id: string } }) => {
 	return (
 		<>
 			<Header forum={forum} user={user} perms={perms}></Header>
-			<main className="container" style={{"backgroundColor": "rgb(var(--800))"}}>
-                {user?.profile_picture !== "" && 
-                    <div>
-                        <Image src={INTERNAL_CDN_URL + user?.profile_picture} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
-                            "width": "10rem",
-                            "height": "10rem",
-                            "borderRadius": "50%"
-                        }}></Image>
+			<main className={style.container} style={{"backgroundColor": "rgb(var(--800))"}}>
+                <div className={style.userInfo}>
+                    {user?.profile_picture !== "" && 
+                        <div>
+                            <Image src={INTERNAL_CDN_URL + user?.profile_picture} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
+                                "width": "10rem",
+                                "height": "10rem",
+                                "borderRadius": "50%"
+                            }}></Image>
+                        </div>
+                    }
+                    <h1>{userData.username}</h1>
+                    <span>{userData.profile_bio}</span>
+                    <div style={{"display": "flex", "gap": "1rem"}}>
+                        {groupsFinished.map((value: any, index: number) => {
+                            return (
+                                <div style={{"color": `#${value.color}`, "padding": "1rem 0"}}>
+                                    {value.name}
+                                </div>
+                            )
+                        })}
                     </div>
-                }
-                <h1>{userData.username}</h1>
-                <span>{userData.profile_bio}</span>
-                <div style={{"display": "flex", "gap": "1rem"}}>
-                    {groupsFinished.map((value: any, index: number) => {
-                        return (
-                            <div style={{"color": `#${value.color}`, "padding": "1rem 0"}}>
-                                {value.name}
-                            </div>
-                        )
-                    })}
+                    <span>Joined {new Date(userData.time_created).toLocaleDateString()}</span>
+                    <br/>
+                    <span>Last seen {new Date(userData.last_online).toLocaleDateString()}</span>
+                </div>
+                <div>
+                    
                 </div>
             </main>
         </>

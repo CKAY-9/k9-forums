@@ -1,4 +1,4 @@
-export const postNotification = (message: string, timeInSeconds: number = 5, onClick: Function) => {
+export const postNotification = (message: string, timeInSeconds: number = 5, onClick: Function = () => {}) => {
     const notiContainer = document.getElementById("notifications");
     if (notiContainer === null) return;
 

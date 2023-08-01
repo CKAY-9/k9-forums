@@ -20,7 +20,7 @@ const User = (props: {user: User, me: User}) => {
                     "url": INTERNAL_API_URL + "/usergroup/info",
                     "method": "GET",
                     "params": {
-                        "usergroup_id": Number.parseInt(props.user.usergroups[i])
+                        "usergroup_id": Number.parseInt(props.user.usergroups[i]) - 1
                     }
                 });
 

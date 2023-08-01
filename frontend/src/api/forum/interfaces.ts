@@ -1,9 +1,36 @@
+import { User } from "../user/interfaces"
+
+export interface FetchCategoryTopicsResponse {
+    message: string,
+    topics: Topic[]
+}
+
+export interface FetchTopicPostsResponse {
+    message: string,
+    topic: Topic | undefined
+}
+
+export type Post = {
+    initial_comment: String
+    comments: Comment[]
+    first_posted: Date
+    last_updated: Date
+    closed: boolean
+    pinned: boolean
+    post_id: number
+    User?: User
+    user_id?: number
+    Topic?: Topic
+    topic_id?: number
+}
+
 export type Topic = {
     name: string
     about: string
-    topics_id: number
+    topic_id: number
     Category?: Category
-    categoryCategory_id?: number
+    category_id?: number
+    posts: Post[]
 }
 
 export type Category = {

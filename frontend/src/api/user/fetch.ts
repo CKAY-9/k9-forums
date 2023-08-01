@@ -1,7 +1,7 @@
 import axios, { AxiosError, AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
 import { cookies } from "next/headers";
-import { AllUsersResponse, PersonalInformationResponse, User } from "./interfaces";
+import { AllUsersResponse, PersonalInformationResponse, PublicUserResponse, User } from "./interfaces";
 import { getUserToken } from "./utils";
 
 export const fetchPersonalInformation = async (manualToken: string = ""): Promise<User | undefined> => {
@@ -38,13 +38,17 @@ export const fetchAllPublicUsers = async (manualToken: string = ""): Promise<Use
 }
 
 export const fetchPublicProflie = async (public_id: string) => {
-    const req = await axios({
-        "url": INTERNAL_API_URL + "/user/public",
-        "method": "GET",
-        "params": {
-            "public_id": public_id
-        }
-    });
+    try {
+        const req: AxiosResponse<PublicUserResponse> = await axios({
+            "url": INTERNAL_API_URL + "/user/public",
+            "method": "GET",
+            "params": {
+                "public_id": public_id
+            }
+        });
 
-    return req.data.user;
+        return req.data.userData;
+    } catch (ex) {
+        return undefined;
+    }
 }

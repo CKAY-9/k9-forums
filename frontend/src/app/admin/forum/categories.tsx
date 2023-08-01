@@ -4,6 +4,7 @@ import categories from "./categories.module.scss";
 import Image from "next/image";
 import { BaseSyntheticEvent, useState } from "react";
 import { createNewForumCategory, updateForumCategory } from "@/api/admin/config/post";
+import { postNotification } from "@/components/notifications/notification";
 
 const Categories = (props: {forum: Forum}) => {
     const [fCategories, fSetCategories] = useState<Category[]>(props.forum.categories || []);
@@ -18,6 +19,8 @@ const Categories = (props: {forum: Forum}) => {
 
         fSetCategories(fCategories.filter((value, index) => value.category_id !== newCategory.category_id));       
         fSetCategories(old => [...old, res.category]); 
+
+        postNotification("Created new category with ID " + res.category.category_id);
     }
     
     const updateCategory = async (e: BaseSyntheticEvent, category: Category) => {
@@ -30,11 +33,13 @@ const Categories = (props: {forum: Forum}) => {
 
         fSetCategories(fCategories.filter((value, index) => value.category_id !== category.category_id));       
         fSetCategories(old => [...old, res.category]); 
+
+        postNotification("Updated category with ID " + res.category.category_id);
     }
 
     return (
         <>
-            <h1>Forum Categories</h1>
+            <h1>Categories</h1>
             <div className={categories.categories}>
                 <button className={categories.category} id ={categories.new} style={{"position": "relative", "alignItems": "center", "justifyContent": "center"}} onClick={() => {
                     const newCategory: Category = {

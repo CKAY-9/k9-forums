@@ -37,7 +37,7 @@ export class UserController {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "User couldn't be found"});
         }
 
-        return res.status(HttpStatus.OK).json({"message": "Got public profile", "user": user});
+        return res.status(HttpStatus.OK).json({"message": "Got public profile", "userData": user});
     }
 
     @Get("maxPermissionRole") 

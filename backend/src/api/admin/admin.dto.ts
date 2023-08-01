@@ -24,3 +24,9 @@ export class UpdateCategoryDTO {
     about: string;
     category_id: number;
 }
+
+export class CreateTopicDTO {
+    name: string;
+    category_id: number;
+    about: string;
+}

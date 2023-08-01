@@ -1,6 +1,11 @@
-import { Category } from "@/api/forum/interfaces"
+import { Category, Topic } from "@/api/forum/interfaces"
 
 export type NewCategoryResponse = {
     message: string,
     category: Category
+}
+
+export type AllTopicsResponse = {
+    message: string,
+    topics: Topic[]
 }

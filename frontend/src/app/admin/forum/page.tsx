@@ -1,42 +1,15 @@
-import { fetchAllGroups, fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { UsergroupFlags } from "@/api/admin/usergroup/interface";
-import { fetchForumInfo } from "@/api/forum/fetch";
-import { fetchPersonalInformation } from "@/api/user/fetch";
-import Header from "@/components/header/header";
-import Link from "next/link";
-import ForumClient from "./client";
+import RolesClient from "../roles/client"
+import { ForumHolder } from "./client"
+import ForumServer from "./server"
 
-const RolesPage = async () => {
-	const user = await fetchPersonalInformation();
-	const forum = await fetchForumInfo();
-	let perms: number = 0;
-	if (user !== undefined) {
-		perms = await fetchPermissionLevel(user.usergroups);
-	}
-
-    if ((perms & UsergroupFlags.FORUM_MANAGEMENT) !== UsergroupFlags.FORUM_MANAGEMENT) {
-        return (
-            <>
-                <Header user={user} forum={forum} perms={perms}></Header>
-                <main className="container">
-                    <h1>Invalid Permissions!</h1>
-                </main>
-            </>
-        )
-    }
-
-    const groups = await fetchAllGroups();
-
+export const ForumPage = () => {
     return (
         <>
-            <title>Forum Management - K9 Forums</title>
-            <main className="container">
-                <Link href="/admin">Back</Link>
-                <h1>Forum Config</h1>
-                <ForumClient user={user} forum={forum} groups={groups}></ForumClient>
-            </main>
+            <ForumHolder>
+                <ForumServer />
+            </ForumHolder>
         </>
-    );
+    )
 }
 
-export default RolesPage;
+export default ForumPage;
