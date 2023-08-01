@@ -32,4 +32,10 @@ export class UserController {
             return res.status(HttpStatus.BAD_REQUEST).json({"message": "Usergroup isn't assigned"});
         }
     }
+
+    @Get("all")
+    async getAllUsers(@Res() res: Response) {
+        const users = await prisma.user.findMany();
+        return res.status(HttpStatus.OK).json({"message": "Fetched all users", "users": users})
+    }
 }

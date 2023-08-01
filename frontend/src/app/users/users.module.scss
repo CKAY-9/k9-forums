@@ -1,0 +1,30 @@
+.users {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    align-items: start;
+
+    .user {
+        border-radius: 1rem;
+        padding: 2rem 2rem;
+        background-color: rgb(var(--800));
+        box-shadow: var(--shdw1);
+
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.list {
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.groups {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

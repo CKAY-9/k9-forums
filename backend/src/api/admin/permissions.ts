@@ -47,6 +47,10 @@ export const doesUserHavePermissionLevel = async (user: User, flag: UsergroupFla
         });
 
         if (lookup === null) continue;
-        return (lookup.permissions & flag) == flag;
+        if ((lookup.permissions & flag) == flag) {
+            return true;
+        }
     }
+
+    return false;
 }

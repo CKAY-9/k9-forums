@@ -1,9 +1,14 @@
+"use client";
+
 import { Forum } from "@/api/forum/interfaces";
 import style from "./header.module.scss";
 import Link from "next/link";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
+import { useState } from "react";
 
 const Header = (props: {forum: Forum, user: any | undefined, perms: number}) => {
+    const [currentHover, setCurrentHover] = useState<number>(-1);
+
     return (
         <header className={style.header}>
             <section>
@@ -29,14 +34,49 @@ const Header = (props: {forum: Forum, user: any | undefined, perms: number}) => 
                 </div>
             </section>
             <nav>
-                <div className={style.navElement}>
-                    <h3>General</h3>
+                <div className={style.navElement} onMouseLeave={() => setCurrentHover(-1)}>
+                    <h3 onMouseEnter={() => setCurrentHover(0)} className={style.action} style={{
+                        "backgroundColor": currentHover == 0 ? "rgb(var(--accent)" : "rgb(var(--800))",
+                        "borderBottomLeftRadius": currentHover == 0 ? "0" : "1rem",
+                        "borderBottomRightRadius": currentHover == 0 ? "0" : "1rem"
+                    }}>General</h3>
+                    <div id="generalNav" className={style.menu} style={{"opacity": currentHover == 0 ? "1" : "0"}}>
+                        <Link href="/">Home</Link>
+                        <Link href="/about">About {props.forum.community_name}</Link>
+                    </div>
                 </div>
-                <div className={style.navElement}>
-                    <h3>Users</h3>
+                <div className={style.navElement} onMouseLeave={() => setCurrentHover(-1)}>
+                    <h3 onMouseEnter={() => setCurrentHover(1)} className={style.action} style={{
+                        "backgroundColor": currentHover == 1 ? "rgb(var(--accent)" : "rgb(var(--800))",
+                        "borderBottomLeftRadius": currentHover == 1 ? "0" : "1rem",
+                        "borderBottomRightRadius": currentHover == 1 ? "0" : "1rem"
+                    }}>Users</h3>
+                    <div id="userNav" className={style.menu} style={{"opacity": currentHover == 1 ? "1" : "0"}}>
+                        <Link href="/users">All Users</Link>
+                        <Link href="/users/groups">Usergroups</Link>
+                        <Link href="/users/staff">Staff</Link>
+                    </div>
                 </div>
-                <div className={style.navElement}>
-                    <h3>Posts</h3>
+                <div className={style.navElement} onMouseLeave={() => setCurrentHover(-1)}>
+                    <h3 onMouseEnter={() => setCurrentHover(2)}className={style.action} style={{
+                        "backgroundColor": currentHover == 2 ? "rgb(var(--accent)" : "rgb(var(--800))",
+                        "borderBottomLeftRadius": currentHover == 2 ? "0" : "1rem",
+                        "borderBottomRightRadius": currentHover == 2 ? "0" : "1rem"
+                    }}>Posts</h3>
+                    <div id="postNav" className={style.menu} style={{"opacity": currentHover == 2 ? "1" : "0"}}>
+                        <Link href="/">All Posts</Link>
+                    </div>
+                </div>
+                <div className={style.navElement} onMouseLeave={() => setCurrentHover(-1)}>
+                    <h3 onMouseEnter={() => setCurrentHover(3)}className={style.action} style={{
+                        "backgroundColor": currentHover == 3 ? "rgb(var(--accent)" : "rgb(var(--800))",
+                        "borderBottomLeftRadius": currentHover == 3 ? "0" : "1rem",
+                        "borderBottomRightRadius": currentHover == 3 ? "0" : "1rem"
+                    }}>Extra</h3>
+                    <div id="postNav" className={style.menu} style={{"opacity": currentHover == 3 ? "1" : "0"}}>
+                        <Link href="/k9/about">About K9-Forums</Link>
+                        <Link href="https://github.com/CKAY-9/k9-forums">Github</Link>
+                    </div>
                 </div>
             </nav>
         </header>

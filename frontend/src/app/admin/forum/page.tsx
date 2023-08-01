@@ -1,10 +1,10 @@
 import { fetchAllGroups, fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { Usergroup, UsergroupFlagPretty, UsergroupFlags, usergroupFlagsPretty } from "@/api/admin/usergroup/interface";
+import { UsergroupFlags } from "@/api/admin/usergroup/interface";
 import { fetchForumInfo } from "@/api/forum/fetch";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
-import style from "../admin.module.scss";
 import Link from "next/link";
+import ForumClient from "./client";
 
 const RolesPage = async () => {
 	const user = await fetchPersonalInformation();
@@ -33,16 +33,7 @@ const RolesPage = async () => {
             <main className="container">
                 <Link href="/admin">Back</Link>
                 <h1>Forum Config</h1>
-                <div className={style.management}>
-                    <nav>
-                        <button>Information</button>
-                        <button>Custom Links</button>
-                        <button>Categories</button>
-                    </nav>
-                    <div>
-
-                    </div>
-                </div>
+                <ForumClient user={user} forum={forum} groups={groups}></ForumClient>
             </main>
         </>
     );

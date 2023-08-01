@@ -2,7 +2,7 @@
     margin: 3rem 10rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1rem;
 
     section {
         display: flex;
@@ -14,19 +14,45 @@
 
     nav {
         display: flex;
-        flex-direction: row;
-        align-items: center;
-        gap: 1rem;
+        gap: 2rem;
 
         .navElement {
             text-align: center;
-            width: fit-content;
-            padding: 1rem 2rem;
-            border-radius: 1rem;
-            background-color: rgb(var(--800));
+            display: flex;
+            flex-direction: column;
+            position: relative;
 
-            &:hover {
-                background-color: rgb(var(--accent));
+            .action {
+                position: relative;
+                z-index: 1;
+                width: 10rem;
+                padding: 1rem 2rem;
+                border-radius: 1rem;
+                background-color: rgb(var(--800));
+
+                &:hover {
+                    background-color: rgb(var(--accent));
+                }
+            }
+
+            .menu {
+                top: calc(100% - 1rem);
+                left: 0;
+                position: absolute;
+                z-index: 0;
+
+                width: 10rem;
+
+                padding: 1rem 2rem;
+                opacity: 0;
+                background-color: rgb(var(--800));
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                border-bottom-left-radius: 1rem;
+                border-bottom-right-radius: 1rem;
+
+                box-shadow: var(--shdw1);
             }
         }
     }

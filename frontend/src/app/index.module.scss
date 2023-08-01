@@ -1,0 +1,24 @@
+.categories {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+
+    .category {
+        padding: 2rem 3rem;
+        border-radius: 2rem;
+        background-color: rgb(var(--800));
+
+        .about {
+            h1 {
+                margin: 0;
+            }
+
+            padding: 1rem 0;
+            border-bottom: 1px solid rgb(var(--text));
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: end;
+        }
+    }
+}

@@ -1,12 +1,11 @@
 import { Req, Controller, Get, Param, Res, HttpStatus, Query, Body, Post } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
-import { UpdateGroupDTO } from "./update-group.dto";
 import { UserController } from "../user/user.controller";
 import { validateUser } from "../user/user.utils";
 import { UsergroupFlags, doesUserHavePermissionLevel } from "./permissions";
 import { prisma } from "../../db/prisma";
-import { NewGroupDTO } from "./new-group.dto";
+import { NewGroupDTO, UpdateGroupDTO } from "./admin.dto";
 
 /*
     Permissions
@@ -44,10 +43,10 @@ export class UsergroupController {
     }
 
     @Get("info")
-    async getUserGroup(@Param() params: any, @Res() res: Response): Promise<any> {
+    async getUserGroup(@Query() query: {usergroup_id: string}, @Res() res: Response): Promise<any> {
         const usergroup = await prisma.usergroup.findUnique({
             where: {
-                usergroup_id: params.usergroup_id
+                usergroup_id: Number.parseInt(query.usergroup_id)
             }
         });
 

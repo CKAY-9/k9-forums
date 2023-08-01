@@ -3,6 +3,11 @@ export interface PersonalInformationResponse {
     user: User | undefined
 }
 
+export interface AllUsersResponse {
+    message: string,
+    users: User[] | undefined
+}
+
 export type User = {
     username: string,
     email: string,

@@ -6,17 +6,46 @@ import { prisma } from "../../db/prisma";
 export class ForumController {
     @Get("info")
     async GeneralInfoForum(@Res() res: Response): Promise<any> {
-        let forumInfo = await prisma.forum.findFirst();
+        let forumInfo = await prisma.forum.findFirst({
+            "select": {
+                "categories": true,
+                "community_name": true,
+                "community_logo": true,
+                "about": true,
+                "custom_redirects": true,
+            }
+        });
         if (forumInfo === null) {
-            forumInfo = {
+            let newTemp = {
                 community_name: "K9 Forums",
                 community_logo: "",
                 about: "FOS Forum Software by CKAY9",
                 custom_redirects: []
-            } 
+            }
 
-            await prisma.forum.create({data: forumInfo});
+            await prisma.forum.create({data: newTemp});
         }
-        return res.status(HttpStatus.OK).json(forumInfo);
+
+        const categories = await prisma.category.findMany();
+
+        const updateForum = await prisma.forum.update({
+            "data": {
+                "categories": {
+                    "set": categories
+                }
+            },
+            "select": {
+                "categories": true,
+                "community_name": true,
+                "community_logo": true,
+                "about": true,
+                "custom_redirects": true,
+            },
+            "where": {
+                "community_name": forumInfo === null ? "K9 Forums" : forumInfo.community_name
+            }
+        });
+
+        return res.status(HttpStatus.OK).json(updateForum);
     }
 }

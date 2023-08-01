@@ -1,4 +1,4 @@
-import axios from "axios"
+import axios, { AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
 
 export const fetchForumInfo = async () => {
