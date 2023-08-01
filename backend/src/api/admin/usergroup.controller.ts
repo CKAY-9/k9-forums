@@ -46,9 +46,11 @@ export class UsergroupController {
     async getUserGroup(@Query() query: {usergroup_id: string}, @Res() res: Response): Promise<any> {
         const usergroup = await prisma.usergroup.findUnique({
             where: {
-                usergroup_id: Number.parseInt(query.usergroup_id)
+                usergroup_id: Number.parseInt(query.usergroup_id) + 1
             }
         });
+
+        console.log(usergroup);
 
         if (usergroup === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "This usergroup couldn't be found"});

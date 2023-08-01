@@ -26,7 +26,7 @@ const Header = (props: {forum: Forum, user: any | undefined, perms: number}) => 
                         <div style={{"textAlign": "right"}}>
                             <h2>Logged in as {props.user.username}</h2>
                             <span style={{"display": "flex", "gap": "1rem"}}>
-                                <Link href="/profile">View profile</Link>
+                                <Link href="/users/me">View profile</Link>
                                 {(props.perms & UsergroupFlags.FORUM_MANAGEMENT) == UsergroupFlags.FORUM_MANAGEMENT && <Link href="/admin">Admin Settings</Link>}
                             </span>
                         </div>

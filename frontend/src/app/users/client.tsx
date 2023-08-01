@@ -8,7 +8,7 @@ import axios from "axios";
 import { INTERNAL_API_URL } from "@/api/resources";
 import Link from "next/link";
 
-const User = (props: {user: User}) => {
+const User = (props: {user: User, me: User}) => {
     const [loadingGroups, setLoadingGroups] = useState<boolean>(true);
     const [groups, setGroups] = useState<Usergroup[]>([]);
 
@@ -33,7 +33,7 @@ const User = (props: {user: User}) => {
     });
 
     return (
-        <Link href={`/users/${props.user.public_id}`} className={style.user} style={{"color": "rgb(var(--text))"}}>
+        <Link href={`/users/${props.user.public_id === props.me.public_id ? "me" : props.user.public_id}`} className={style.user} style={{"color": "rgb(var(--text))"}}>
             <h1>{props.user.username}</h1>
             {loadingGroups && <h2>Loading</h2>}
             {!loadingGroups && 
@@ -54,14 +54,14 @@ const User = (props: {user: User}) => {
     );
 }
 
-const UsersClient = (props: {users: User[] | undefined}) => {
+const UsersClient = (props: {users: User[] | undefined, me: User}) => {
     return (
         <>
             <div className={style.users}>
                     {props.users?.map((value: User, index: number) => {
                         return (
                             <>
-                                <User key={index} user={value}></User>
+                                <User key={index} me={props.me} user={value}></User>
                             </>
                         );
                     })}

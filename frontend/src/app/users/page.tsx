@@ -22,7 +22,7 @@ const UsersPage = async () => {
 			<Header forum={forum} user={user} perms={perms}></Header>
 			<main className="container">
                 <h1>All Users</h1>
-                <UsersClient users={users}></UsersClient>
+                <UsersClient me={user} users={users}></UsersClient>
             </main>
         </>
     );

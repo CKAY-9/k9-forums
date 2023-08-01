@@ -36,3 +36,15 @@ export const fetchAllPublicUsers = async (manualToken: string = ""): Promise<Use
         return undefined;
     }
 }
+
+export const fetchPublicProflie = async (public_id: string) => {
+    const req = await axios({
+        "url": INTERNAL_API_URL + "/user/public",
+        "method": "GET",
+        "params": {
+            "public_id": public_id
+        }
+    });
+
+    return req.data.user;
+}

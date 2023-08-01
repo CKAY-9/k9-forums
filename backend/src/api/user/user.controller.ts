@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, HttpStatus, Param } from "@nestjs/common";
+import { Controller, Get, Req, Res, HttpStatus, Param, Query } from "@nestjs/common";
 import { Response } from "express";
 import { validateUser } from "./user.utils";
 import { prisma } from "../../db/prisma";
@@ -13,6 +13,31 @@ export class UserController {
         }
 
         return res.status(HttpStatus.OK).json({"message": "Got personal details", "user": user});
+    }
+
+    @Get("public")
+    async getPublicUser(@Query() query: {public_id: string}, @Res() res: Response) {
+        const user = await prisma.user.findUnique({
+            where: {
+                public_id: Number.parseInt(query.public_id)
+            }, 
+            select: {
+                username: true,
+                posts: true,
+                comments: true,
+                time_created: true,
+                reputation: true,
+                profile_bio: true,
+                last_online: true,
+                usergroups: true
+            }
+        });
+
+        if (user === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "User couldn't be found"});
+        }
+
+        return res.status(HttpStatus.OK).json({"message": "Got public profile", "user": user});
     }
 
     @Get("maxPermissionRole") 
