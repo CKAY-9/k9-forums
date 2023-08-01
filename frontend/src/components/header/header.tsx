@@ -5,6 +5,8 @@ import style from "./header.module.scss";
 import Link from "next/link";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
 import { useState } from "react";
+import Image from "next/image";
+import { INTERNAL_CDN_URL } from "@/api/resources";
 
 const Header = (props: {forum: Forum, user: any | undefined, perms: number}) => {
     const [currentHover, setCurrentHover] = useState<number>(-1);
@@ -12,13 +14,17 @@ const Header = (props: {forum: Forum, user: any | undefined, perms: number}) => 
     return (
         <header className={style.header}>
             <section>
-                <div>
-                    <h1>{props.forum.community_name}</h1>
+                <div style={{"display": "flex", "alignItems": "center", "gap": "3rem"}}>
                     {props.forum.community_logo !== "" && 
-                        <div className={style.communityLogo}>
-                            
+                        <div>
+                            <Image src={INTERNAL_CDN_URL + props.forum.community_logo} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
+                                "width": "5rem",
+                                "height": "5rem",
+                                "borderRadius": "50%"
+                            }}></Image>
                         </div>
                     }
+                    <h1>{props.forum.community_name}</h1>
                 </div>
                 <div>
                     {props.user === undefined && <span><Link href="/login">Login</Link>/<Link href="/register">Register</Link></span>}

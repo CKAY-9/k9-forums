@@ -1,9 +1,12 @@
+import { fetchForumInfo } from "@/api/forum/fetch";
 import LoginClient from "./client";
 
-const LoginServer = () => {
+const LoginServer = async () => {
+    const forum = await fetchForumInfo();
+
     return (
         <>
-            <LoginClient></LoginClient>
+            <LoginClient forum={forum}></LoginClient>
         </>
     );
 }

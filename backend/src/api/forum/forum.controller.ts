@@ -18,9 +18,9 @@ export class ForumController {
         if (forumInfo === null) {
             let newTemp = {
                 community_name: "K9 Forums",
-                community_logo: "",
+                community_logo: "/default/default.png",
                 about: "FOS Forum Software by CKAY9",
-                custom_redirects: []
+                custom_redirects: [],
             }
 
             await prisma.forum.create({data: newTemp});

@@ -4,11 +4,13 @@ import Link from "next/link";
 import style from "./login.module.scss";
 import { BaseSyntheticEvent, useState } from "react";
 import axios from "axios";
-import { INTERNAL_API_URL } from "@/api/resources";
+import { INTERNAL_API_URL, INTERNAL_CDN_URL } from "@/api/resources";
 import { SHA256 } from "crypto-js";
 import { setCookie } from "@/utils/cookie";
+import Image from "next/image";
+import { Forum } from "@/api/forum/interfaces";
 
-const RegisterClient = () => {
+const RegisterClient = (props: {forum: Forum}) => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [username, setUsername] = useState<string>("");
@@ -35,6 +37,15 @@ const RegisterClient = () => {
     return (
         <>
             <main className={style.container}>
+                {props.forum.community_logo !== "" && 
+                    <div>
+                        <Image src={INTERNAL_CDN_URL + props.forum.community_logo} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
+                            "width": "10rem",
+                            "height": "10rem",
+                            "borderRadius": "50%"
+                        }}></Image>
+                    </div>
+                }
                 <h1>Register</h1>
                 <div className={style.login}>
                     <form onSubmit={register} style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>

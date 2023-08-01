@@ -4,6 +4,9 @@ const nextConfig = {
         "remotePatterns": [
             {
                 "hostname": "contrib.rocks"
+            },
+            {
+                "hostname": "127.0.0.1"
             }
         ],
         "dangerouslyAllowSVG": true

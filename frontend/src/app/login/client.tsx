@@ -2,11 +2,23 @@
 
 import Link from "next/link";
 import style from "./login.module.scss";
+import Image from "next/image";
+import { INTERNAL_CDN_URL } from "@/api/resources";
+import { Forum } from "@/api/forum/interfaces";
 
-const LoginClient = () => {
+const LoginClient = (props: {forum: Forum}) => {
     return (
         <>
             <main className={style.container}>
+                {props.forum.community_logo !== "" && 
+                    <div>
+                        <Image src={INTERNAL_CDN_URL + props.forum.community_logo} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
+                            "width": "10rem",
+                            "height": "10rem",
+                            "borderRadius": "50%"
+                        }}></Image>
+                    </div>
+                }
                 <h1>Login</h1>
                 <div className={style.login}>
                     <h3>Using K9</h3>

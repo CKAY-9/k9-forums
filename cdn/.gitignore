@@ -1,0 +1,5 @@
+files/*
+!files/default/
+.venv
+__pycache__
+*/__pycache__

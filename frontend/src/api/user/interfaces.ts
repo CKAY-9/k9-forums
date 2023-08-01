@@ -20,5 +20,6 @@ export type User = {
     profile_bio: string,
     comments?: string[],
     posts?: string[],
+    profile_picture: string,
     usergroups: string[]
 }

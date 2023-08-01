@@ -79,6 +79,7 @@ model User {
   reputation          Int
   usergroups          String[]
   profile_bio         String
+  profile_picture     String
   Forum               Forum?    @relation(fields: [forumCommunity_name], references: [community_name])
   forumCommunity_name String?
 }

@@ -48,7 +48,8 @@ export class AuthController {
             token: SHA256(createUserDto.email + createUserDto.password).toString(),
             profile_bio: "No information provided.",
             reputation: 0,
-            usergroups: [userGroupID.toString()]
+            usergroups: [userGroupID.toString()],
+            profile_picture: "/default/default.png"
         }
 
         const createUser = await prisma.user.create({data: user});
