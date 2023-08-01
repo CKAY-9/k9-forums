@@ -6,7 +6,6 @@
 # Logs
 logs
 *.log
-.env
 npm-debug.log*
 pnpm-debug.log*
 yarn-debug.log*
@@ -15,6 +14,7 @@ lerna-debug.log*
 
 # OS
 .DS_Store
+.env
 
 # Tests
 /coverage
