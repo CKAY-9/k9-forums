@@ -20,7 +20,7 @@ export class AuthController {
         }
 
         let userUsergroupCheck = await prisma.usergroup.findFirst();
-        let userGroupID = 0;
+        let userGroupID = 1;
         if (userUsergroupCheck === null) {
             let userUsergroup: Prisma.UsergroupCreateInput = {
                 color: "FFFFFF",
@@ -34,10 +34,12 @@ export class AuthController {
                 permissions: (0x400 | 0x410 | 0x420 | 0x4000 | 0x4100 | 0x5000 | 0x5100 | 0x08 | 0x04)
             }
 
-            await prisma.usergroup.create({data: adminUsergroup});
-
             const crud = await prisma.usergroup.create({data: userUsergroup});
             userGroupID = crud.usergroup_id;
+        
+            await prisma.usergroup.create({data: adminUsergroup});
+        } else {
+            userGroupID === userUsergroupCheck.usergroup_id;
         }
 
         let user: Prisma.UserCreateInput = {

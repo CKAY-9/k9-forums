@@ -40,7 +40,8 @@ export class PostController {
                 closed: false,
                 pinned: false,
                 topic_id: topic.topic_id,
-                last_updated: new Date()
+                last_updated: new Date(),
+                votes: 0
             }
         });
 
@@ -74,6 +75,7 @@ export class PostController {
                 User: true,
                 closed: true,
                 pinned: true,
+                votes: true,
                 comments: true,
                 first_posted: true,
                 last_updated: true,
@@ -201,6 +203,7 @@ export class PostController {
                 content: newCommentDTO.content,
                 user_id: Number.parseInt(newCommentDTO.user_id),
                 post_id: Number.parseInt(newCommentDTO.post_id),
+                votes: 0
             }
         });
 
