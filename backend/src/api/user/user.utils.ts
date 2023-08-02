@@ -15,5 +15,15 @@ export const validateUser = async (req: Request): Promise<User | undefined> => {
     });
 
     if (user === null) return undefined;
+    
+    const updateNow = await prisma.user.update({
+        where: {
+            token: user.token
+        },
+        data: {
+            last_online: new Date()
+        }
+    })
+
     return user;
 }

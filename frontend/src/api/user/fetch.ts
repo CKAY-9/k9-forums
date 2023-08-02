@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
-import { AllUsersResponse, PersonalInformationResponse, PublicUserResponse, User } from "./interfaces";
+import { AllUsersResponse, LoginResponse, PersonalInformationResponse, PublicUserResponse, User } from "./interfaces";
 import { getUserToken } from "./utils.server";
 
 export const fetchPersonalInformation = async (manualToken: string = ""): Promise<User | undefined> => {

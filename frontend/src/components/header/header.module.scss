@@ -15,20 +15,22 @@
 
     nav {
         display: flex;
-        gap: 2rem;
+        gap: 1rem;
 
         .navElement {
+            position: relative;
             text-align: center;
             display: flex;
             flex-direction: column;
             position: relative;
+            font-size: 1rem;
 
             .action {
                 box-shadow: var(--shdw1);
                 position: relative;
-                z-index: 1;
                 width: 10rem;
-                padding: 1rem 2rem;
+                z-index: 1;
+                padding: 1rem;
                 border-radius: 1rem;
                 background-color: rgb(var(--800));
 
@@ -46,7 +48,7 @@
 
                 width: 10rem;
 
-                padding: 1rem 2rem;
+                padding: 1rem 1rem;
                 opacity: 0;
                 background-color: rgb(var(--800));
                 display: flex;

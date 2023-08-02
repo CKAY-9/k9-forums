@@ -1,11 +1,12 @@
 import { fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
-import { fetchCategoryTopics, fetchForumInfo } from "@/api/forum/fetch";
+import { fetchCategoryTopics, fetchForumInfo, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import { Category, Forum, Topic } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "./index.module.scss";
 import Link from "next/link";
+import Image from "next/image";
 
 const Index = async () => {
 	const user = await fetchPersonalInformation();
@@ -33,11 +34,25 @@ const Index = async () => {
 									{(topics === undefined ||topics.topics.length <= 0) && <h1>No subtopics found</h1>}
 									{(topics !== undefined && topics.topics.length > 0) && 
 										<div className={style.topics}>
-											{topics.topics.map((topic: Topic, index: number) => {
+											{topics.topics.map(async (topic: Topic, index: number) => {
+												const temp = await fetchTopicPostsAndActivity(topic.topic_id);
+
 												return (
 													<Link key={index} href={`/topic/${topic.topic_id}`} className={style.topic}>
 														<h2>{topic.name}</h2>
 														<p>{topic.about}</p>
+														<div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+															{temp?.topic?.posts !== undefined &&
+																<div style={{"display": "flex", "alignItems": "center", "gap": "0.5rem", "opacity": "0.5"}}>
+																	<Image src={"/svgs/comment.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
+																		"width": "1.5rem",
+																		"height": "1.5rem",
+																		"filter": "invert(1)",
+																	}}></Image>
+																	<span>{temp.topic.posts.length || 0}</span>
+																</div>
+															}
+														</div>
 													</Link>
 												)
 											})}

@@ -6,6 +6,7 @@ import { UserController } from './api/user/user.controller';
 import { CategoryController } from './api/admin/category.controller';
 import { TopicController } from './api/admin/topics.controller';
 import { PostController } from './api/forum/post.controller';
+import { VoteController } from './api/forum/vote.controller';
 
 @Module({
   imports: [],
@@ -16,7 +17,8 @@ import { PostController } from './api/forum/post.controller';
     UserController,
     CategoryController,
     TopicController,
-    PostController
+    PostController,
+    VoteController
   ],
 })
 export class AppModule {}

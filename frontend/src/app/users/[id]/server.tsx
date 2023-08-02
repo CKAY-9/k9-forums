@@ -7,6 +7,8 @@ import Header from "@/components/header/header";
 import axios from "axios";
 import Image from "next/image";
 import style from "./profile.module.scss";
+import Link from "next/link";
+import { calcTimeSinceMillis } from "@/utils/time";
 
 const ProfileServer = async (props: { params: { id: string } }) => {
 	const user = await fetchPersonalInformation();
@@ -73,9 +75,17 @@ const ProfileServer = async (props: { params: { id: string } }) => {
                             )
                         })}
                     </div>
+                    <span>Reputation: {userData.reputation}</span>
+                    <br/>
                     <span>Joined {new Date(userData.time_created).toLocaleDateString()}</span>
                     <br/>
-                    <span>Last seen {new Date(userData.last_online).toLocaleDateString()}</span>
+                    <span>Last seen {calcTimeSinceMillis(new Date(userData.last_online).getTime(), new Date().getTime())} ago</span>
+
+                    {(user !== undefined && user.public_id === userData.public_id) && 
+                        <div className={style.controls}>
+                            <Link href="/users/settings">Edit Account</Link>
+                        </div>
+                    }
                 </div>
                 <div>
                     

@@ -9,6 +9,7 @@ import { SHA256 } from "crypto-js";
 import { setCookie } from "@/utils/cookie";
 import Image from "next/image";
 import { Forum } from "@/api/forum/interfaces";
+import { postNotification } from "@/components/notifications/notification";
 
 const RegisterClient = (props: {forum: Forum}) => {
     const [email, setEmail] = useState<string>("");
@@ -18,19 +19,31 @@ const RegisterClient = (props: {forum: Forum}) => {
     const register = async (e: BaseSyntheticEvent) => {
         e.preventDefault();
 
-        const req = await axios({
-            "url": INTERNAL_API_URL + "/auth/k9r",
-            "method": "POST",
-            data: {
-                username: username,
-                password: SHA256(password).toString(),
-                email: email
-            }
-        });
+        try {
+            const req = await axios({
+                "url": INTERNAL_API_URL + "/auth/k9r",
+                "method": "POST",
+                "data": {
+                    username: username,
+                    password: SHA256(password).toString(),
+                    email: email
+                },
+                "validateStatus": (status) => {
+                    if (status === 401) {
+                        postNotification("An account with this email already exists!");
+                        return false;
+                    }
 
-        if (req.status === 200 && req.data.token !== null) {
-            setCookie("token", req.data.token, 365);
-            window.location.href = "/";
+                    return true;
+                }
+            });
+            
+            if (req.status === 200 && req.data.token !== null) {
+                setCookie("token", req.data.token, 365);
+                window.location.href = "/";
+            }
+        } catch (ex) {
+            console.log(ex);
         }
     }
  

@@ -40,8 +40,7 @@ export class PostController {
                 closed: false,
                 pinned: false,
                 topic_id: topic.topic_id,
-                last_updated: new Date(),
-                votes: 0
+                last_updated: new Date()
             }
         });
 
@@ -134,7 +133,7 @@ export class PostController {
                 post_id: Number.parseInt(lockPostDTO.post_id)
             },
             data: {
-                closed: true
+                closed: !post.closed
             }
         });
 
@@ -167,7 +166,7 @@ export class PostController {
                 post_id: Number.parseInt(pinPostDTO.post_id)
             },
             data: {
-                pinned: true
+                pinned: !post.pinned
             }
         });
 
@@ -202,8 +201,7 @@ export class PostController {
             data: {
                 content: newCommentDTO.content,
                 user_id: Number.parseInt(newCommentDTO.user_id),
-                post_id: Number.parseInt(newCommentDTO.post_id),
-                votes: 0
+                post_id: Number.parseInt(newCommentDTO.post_id)
             }
         });
 

@@ -42,6 +42,16 @@ model Usergroup {
   permissions  Int
 }
 
+model Vote {
+  type       Int
+  user_id    Int
+  vote_id    Int      @id @unique @default(autoincrement())
+  Comment    Comment? @relation(fields: [comment_id], references: [comment_id])
+  comment_id Int?
+  Post       Post?    @relation(fields: [post_id], references: [post_id])
+  post_id    Int?
+}
+
 model Comment {
   user       User?    @relation(fields: [user_id], references: [public_id])
   content    String
@@ -50,7 +60,7 @@ model Comment {
   post       Post?    @relation(fields: [post_id], references: [post_id])
   post_id    Int?
   user_id    Int?
-  votes      Int
+  votes      Vote[]
 }
 
 model Post {
@@ -66,7 +76,7 @@ model Post {
   user_id      Int?
   Topic        Topic?    @relation(fields: [topic_id], references: [topic_id])
   topic_id     Int?
-  votes        Int
+  votes        Vote[]
 }
 
 model User {

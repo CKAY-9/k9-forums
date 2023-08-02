@@ -1,7 +1,8 @@
-import { Controller, Get, Req, Res, HttpStatus, Param, Query } from "@nestjs/common";
+import { Controller, Get, Req, Res, HttpStatus, Param, Query, Post, Body } from "@nestjs/common";
 import { Response } from "express";
 import { validateUser } from "./user.utils";
 import { prisma } from "../../db/prisma";
+import { UpdateUserDTO } from "./user.dto";
 
 @Controller("user")
 export class UserController {
@@ -64,5 +65,27 @@ export class UserController {
     async getAllUsers(@Res() res: Response) {
         const users = await prisma.user.findMany();
         return res.status(HttpStatus.OK).json({"message": "Fetched all users", "users": users})
+    }
+
+    @Post("update")
+    async updateUserProfile(@Req() req: Request, @Res() res: Response, @Body() body: UpdateUserDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        const update = await prisma.user.update({
+            where: {
+                token: user.token
+            },
+            data: {
+                username: body.username,
+                profile_bio: body.bio,
+                profile_picture: body.pfp,
+                last_online: new Date()
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Updated profile"});
     }
 }

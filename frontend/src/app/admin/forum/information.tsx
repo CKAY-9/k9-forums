@@ -37,22 +37,11 @@ const Information = (props: {forum: Forum}) => {
 
     const uploadLogo = async (e: BaseSyntheticEvent) => {
         e.preventDefault();
-        if (logoFile === undefined) {
-            postNotification("Logo input cannot be empty!");
-            return;
-        }
-
-        if (logoFile.size > (1024 * 1024 * 3) /* 3MB */) {
-            postNotification("Files must be smaller than 3MB (3072KB)!");
-            return;
-        }
 
         const newLogoDest = await uploadFile(logoFile, {
             "folder_id": "forum",
             "previous_file_dest": props.forum.community_logo || ""
         });
-
-        console.log(newLogoDest);
 
         if (newLogoDest !== undefined) {
             setLogo(newLogoDest.dest);

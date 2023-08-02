@@ -16,6 +16,15 @@ export interface PublicUserResponse {
     userData: PublicUser
 }
 
+export interface LoginResponse {
+    message: string,
+    token: string | undefined
+}
+
+export interface UpdateUserProfileResponse {
+    message: string
+}
+
 export type User = {
     username: string,
     email: string,

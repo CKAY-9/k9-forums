@@ -20,3 +20,9 @@ export class UpdateForumDTO {
     about: string;
     logo: string;
 }
+
+export class VoteOnDTO {
+    type: -1 | 0 | 1;
+    user_id: string;
+    target_id: string;
+}

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Res, HttpStatus } from "@nestjs/common";
+import { Body, Controller, Post, Res, HttpStatus, Query, Get } from "@nestjs/common";
 import { Response } from "express";
 import { CreateUserK9Dto } from "./create-user.dto";
 import { prisma } from "../../db/prisma";
@@ -7,6 +7,22 @@ import { Prisma } from "@prisma/client";
 
 @Controller("auth")
 export class AuthController {
+    @Get("k9l")
+    async knLogin(@Res() res: Response, @Query() query: {email: string, password: string}) {
+        const token = SHA256(query.email + query.password).toString();
+        const user = await prisma.user.findUnique({
+            where: {
+                token: token
+            }
+        });
+
+        if (user === null) {
+            return res.status(HttpStatus.BAD_REQUEST).json({"message": "Failed to login with given email and password"});
+        }
+
+        return res.status(HttpStatus.OK).json({"message": "Logged in", "token": token});
+    }
+
     @Post("k9r")
     async knRegister(@Body() createUserDto: CreateUserK9Dto, @Res() res: Response): Promise<any> {
         const userCheck = await prisma.user.findUnique({

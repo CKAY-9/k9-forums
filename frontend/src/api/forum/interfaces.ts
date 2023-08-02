@@ -25,6 +25,21 @@ export interface NewCommentResponse {
     comment_id: string | undefined
 }
 
+export interface VoteOnPostData {
+    postType: "comment" | "post", 
+    voteType: -1 | 0 | 1
+    targetID: number,
+    userID: number,
+    votes: Vote[]
+}
+
+export type Vote = {
+    user_id: number
+    post_id?: number
+    comment_id?: number
+    type: -2 | -1 | 0 | 1 | 2
+}
+
 export type Comment = {
     user?: PublicUser
     content: string
@@ -33,7 +48,7 @@ export type Comment = {
     post?: Post
     post_id: number
     user_id: number
-    votes: number
+    votes: Vote[]
 }
 
 export type Post = {
@@ -49,7 +64,7 @@ export type Post = {
     user_id?: number
     Topic?: Topic
     topic_id?: number
-    votes: number
+    votes: Vote[]
 }
 
 export type Topic = {
