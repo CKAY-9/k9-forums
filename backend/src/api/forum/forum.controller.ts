@@ -1,6 +1,9 @@
-import { Body, Controller, Get, Param, Res, HttpStatus } from "@nestjs/common";
+import { Body, Controller, Get, Param, Res, HttpStatus, Post, Req } from "@nestjs/common";
 import { Response } from "express";
 import { prisma } from "../../db/prisma";
+import { UpdateForumDTO } from "./forum.dto";
+import { UsergroupFlags, doesUserHavePermissionLevel } from "../admin/permissions";
+import { validateUser } from "../user/user.utils";
 
 @Controller("forum")
 export class ForumController {
@@ -49,5 +52,37 @@ export class ForumController {
         updateForum.categories = categories;
 
         return res.status(HttpStatus.OK).json(updateForum);
+    }
+
+    @Post("update")
+    async updateForumInfo(@Req() req: Request, @Res() res: Response, @Body() updateForumDTO: UpdateForumDTO) {
+        const user = await validateUser(req);
+        
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        const forum = await prisma.forum.findFirst();
+
+        if (forum === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Error fetching forum data"});
+        }
+
+        const forumUpdate = await prisma.forum.update({
+            where: {
+                community_name: forum.community_name
+            },
+            data: {
+                about: updateForumDTO.about,
+                community_name: updateForumDTO.name,
+                community_logo: updateForumDTO.logo
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Updated forum information"});
     }
 }

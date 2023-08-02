@@ -62,6 +62,7 @@ py -3 -m venv .venv
 pip install flask
 pip install markupsafe
 pip install werkzeug
+pip install -U flask-cors
 
 # running
 flask --app main run

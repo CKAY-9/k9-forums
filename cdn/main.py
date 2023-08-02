@@ -1,9 +1,13 @@
-from flask import Flask, flash, request, redirect, url_for, send_file
+from flask import Flask, flash, request, jsonify, send_file
+from flask_cors import CORS
 from markupsafe import escape
 from werkzeug.utils import secure_filename
+from hashlib import md5
+import random
 import os
 
 app = Flask(__name__)
+CORS(app)
 
 
 
@@ -26,27 +30,43 @@ def get_file(id, file):
 # UPLOADING
 
 
-
-
-UPLOAD_FOLDER = './cdn/'
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
-    if request.method == 'POST':
-        if 'file' not in request.files:
+    if (request.method == 'POST'):
+        # check if the post request has the file part
+        if ('file' not in request.files):
             flash('No file part')
-            return redirect(request.url)
+            return jsonify({
+                "message": "File missing!"
+            }), 400
+        
         file = request.files['file']
-        if file.filename == '':
+        previous_file = ""
+
+        if ('previous_file' in request.form):
+            previous_file = request.form["previous_file"]
+
+        # If the user does not select a file, the browser submits an
+        # empty file without a filename.
+        if (file.filename == ''):
             flash('No selected file')
-            return redirect(request.url)
-        if file and allowed_file(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            return redirect(url_for('download_file', name=filename))
+            return jsonify({
+                "message": "Filename invalid"
+            }), 400
+        
+        if (file):
+            unique_id = md5(bytes(str(random.randint(0, 1_000_000_000)).encode("ascii", "utf-8"))).hexdigest()
+            filename = secure_filename(unique_id + file.filename)
+
+            if (not os.path.exists(f"./files/{request.form['folder_id']}")):
+                os.makedirs(f"./files/{request.form['folder_id']}")
+
+            file.save(os.path.join(f"./files/{request.form['folder_id']}", filename))
+
+            if (not previous_file == "" and not previous_file == "/default/default.png"):
+                os.remove("./files" + previous_file)
+
+            return jsonify({
+                "message": "Uploaded file",
+                "dest": f"/{request.form['folder_id']}/{filename}"
+            }), 200

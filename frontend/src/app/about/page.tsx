@@ -4,6 +4,9 @@ import { fetchForumInfo } from "@/api/forum/fetch";
 import { Forum } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
+import DOMPurify from "dompurify";
+import { marked } from "marked";
+import AboutClient from "./client";
 
 const AboutCommunity = async () => {
 	const user = await fetchPersonalInformation();
@@ -13,15 +16,13 @@ const AboutCommunity = async () => {
 		perms = await fetchPermissionLevel(user.usergroups);
 	}
 
-    // TODO: Parse markdown
-
 	return (
 		<>
 			<Header forum={forum} user={user} perms={perms}></Header>
 
             <main className="container">
                 <h1>About {forum.community_name}</h1>
-                <p>{forum.about}</p>
+				<AboutClient forum={forum}></AboutClient>
             </main>
 		</>
 	);

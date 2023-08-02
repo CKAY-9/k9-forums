@@ -14,3 +14,9 @@ export class NewCommentDTO {
     user_id: string;
     content: string;
 }
+
+export class UpdateForumDTO {
+    name: string;
+    about: string;
+    logo: string;
+}

@@ -9,3 +9,7 @@ export type AllTopicsResponse = {
     message: string,
     topics: Topic[]
 }
+
+export interface UpdateForumResponse {
+    message: string
+}
