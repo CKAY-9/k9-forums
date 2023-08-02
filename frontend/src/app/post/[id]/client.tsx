@@ -14,6 +14,7 @@ import { lockPostWithID, pinPostWithID, postCommentUnderPost } from "@/api/forum
 import axios, { AxiosResponse } from "axios";
 import { postNotification } from "@/components/notifications/notification";
 import { generateEmptyProflie } from "@/api/user/utils.client";
+import { calcTimeSinceMillis } from "@/utils/time";
 
 export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined, first: string, update: string }) => {
     const [showNewComment, setShowNewComment] = useState<boolean>(false);
@@ -68,8 +69,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             <header className={style.header}>
                 <section>
                     <h1>{props.post?.title}</h1>
-                    <span>Posted {props.first}</span>
-                    <span style={{ "marginLeft": "1rem" }}>Updated {props.update}</span>
+                    <span>Posted {calcTimeSinceMillis(new Date(props?.post?.first_posted || "").getTime(), new Date().getTime())} ago</span>
+                    {(props?.post?.last_updated !== props?.post?.first_posted) && <span style={{"marginLeft": "1rem", "opacity": "0.5"}}>(Updated {calcTimeSinceMillis(new Date(props?.post?.last_updated || "").getTime(), new Date().getTime())} ago)</span>}              
                     <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
                 </section>
                 <section style={{ "display": "flex", "flexDirection": "row" }}>
@@ -195,6 +196,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                             </div>
                                         </>
                                     }
+                                    <span style={{"opacity": "0.5", "pointerEvents": "none"}}>Posted {calcTimeSinceMillis(new Date(comment.posted_at).getTime(), new Date().getTime())} ago</span>
                                 </footer>
                             </div>
                         </div>

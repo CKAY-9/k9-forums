@@ -216,6 +216,9 @@ export class PostController {
             data: {
                 comments: {
                     set: post.comments
+                },
+                last_updated: {
+                    set: new Date()
                 }
             }
         });
