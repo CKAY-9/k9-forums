@@ -34,11 +34,12 @@ a {
 	}
 }
 
-input, button {
+input, button, textarea {
 	color: rgb(var(--text));
 	background-color: rgb(var(--700));
 	border: none;
 	padding: 5px 10px;
+	resize: none;
 
 	&:focus {
 		outline: none;
@@ -57,7 +58,7 @@ button {
 	}
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3, h4, h5, h6 {
 	margin: 1rem 0;
 }
 

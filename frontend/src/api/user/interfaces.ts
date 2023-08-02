@@ -40,5 +40,7 @@ export type PublicUser = {
     reputation: number,
     profile_bio: string,
     last_online: string,
-    usergroups: Usergroup[]
+    usergroups: Usergroup[],
+    profile_picture: string,
+    public_id: number
 }

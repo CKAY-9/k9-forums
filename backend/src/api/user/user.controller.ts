@@ -29,7 +29,9 @@ export class UserController {
                 reputation: true,
                 profile_bio: true,
                 last_online: true,
-                usergroups: true
+                usergroups: true,
+                profile_picture: true,
+                public_id: true
             }
         });
 

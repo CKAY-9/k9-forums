@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
-import { FetchCategoryTopicsResponse, FetchTopicPostsResponse } from "./interfaces";
+import { FetchCategoryTopicsResponse, FetchPostResponse, FetchTopicPostsResponse } from "./interfaces";
 
 export const fetchForumInfo = async () => {
     const req = await axios({
@@ -30,6 +30,22 @@ export const fetchTopicPostsAndActivity = async (topicID: number) => {
             "method": "GET",
             "params": {
                 "topic_id": topicID
+            }
+        });
+
+        return req.data;
+    } catch (ex) {
+        return undefined;
+    }
+}
+
+export const fetchPost = async (postID: number) => {
+    try {
+        const req: AxiosResponse<FetchPostResponse> = await axios({
+            "url": INTERNAL_API_URL + "/post/get",
+            "method": "GET",
+            "params": {
+                "post_id": postID
             }
         });
 

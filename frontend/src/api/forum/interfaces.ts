@@ -1,4 +1,4 @@
-import { User } from "../user/interfaces"
+import { PublicUser, User } from "../user/interfaces"
 
 export interface FetchCategoryTopicsResponse {
     message: string,
@@ -10,8 +10,35 @@ export interface FetchTopicPostsResponse {
     topic: Topic | undefined
 }
 
+export interface FetchPostResponse {
+    message: string,
+    post: Post | undefined
+}
+
+export interface CreatePostResponse {
+    message: string,
+    post_id: string | undefined
+}
+
+export interface NewCommentResponse {
+    message: string,
+    comment_id: string | undefined
+}
+
+export type Comment = {
+    user?: PublicUser
+    content: string
+    comment_id: number
+    posted_at: Date
+    post?: Post
+    post_id: number
+    user_id: number
+    votes: number
+}
+
 export type Post = {
-    initial_comment: String
+    title: string
+    body: string
     comments: Comment[]
     first_posted: Date
     last_updated: Date
@@ -22,6 +49,7 @@ export type Post = {
     user_id?: number
     Topic?: Topic
     topic_id?: number
+    votes: number
 }
 
 export type Topic = {

@@ -9,13 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@types/dompurify": "^3.0.2",
+    "@types/marked": "^5.0.1",
     "@types/node": "20.4.5",
     "@types/react": "18.2.17",
     "@types/react-dom": "18.2.7",
     "axios": "^1.4.0",
     "crypto-js": "^4.1.1",
+    "dompurify": "^3.0.5",
     "eslint": "8.46.0",
     "eslint-config-next": "13.4.12",
+    "marked": "^6.0.0",
     "next": "13.4.12",
     "react": "18.2.0",
     "react-dom": "18.2.0",
