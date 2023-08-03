@@ -6,7 +6,9 @@ import Header from "@/components/header/header"
 import { NewPostCreation } from "./client";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
 
-const TopicPostServer = async (props: { params: { id: string } }) => {
+const TopicPostServer = async (props: { 
+    params: { id: string }
+}) => {
     const user = await fetchPersonalInformation();
 	const forum: Forum = await fetchForumInfo();
 	let perms: number = 0;

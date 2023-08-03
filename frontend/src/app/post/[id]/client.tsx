@@ -12,8 +12,10 @@ import Link from "next/link";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
 import { lockPostWithID, pinPostWithID, postCommentUnderPost, voteOnPost } from "@/api/forum/post";
 import { postNotification } from "@/components/notifications/notification";
-import { VotedResult, calcRunningTotalVotes, generateEmptyProflie, userHasVoted } from "@/api/user/utils.client";
+import { calcRunningTotalVotes, generateEmptyProflie } from "@/api/user/utils.client";
 import { calcTimeSinceMillis } from "@/utils/time";
+import MarkdownPreview from "@uiw/react-markdown-preview";
+import MDEditor from "@uiw/react-md-editor";
 
 export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined, first: string, update: string }) => {
     const [showNewComment, setShowNewComment] = useState<boolean>(false);
@@ -82,22 +84,29 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
                 </section>
                 <section style={{ "display": "flex", "flexDirection": "row" }}>
-                    <button style={{ "padding": "1rem" }} onClick={pinPost}>
-                        <Image src={"/svgs/pin.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
-                            "width": "2rem",
-                            "height": "2rem",
-                            "filter": "invert(1)",
-                            "opacity": props.post?.pinned ? "1" : "0.5"
-                        }}></Image>
-                    </button>
-                    <button style={{ "padding": "1rem" }} onClick={lockPost}>
-                        <Image src={"/svgs/closed.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
-                            "width": "2rem",
-                            "height": "2rem",
-                            "filter": "invert(1)",
-                            "opacity": props.post?.closed ? "1" : "0.5"
-                        }}></Image>
-                    </button>
+                    <section className={style.controls}>
+                        <section>
+                            <button style={{ "padding": "1rem" }} onClick={pinPost}>
+                                <Image src={"/svgs/pin.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
+                                    "width": "2rem",
+                                    "height": "2rem",
+                                    "filter": "invert(1)",
+                                    "opacity": props.post?.pinned ? "1" : "0.5"
+                                }}></Image>
+                            </button>
+                            <button style={{ "padding": "1rem" }} onClick={lockPost}>
+                                <Image src={"/svgs/closed.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
+                                    "width": "2rem",
+                                    "height": "2rem",
+                                    "filter": "invert(1)",
+                                    "opacity": props.post?.closed ? "1" : "0.5"
+                                }}></Image>
+                            </button>
+                        </section>
+                        <section>
+                            <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`} className={style.control} style={{ "padding": "1rem" }}>Use post as template</Link>
+                        </section>
+                    </section>
                 </section>
             </header>
             <main className={style.body}>
@@ -117,8 +126,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     </div>
                 </Link>
                 <div className={style.content} id="mainBody">
-                    <div id="content">
-                    </div>
+                    <MarkdownPreview style={{"backgroundColor": "transparent"}} source={props.post?.body || ""} />
                     <footer className={style.footer}>
                         {props.user !== undefined &&
                             <>
@@ -175,6 +183,14 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             {(props.user !== undefined && !props.post?.closed) &&
                 <button onClick={() => {
                     setShowNewComment(!showNewComment);
+                    if (showNewComment === true) 
+                        return;
+
+                    setTimeout(() => {
+                        const elm = document.getElementById("newCommentForm");
+                        if (elm === null) return;
+                        elm.scrollIntoView();
+                    }, 250);
                 }} style={{ "margin": "1rem 0 0 0" }}>Comment</button>
             }
             <div className={style.comments} style={{ "margin": "1rem 0 0 0" }}>
@@ -185,14 +201,6 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     if (commentor === undefined) {
                         commentor = generateEmptyProflie();
                     }
-
-                    useEffect(() => {
-                        const bodyParse = DOMPurify.sanitize(marked.parse(comment.content || ""));
-                        const content = document.getElementById("content" + index);
-                        if (content === null) return;
-
-                        content.innerHTML = bodyParse;
-                    }, []);
 
                     return (
                         <div key={index} className={style.body}>
@@ -212,8 +220,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                 </div>
                             </Link>
                             <div className={style.content} id="mainBody">
-                                <div id={"content" + index}>
-                                </div>
+                                <MarkdownPreview source={comment.content} style={{"backgroundColor": "transparent", "marginBottom": "3rem"}} />
                                 <footer className={style.footer}>
                                     {props.user !== undefined &&
                                         <>
@@ -272,7 +279,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                 })}
             </div>
             {(props.user !== undefined && showNewComment) &&
-                <div className={style.body} style={{ "marginTop": "1rem" }}>
+                <div id="newCommentForm" className={style.body} style={{ "marginTop": "1rem" }}>
                     <Link href={`/users/me`} className={style.user}>
                         {props.user.profile_picture !== "" &&
                             <div>
@@ -290,9 +297,14 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     </Link>
                     <div className={style.content} id="mainBody">
                         <div style={{ "display": "flex", "flexDirection": "column", "gap": "1rem" }}>
-                            <h2>Comment on {props.author?.username || ""}'s thread</h2>
+                            <section style={{"display": "flex", "justifyContent": "space-between"}}>
+                                <h2>Comment on {props.author?.username || ""}'s thread</h2>
+                                <button style={{"padding": "1rem"}} onClick={() => {
+                                    setShowNewComment(false);
+                                }}>X</button>
+                            </section>
                             <label htmlFor="content">Comment Content</label>
-                            <textarea onChange={(e: BaseSyntheticEvent) => setCommentContent(e.target.value)} name="content" cols={60} rows={10}></textarea>
+                            <MDEditor height="25rem" onChange={(value: string | undefined) => setCommentContent(value || "")} value={""} />
                             <button onClick={postComment}>Post</button>
                         </div>
                     </div>

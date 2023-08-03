@@ -9,6 +9,7 @@ import Image from "next/image";
 import style from "./profile.module.scss";
 import Link from "next/link";
 import { calcTimeSinceMillis } from "@/utils/time";
+import { Logout } from "@/components/logout/logout";
 
 const ProfileServer = async (props: { params: { id: string } }) => {
 	const user = await fetchPersonalInformation();
@@ -84,6 +85,7 @@ const ProfileServer = async (props: { params: { id: string } }) => {
                     {(user !== undefined && user.public_id === userData.public_id) && 
                         <div className={style.controls}>
                             <Link href="/users/settings">Edit Account</Link>
+                            <Logout></Logout>
                         </div>
                     }
                 </div>

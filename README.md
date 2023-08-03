@@ -15,6 +15,9 @@
 
 K9 Forums is a free and open-source forum software built with NestJS and NextJS, using TypeScript. K9 Forums is meant to be simple solution to forums while offer ease-of-use and configurability.
 
+## Credits
+- Thank you to <a href="https://github.com/uiwjs">uiwjs</a> for react-markdown preview and editor
+
 ## Installation
 
 This project is WIP and not finished. Run at your own risk.

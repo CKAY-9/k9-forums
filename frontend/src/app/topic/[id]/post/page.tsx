@@ -2,9 +2,10 @@ import TopicPostClient from "./client";
 import TopicPostServer from "./server";
 
 const TopicPostPage = ({ params }: { params: { id: string } }) => {
+
     return (
         <>
-            <TopicPostClient>
+            <TopicPostClient >
                 <TopicPostServer params={params} />
             </TopicPostClient>
         </>

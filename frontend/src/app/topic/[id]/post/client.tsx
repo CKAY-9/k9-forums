@@ -4,11 +4,21 @@ import { Forum, Topic } from "@/api/forum/interfaces";
 import { User } from "@/api/user/interfaces";
 import style from "./post.module.scss";
 import Link from "next/link";
-import { BaseSyntheticEvent, useState } from "react";
+import { BaseSyntheticEvent, useEffect, useState } from "react";
 import { postNotification } from "@/components/notifications/notification";
 import { createNewPost } from "@/api/forum/post";
+import { useSearchParams } from "next/navigation";
+import { fetchPost } from "@/api/forum/fetch";
+import MDEditor from "@uiw/react-md-editor";
 
-export const NewPostCreation = (props: {topic: Topic | undefined, user: User | undefined, forum: Forum}) => {
+export const NewPostCreation = (props: {
+    topic: Topic | undefined, 
+    user: User | undefined, 
+    forum: Forum
+}) => {
+    const searchParams = useSearchParams();
+    const templateID = searchParams.get("template_id");
+
     const [title, setTitle] = useState<string>("");
     const [body, setBody] = useState<string>("");
 
@@ -34,15 +44,30 @@ export const NewPostCreation = (props: {topic: Topic | undefined, user: User | u
         postNotification("Failed to create new post");
     }
 
+    useEffect(() => {
+        (async() => {
+            if (body !== "" || title !== "")
+                return;
+                
+            const templateRequest = await fetchPost(Number.parseInt(templateID || "0") || 0);
+
+            if (templateRequest === undefined || templateRequest.post === undefined)
+                return;
+
+            setBody(templateRequest.post.body);
+            setTitle(templateRequest.post.title);
+        })();
+    }, [])
+
     return (
         <>
             <Link href={`/topic/${props.topic?.topic_id}`}>Back</Link>
             <h1>Make a post to {props.topic?.name}</h1>
             <form onSubmit={post} className={style.form}>
                 <label htmlFor="title">Post Title</label>
-                <input onChange={(e: BaseSyntheticEvent) => setTitle(e.target.value)} type="text" name="title" placeholder="Post Title" />
+                <input defaultValue={title} onChange={(e: BaseSyntheticEvent) => setTitle(e.target.value)} type="text" name="title" id="title" placeholder="Post Title" />
                 <label htmlFor="body">Body</label>
-                <textarea onChange={(e: BaseSyntheticEvent) => setBody(e.target.value)} name="body" cols={60} rows={10}></textarea>
+                <MDEditor height="25rem" style={{"width": "50rem"}} onChange={(value: string | undefined) => setBody(value || "")} value={body}></MDEditor>
                 <input type="submit" value="Post" />
             </form>
         </>

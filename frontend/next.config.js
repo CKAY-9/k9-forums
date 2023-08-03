@@ -1,4 +1,6 @@
 /** @type {import('next').NextConfig} */
+const removeImports = require('next-remove-imports')();
+
 const nextConfig = {
     "images": {
         "remotePatterns": [
@@ -10,7 +12,7 @@ const nextConfig = {
             }
         ],
         "dangerouslyAllowSVG": true
-    }
+    },
 }
 
-module.exports = nextConfig
+module.exports = nextConfig, removeImports

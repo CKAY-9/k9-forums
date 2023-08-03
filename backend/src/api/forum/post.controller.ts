@@ -78,6 +78,7 @@ export class PostController {
                 comments: true,
                 first_posted: true,
                 last_updated: true,
+                topic_id: true,
             }
         });
 
