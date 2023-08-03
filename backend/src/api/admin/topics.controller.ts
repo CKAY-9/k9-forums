@@ -45,7 +45,7 @@ export class TopicController {
 
         const topicPosts = await prisma.post.findMany({
             where: {
-                topic_id: Number.parseInt(query.topic_id)
+                topic_id: topic.topic_id
             }
         });
 

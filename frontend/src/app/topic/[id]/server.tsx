@@ -1,12 +1,11 @@
 import { fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { fetchForumInfo, fetchPost, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
-import { Forum, Post } from "@/api/forum/interfaces";
-import { fetchPersonalInformation, fetchPublicProflie } from "@/api/user/fetch";
+import { fetchForumInfo, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
+import { Forum } from "@/api/forum/interfaces";
+import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header"
 import style from "../topic.module.scss";
 import Link from "next/link";
-import Image from "next/image";
-import { calcTimeSinceMillis } from "@/utils/time";
+import { PostPreviews } from "./client";
 
 const TopicServer = async (props: { params: { id: string } }) => {
     const user = await fetchPersonalInformation();
@@ -54,47 +53,7 @@ const TopicServer = async (props: { params: { id: string } }) => {
                 {(topic.topic === undefined || topic.topic.posts.length <= 0) && <h1>There are no posts in this topic!</h1>}
                 {(topic.topic !== undefined && topic.topic.posts.length >= 1) && 
                     <div className={style.posts}>
-                        {topic.topic.posts.map(async (post: Post, index: number) => {
-                            const publicUser = await fetchPublicProflie(post.user_id?.toString() || "0");
-                            const _post = await fetchPost(post.post_id);
-
-                            return (
-                                <Link href={`/post/${post.post_id}`} className={style.post}>
-                                    <div style={{"display": "flex", "justifyContent": "space-between"}}>
-                                        <h1>{post.title}</h1>
-                                        <section>
-                                            <button style={{"padding": "1rem"}}>
-                                                <Image src={"/svgs/pin.svg"} alt="Pinned" sizes="100%" width={0} height={0} style={{
-                                                    "width": "1.5rem",
-                                                    "height": "1.5rem",
-                                                    "filter": "invert(1)",
-                                                    "opacity": post.pinned ? "1" : "0.5"
-                                                }}></Image>
-                                            </button>
-                                            <button style={{"padding": "1rem"}}>
-                                                <Image src={"/svgs/closed.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
-                                                    "width": "1.5rem",
-                                                    "height": "1.5rem",
-                                                    "filter": "invert(1)",
-                                                    "opacity": post.closed ? "1" : "0.5"
-                                                }}></Image>
-                                            </button>
-                                        </section>
-                                    </div>
-                                    <h3>Posted by <Link href={`/users/${publicUser?.public_id}`}>{publicUser?.username}</Link></h3>
-                                    <span>Posted {calcTimeSinceMillis(new Date(post.first_posted).getTime(), new Date().getTime())} ago</span>
-                                    {(post.last_updated !== post.first_posted) && <span style={{"marginLeft": "1rem", "opacity": "0.5"}}>(Updated {calcTimeSinceMillis(new Date(post.last_updated).getTime(), new Date().getTime())} ago)</span>}
-                                    <div style={{"opacity": "0.5", "display": "flex", "gap": "0.5rem", "marginTop": "1rem"}}>
-                                        <Image src={"/svgs/comment.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
-                                            "width": "1.5rem",
-                                            "height": "1.5rem",
-                                            "filter": "invert(1)",
-                                        }}></Image>
-                                        <span>{_post?.post?.comments.length || 0}</span>
-                                    </div>
-                                </Link>
-                            )
-                        })}
+                        <PostPreviews posts={topic.topic.posts}></PostPreviews>
                     </div>
                 }
             </main>

@@ -1,6 +1,6 @@
 "use client";
 
-import { Comment, Post, Vote } from "@/api/forum/interfaces";
+import { Comment, Post, Topic, Vote } from "@/api/forum/interfaces";
 import { PublicUser, User } from "@/api/user/interfaces";
 import style from "./post.module.scss";
 import Image from "next/image";
@@ -16,13 +16,20 @@ import { calcRunningTotalVotes, generateEmptyProflie } from "@/api/user/utils.cl
 import { calcTimeSinceMillis } from "@/utils/time";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import MDEditor from "@uiw/react-md-editor";
+import { fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 
 export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined, first: string, update: string }) => {
     const [showNewComment, setShowNewComment] = useState<boolean>(false);
     const [commentContent, setCommentContent] = useState<string>("");
     const [primaryPostVotes, setPrimaryPostVotes] = useState<Vote[]>(props.post?.votes || []);
+    const [originalTopic, setOriginalTopic] = useState<Topic | undefined>();
 
     useEffect(() => {
+        (async() => {
+            const topic = await fetchTopicPostsAndActivity(props.post?.topic_id || 0);
+            setOriginalTopic(topic?.topic);
+        })();
+
         const bodyParse = DOMPurify.sanitize(marked.parse(props.post?.body || ""));
         const content = document.getElementById("content");
         if (content === null) return;
@@ -79,9 +86,12 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             <header className={style.header}>
                 <section>
                     <h1>{props.post?.title}</h1>
-                    <span>Posted {calcTimeSinceMillis(new Date(props?.post?.first_posted || "").getTime(), new Date().getTime())} ago</span>
-                    {(props?.post?.last_updated !== props?.post?.first_posted) && <span style={{ "marginLeft": "1rem", "opacity": "0.5" }}>(Updated {calcTimeSinceMillis(new Date(props?.post?.last_updated || "").getTime(), new Date().getTime())} ago)</span>}
-                    <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
+                    <section style={{ "display": "flex", "flexDirection": "row", "gap": "1rem", "opacity": "0.5" }}>
+                        <span>Posted {calcTimeSinceMillis(new Date(props?.post?.first_posted || "").getTime(), new Date().getTime())} ago</span>
+                        {(props?.post?.last_updated !== props?.post?.first_posted) && <span>(Updated {calcTimeSinceMillis(new Date(props?.post?.last_updated || "").getTime(), new Date().getTime())} ago)</span>}
+                        <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
+                        {originalTopic !== undefined && <div>Posted to <Link href={`/topic/${props.post?.topic_id}`}>{originalTopic?.name}</Link></div>}
+                    </section>
                 </section>
                 <section style={{ "display": "flex", "flexDirection": "row" }}>
                     <section className={style.controls}>
