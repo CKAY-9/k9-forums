@@ -38,20 +38,33 @@ input, button, textarea {
 	color: rgb(var(--text));
 	background-color: rgb(var(--700));
 	border: none;
-	padding: 5px 10px;
+	font-size: 1rem;
+	padding: 0.5rem 1rem;
 	resize: none;
+	border-radius: 1rem;
+	transition: 0.5s ease all;
 
 	&:focus {
 		outline: none;
+		border-radius: 0.5rem;
 	}
 	
 	&[type="submit"]:hover {
 		cursor: pointer;
+	}
+
+	&:hover {
+		border-radius: 0.5rem;
 		background-color: rgb(var(--600));
 	}
 }
 
-button {
+textarea:hover {
+	border-radius: 0.5rem;
+	background-color: initial;
+}
+
+button, input[type="submit"] {
 	&:hover {
 		cursor: pointer;
 		background-color: rgb(var(--600));

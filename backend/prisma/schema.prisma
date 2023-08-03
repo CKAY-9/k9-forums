@@ -64,19 +64,20 @@ model Comment {
 }
 
 model Post {
-  title        String
-  body         String
-  comments     Comment[]
-  first_posted DateTime  @default(now())
-  last_updated DateTime
-  closed       Boolean
-  pinned       Boolean
-  post_id      Int       @id @unique @default(autoincrement())
-  User         User?     @relation(fields: [user_id], references: [public_id])
-  user_id      Int?
-  Topic        Topic?    @relation(fields: [topic_id], references: [topic_id])
-  topic_id     Int?
-  votes        Vote[]
+  title            String
+  body             String
+  comments         Comment[]
+  first_posted     DateTime  @default(now())
+  last_updated     DateTime
+  closed           Boolean
+  pinned           Boolean
+  template_allowed Boolean
+  post_id          Int       @id @unique @default(autoincrement())
+  User             User?     @relation(fields: [user_id], references: [public_id])
+  user_id          Int?
+  Topic            Topic?    @relation(fields: [topic_id], references: [topic_id])
+  topic_id         Int?
+  votes            Vote[]
 }
 
 model User {

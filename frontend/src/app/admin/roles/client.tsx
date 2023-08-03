@@ -6,16 +6,17 @@ import { BaseSyntheticEvent, useState } from "react";
 import { createUsergroup, updateUsergroup } from "@/api/admin/usergroup/post";
 import { postNotification } from "@/components/notifications/notification";
 import Image from "next/image";
+import { calcPermissionLevelWithArray, permissionLevelToArray } from "@/api/user/utils.client";
 
 const RolesClient = (props: {groups: Usergroup[]}) => {
     const [currentRole, setCurrentRole] = useState<Usergroup>(props.groups[0]);
+    const [currentPermissions, setCurrentPermissions] = useState<number[]>(permissionLevelToArray(props.groups[0].permissions) || []);
     const [groups, setGroups] = useState<Usergroup[]>(props.groups);
 
     const updateRole = async (e: BaseSyntheticEvent) => {
         e.preventDefault();
 
         if (currentRole === undefined) return;
-        console.log(currentRole);
 
         const res = await updateUsergroup({
             color: currentRole.color,
@@ -69,7 +70,10 @@ const RolesClient = (props: {groups: Usergroup[]}) => {
                         </button>
                         {groups?.map((group: Usergroup, index: number) => {
                             return (
-                                <button key={index} onClick={() => setCurrentRole(group)} className={style.usergroup} style={{"color": `#${group.color}`}}>
+                                <button key={index} onClick={() => {
+                                    setCurrentPermissions(permissionLevelToArray(group.permissions));
+                                    setCurrentRole(group);
+                                }} className={style.usergroup} style={{"color": `#${group.color}`}}>
                                     {group.name}
                                 </button>
                             )
@@ -81,7 +85,7 @@ const RolesClient = (props: {groups: Usergroup[]}) => {
                             <label htmlFor="name">Usergroup Name</label>
                             <input onChange={(e: BaseSyntheticEvent) => currentRole.name = e.target.value} className={style.groupName} type="text" name="usergroupName" placeholder="Usergroup name" defaultValue={currentRole.name} style={{"color": `#${currentRole.color}`}} />
                             <label htmlFor="permLevel">Permission Level</label>
-                            <span>{currentRole.permissions}</span>
+                            <span>{calcPermissionLevelWithArray(currentPermissions)}</span>
                             <label htmlFor="id">Usergroup ID</label>
                             <span>{currentRole.usergroup_id}</span>
                             <h2>Permissions</h2>
@@ -90,30 +94,25 @@ const RolesClient = (props: {groups: Usergroup[]}) => {
                                     return (
                                         <div key={index} className={style.permission}>
                                             <h4>{usergroup.permission}</h4>
-                                            <input onClick={(e: BaseSyntheticEvent) => {
+                                            <input onChange={(e: BaseSyntheticEvent) => {
                                                 if (e.target.checked) {
-                                                    setCurrentRole({
-                                                        name: currentRole.name,
-                                                        color: currentRole.color,
-                                                        permissions: currentRole.permissions + usergroup.flag,
-                                                        usergroup_id: currentRole.usergroup_id
-                                                    });
+                                                    setCurrentPermissions(old => [...old, usergroup.flag]);
                                                 } else {
-                                                    setCurrentRole({
-                                                        name: currentRole.name,
-                                                        color: currentRole.color,
-                                                        permissions: currentRole.permissions - usergroup.flag,
-                                                        usergroup_id: currentRole.usergroup_id
-                                                    })
-                                                }
-                                                console.log(currentRole.permissions);
+                                                    setCurrentPermissions(perms => perms.filter((val) => val !== usergroup.flag));
+                                                } 
                                             }} type="checkbox" name="enabled" defaultChecked={(currentRole.permissions & usergroup.flag) === usergroup.flag} />
                                         </div>
                                     )
                                 })}
                             </div>
 
-                            {currentRole.usergroup_id == -1 ? <button onClick={createGroup}>Create</button> : <button onClick={updateRole}>Update</button>}
+                            {currentRole.usergroup_id <= -1 ? 
+                                <button onClick={createGroup}>Create</button> : 
+                                <>
+                                    <button onClick={updateRole}>Update</button>
+                                    <button>Delete</button>
+                                </>
+                            }
                         </div>
                     }
             </section>

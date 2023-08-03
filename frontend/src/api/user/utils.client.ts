@@ -1,5 +1,6 @@
 // this file is seperated from `utils.server.ts` because that relies on cookies from next/server
 
+import { usergroupFlagsPretty } from "../admin/usergroup/interface";
 import { Vote } from "../forum/interfaces"
 import { PublicUser } from "./interfaces";
 
@@ -44,4 +45,21 @@ export const calcRunningTotalVotes = (votes: Vote[]) => {
         runningTotal += votes[i].type
     }
     return runningTotal;
+}
+
+export const calcPermissionLevelWithArray = (flags: number[]): number => {
+    let total = 0;
+    for (let i = 0; i < flags.length; i++) {
+        total = total | flags[i];
+    }
+    return total;
+}
+
+export const permissionLevelToArray = (permissionLevel: number): number[] => {
+    const arr: number[] = [];
+    for (let i = 0; i < usergroupFlagsPretty.length; i++) {
+        if ((permissionLevel & usergroupFlagsPretty[i].flag) === usergroupFlagsPretty[i].flag)
+            arr.push(usergroupFlagsPretty[i].flag);
+    }
+    return arr;
 }

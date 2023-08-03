@@ -59,6 +59,7 @@ export type Post = {
     last_updated: Date
     closed: boolean
     pinned: boolean
+    template_allowed: boolean
     post_id: number
     User?: User
     user_id?: number

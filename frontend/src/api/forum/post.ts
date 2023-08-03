@@ -7,7 +7,8 @@ export const createNewPost = async (data: {
     title: string,
     body: string,
     topic_id: string,
-    user_id: string
+    user_id: string,
+    template_allowed: boolean
 }) => {
     try {
         const req: AxiosResponse<CreatePostResponse> = await axios({

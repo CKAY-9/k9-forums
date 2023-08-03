@@ -5,8 +5,6 @@ import { PublicUser, User } from "@/api/user/interfaces";
 import style from "./post.module.scss";
 import Image from "next/image";
 import { INTERNAL_CDN_URL } from "@/api/resources";
-import { marked } from "marked";
-import * as DOMPurify from "dompurify";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
@@ -29,12 +27,6 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             const topic = await fetchTopicPostsAndActivity(props.post?.topic_id || 0);
             setOriginalTopic(topic?.topic);
         })();
-
-        const bodyParse = DOMPurify.sanitize(marked.parse(props.post?.body || ""));
-        const content = document.getElementById("content");
-        if (content === null) return;
-
-        content.innerHTML = bodyParse;
     }, []);
 
     const lockPost = async (e: BaseSyntheticEvent) => {
@@ -64,6 +56,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
     }
 
     const postComment = async (e: BaseSyntheticEvent) => {
+        postNotification(commentContent);
+
         if ((props.perms & UsergroupFlags.COMMENT) !== UsergroupFlags.COMMENT) {
             postNotification("You are not allowed to comment!");
             return;
@@ -114,7 +108,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                             </button>
                         </section>
                         <section>
-                            <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`} className={style.control} style={{ "padding": "1rem" }}>Use post as template</Link>
+                            {props.post?.template_allowed && <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`} className={style.control} style={{ "padding": "1rem" }}>Use post as template</Link>}
                         </section>
                     </section>
                 </section>
@@ -136,7 +130,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     </div>
                 </Link>
                 <div className={style.content} id="mainBody">
-                    <MarkdownPreview style={{"backgroundColor": "transparent"}} source={props.post?.body || ""} />
+                    <MarkdownPreview className={style.content} style={{"backgroundColor": "transparent"}} source={props.post?.body || ""} />
                     <footer className={style.footer}>
                         {props.user !== undefined &&
                             <>
@@ -313,8 +307,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                     setShowNewComment(false);
                                 }}>X</button>
                             </section>
-                            <label htmlFor="content">Comment Content</label>
-                            <MDEditor height="25rem" onChange={(value: string | undefined) => setCommentContent(value || "")} value={""} />
+                            <label htmlFor="content">Comment</label>
+                            <MDEditor height="25rem" style={{"width": "100%", "fontSize": "1rem !important"}} onChange={(value: string | undefined) => setCommentContent(value || "")} value={commentContent}></MDEditor>
                             <button onClick={postComment}>Post</button>
                         </div>
                     </div>

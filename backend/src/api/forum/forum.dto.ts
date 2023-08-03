@@ -3,6 +3,7 @@ export class CreatePostDTO {
     body: string;
     topic_id: string;
     user_id: string;
+    template_allowed: boolean;
 }
 
 export class PostDTO {

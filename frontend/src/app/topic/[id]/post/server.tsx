@@ -44,7 +44,7 @@ const TopicPostServer = async (props: {
         <>
             <Header forum={forum} user={user} perms={perms}></Header>
             <main className="container">
-               <NewPostCreation user={user} topic={topic.topic} forum={forum}></NewPostCreation>
+               <NewPostCreation perms={perms} user={user} topic={topic.topic} forum={forum}></NewPostCreation>
             </main>
         </>
     );

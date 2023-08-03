@@ -5,7 +5,9 @@ import MarkdownPreview from "@uiw/react-markdown-preview";
 
 const AboutClient = (props: {forum: Forum}) => {
     return (
-        <MarkdownPreview style={{"backgroundColor": "transparent"}} source={props.forum.about} />
+        <div>
+            <MarkdownPreview style={{"backgroundColor": "transparent"}} source={props.forum.about} />
+        </div>
     );
 }
 

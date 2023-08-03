@@ -40,7 +40,8 @@ export class PostController {
                 closed: false,
                 pinned: false,
                 topic_id: topic.topic_id,
-                last_updated: new Date()
+                last_updated: new Date(),
+                template_allowed: body.template_allowed
             }
         });
 
