@@ -5,12 +5,12 @@
 
 <div style="display: flex; flex-direction: column; gap: 1rem;">
     <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-        <img src="./assets/showcase/home.png" width="50%" />
-        <img src="./assets/showcase/new-post.png" width="50%" />
+        <img src="./assets/showcase/home.png" width="300" />
+        <img src="./assets/showcase/new-post.png" width="300" />
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-        <img src="./assets/showcase/post.png" width="50%" />
-        <img src="./assets/showcase/profile.png" width="50%" />
+        <img src="./assets/showcase/post.png" width="300" />
+        <img src="./assets/showcase/profile.png" width="300" />
     </div>
 </div>
 
