@@ -57,6 +57,7 @@ model Comment {
   content    String
   comment_id Int      @id @unique @default(autoincrement())
   posted_at  DateTime @default(now())
+  updated_at DateTime @default(now())
   post       Post?    @relation(fields: [post_id], references: [post_id])
   post_id    Int?
   user_id    Int?

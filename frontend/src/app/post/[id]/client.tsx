@@ -8,7 +8,7 @@ import { INTERNAL_CDN_URL } from "@/api/resources";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
-import { lockPostWithID, pinPostWithID, postCommentUnderPost, voteOnPost } from "@/api/forum/post";
+import { lockPostWithID, pinPostWithID, postCommentUnderPost, updateComment, updatePost, voteOnPost } from "@/api/forum/post";
 import { postNotification } from "@/components/notifications/notification";
 import { calcRunningTotalVotes, generateEmptyProflie } from "@/api/user/utils.client";
 import { calcTimeSinceMillis } from "@/utils/time";
@@ -21,6 +21,9 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
     const [commentContent, setCommentContent] = useState<string>("");
     const [primaryPostVotes, setPrimaryPostVotes] = useState<Vote[]>(props.post?.votes || []);
     const [originalTopic, setOriginalTopic] = useState<Topic | undefined>();
+    const [editingPost, setEditingPost] = useState<boolean>(false);
+    const [edit, setEdit] = useState<string>(props.post?.body || "");
+    const [editTitle, setEditTitle] = useState<string>(props.post?.title || "");
 
     useEffect(() => {
         (async() => {
@@ -71,6 +74,23 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
         });
 
         if (res !== undefined) {
+            window.location.reload();
+        }
+    }
+
+    const updateOriginalPost = async (e: BaseSyntheticEvent) => {
+        e.preventDefault();
+
+        if (props.user?.public_id !== props.author?.public_id) return;
+
+        const res = await updatePost({
+            body: edit,
+            title: editTitle,
+            post_id: props.post?.post_id || 0
+        });
+
+        if (res !== undefined) {
+            postNotification("Updated post!");
             window.location.reload();
         }
     }
@@ -130,7 +150,21 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     </div>
                 </Link>
                 <div className={style.content} id="mainBody">
-                    <MarkdownPreview className={style.content} style={{"backgroundColor": "transparent"}} source={props.post?.body || ""} />
+                    {editingPost ? 
+                        <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
+                            <label htmlFor="title">Title</label>
+                            <input onChange={(e: BaseSyntheticEvent) => setEditTitle(e.target.value)} type="text" name="title" defaultValue={props.post?.title} placeholder="Post Title" />
+                            <label htmlFor="title">Body</label>
+                            <MDEditor height="25rem" style={{"width": "100%", "fontSize": "1rem !important"}} value={edit} onChange={(value: string | undefined) => setEdit(value || "")} />
+                            <section style={{"display": "flex", "gap": "1rem"}}>
+                                <button style={{"width": "fit-content"}} onClick={updateOriginalPost}>Update</button>
+                                <button style={{"width": "fit-content"}} onClick={() => {
+                                    setEditingPost(false);
+                                }}>Cancel</button>
+                            </section>
+                        </div> : 
+                        <MarkdownPreview className={style.content} style={{"backgroundColor": "transparent"}} source={props.post?.body || ""} />
+                    }
                     <footer className={style.footer}>
                         {props.user !== undefined &&
                             <>
@@ -151,8 +185,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                     postNotification("Upvoted post!");
                                 }}>
                                     <Image src="/svgs/up.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
-                                        "width": "2rem",
-                                        "height": "2rem",
+                                        "width": "1rem",
+                                        "height": "1rem",
                                         "filter": "invert(1)"
                                     }}></Image>
                                 </button>
@@ -174,11 +208,25 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                     postNotification("Downvoted post!");
                                 }}>
                                     <Image src="/svgs/down.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
-                                        "width": "2rem",
-                                        "height": "2rem",
+                                        "width": "1rem",
+                                        "height": "1rem",
                                         "filter": "invert(1)"
                                     }}></Image>
                                 </button>
+                                {props.user.public_id === props.author?.public_id &&
+                                    <button onClick={(e: BaseSyntheticEvent) => {
+                                        setEditingPost(!editingPost);
+                                        const elm = document.getElementById("mainBody");
+                                        if (elm === null) return;
+                                        elm.scrollIntoView();
+                                    }}>
+                                        <Image src="/svgs/pen.svg" alt="Edit" sizes="100%" width={0} height={0} style={{
+                                            "width": "1rem",
+                                            "height": "1rem",
+                                            "filter": "invert(1)"
+                                        }}></Image>  
+                                    </button>
+                                }
                             </>
                         }
                     </footer>
@@ -200,6 +248,24 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             <div className={style.comments} style={{ "margin": "1rem 0 0 0" }}>
                 {props.post?.comments.map((comment: Comment, index: number) => {
                     const [votesOnThis, setVotesOnThis] = useState<Vote[]>(comment.votes || []);
+                    const [cEdit, cSetEdit] = useState<string>(comment.content);
+                    const [cIsEditing, cSetIsEditing] = useState<boolean>(false);
+
+                    const _updateComment = async (e: BaseSyntheticEvent) => {
+                        e.preventDefault();
+
+                        if (props.user?.public_id !== comment.user_id) return;
+
+                        const res = await updateComment({
+                            "comment_id": comment.comment_id,
+                            "content": cEdit
+                        });
+
+                        if (res !== undefined) {
+                            postNotification("Updated comment!");
+                            window.location.reload();
+                        }
+                    }
 
                     let commentor = comment.user;
                     if (commentor === undefined) {
@@ -223,8 +289,20 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                     {commentor?.public_id === props.author?.public_id && <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}> / Author</span>}
                                 </div>
                             </Link>
-                            <div className={style.content} id="mainBody">
-                                <MarkdownPreview source={comment.content} style={{"backgroundColor": "transparent", "marginBottom": "3rem"}} />
+                            <div className={style.content} id={"mainBody" + index}>
+                                {cIsEditing ? 
+                                    <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
+                                        <label htmlFor="title">Comment</label>
+                                        <MDEditor height="25rem" style={{"width": "100%", "fontSize": "1rem !important"}} value={cEdit} onChange={(value: string | undefined) => cSetEdit(value || "")} />
+                                        <section style={{"display": "flex", "gap": "1rem"}}>
+                                            <button style={{"width": "fit-content"}} onClick={_updateComment}>Update</button>
+                                            <button style={{"width": "fit-content"}} onClick={() => {
+                                                cSetIsEditing(false);
+                                            }}>Cancel</button>
+                                        </section>
+                                    </div> : 
+                                    <MarkdownPreview className={style.content} style={{"backgroundColor": "transparent"}} source={comment.content || ""} />
+                                }
                                 <footer className={style.footer}>
                                     {props.user !== undefined &&
                                         <>
@@ -245,8 +323,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                                 postNotification("Upvoted post!");
                                             }}>
                                                 <Image src="/svgs/up.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
-                                                    "width": "2rem",
-                                                    "height": "2rem",
+                                                    "width": "1rem",
+                                                    "height": "1rem",
                                                     "filter": "invert(1)"
                                                 }}></Image>
                                             </button>
@@ -268,12 +346,26 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                                 postNotification("Downvoted post!");
                                             }}>
                                                 <Image src="/svgs/down.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
-                                                    "width": "2rem",
-                                                    "height": "2rem",
+                                                    "width": "1rem",
+                                                    "height": "1rem",
                                                     "filter": "invert(1)"
                                                 }}></Image>
                                             </button>
                                         </>
+                                    }
+                                    {props.user?.public_id === comment.user_id &&
+                                        <button onClick={(e: BaseSyntheticEvent) => {
+                                            cSetIsEditing(!cIsEditing);
+                                            const elm = document.getElementById("mainBody" + index);
+                                            if (elm === null) return;
+                                            elm.scrollIntoView();
+                                        }}>
+                                            <Image src="/svgs/pen.svg" alt="Edit" sizes="100%" width={0} height={0} style={{
+                                                "width": "1rem",
+                                                "height": "1rem",
+                                                "filter": "invert(1)"
+                                            }}></Image>  
+                                        </button>
                                     }
                                     <span style={{ "opacity": "0.5", "pointerEvents": "none" }}>Posted {calcTimeSinceMillis(new Date(comment.posted_at).getTime(), new Date().getTime())} ago</span>
                                 </footer>

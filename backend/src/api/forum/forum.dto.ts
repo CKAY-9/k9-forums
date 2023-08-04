@@ -6,6 +6,12 @@ export class CreatePostDTO {
     template_allowed: boolean;
 }
 
+export class UpdatePostDTO {
+    title: string;
+    body: string;
+    post_id: string;
+}
+
 export class PostDTO {
     post_id: string;
 }
@@ -13,6 +19,11 @@ export class PostDTO {
 export class NewCommentDTO {
     post_id: string;
     user_id: string;
+    content: string;
+}
+
+export class UpdateCommentDTO {
+    comment_id: string;
     content: string;
 }
 

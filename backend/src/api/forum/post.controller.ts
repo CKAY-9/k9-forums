@@ -1,6 +1,6 @@
 import { Body, Controller, Req, Res, Post, HttpStatus, Get, Query } from "@nestjs/common";
 import { Response } from "express";
-import { CreatePostDTO, NewCommentDTO, PostDTO } from "./forum.dto";
+import { CreatePostDTO, NewCommentDTO, PostDTO, UpdateCommentDTO, UpdatePostDTO } from "./forum.dto";
 import { validateUser } from "../user/user.utils";
 import { UsergroupFlags, doesUserHavePermissionLevel } from "../admin/permissions";
 import { prisma } from "src/db/prisma";
@@ -59,6 +59,39 @@ export class PostController {
         });
 
         return res.status(HttpStatus.OK).json({"message": "Created new post", "post_id": postCreate.post_id});
+    }
+
+    @Post("update")
+    async updatePost(@Res() res: Response, @Req() req: Request, @Body() body: UpdatePostDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        const post = await prisma.post.findMany({
+            where: {
+                post_id: Number.parseInt(body.post_id),
+                user_id: user.public_id
+            }
+        });
+
+        if (post === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find post"});
+        }
+
+        const postUpdate = await prisma.post.update({
+            where: {
+                post_id: Number.parseInt(body.post_id),
+                user_id: user.public_id
+            },
+            data: {
+                title: body.title,
+                body: body.body,
+                last_updated: new Date()
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Updated post"});
     }
 
     @Get("get")
@@ -203,7 +236,7 @@ export class PostController {
             data: {
                 content: newCommentDTO.content,
                 user_id: Number.parseInt(newCommentDTO.user_id),
-                post_id: Number.parseInt(newCommentDTO.post_id)
+                post_id: Number.parseInt(newCommentDTO.post_id),
             }
         });
 
@@ -224,5 +257,38 @@ export class PostController {
         });
 
         return res.status(HttpStatus.OK).json({"message": "Comment posted", "comment_id": commentInsert.comment_id})
+    }
+
+    @Post("updateComment")
+    async updateComment(@Res() res: Response, @Req() req: Request, @Body() body: UpdateCommentDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        const comment = await prisma.comment.findUnique({
+            where: {
+                comment_id: Number.parseInt(body.comment_id),
+                user_id: user.public_id
+            }
+        });
+
+        if (comment === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find comment"});
+        }
+
+        const commentUpdate = await prisma.comment.update({
+            where: {
+                comment_id: Number.parseInt(body.comment_id),
+                user_id: user.public_id
+            },
+            data: {
+                content: body.content,
+                posted_at: comment.posted_at,
+                updated_at: new Date()
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Updated comment"});
     }
 }

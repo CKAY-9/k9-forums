@@ -1,4 +1,5 @@
 .users {
+    
     display: flex;
     flex-direction: row;
     gap: 1rem;
@@ -18,7 +19,7 @@
 .list {
     display: flex;
     flex-direction: row;
-    align-items: start;
+    align-items: flex-start;
     gap: 1rem;
     flex-wrap: wrap;
 }

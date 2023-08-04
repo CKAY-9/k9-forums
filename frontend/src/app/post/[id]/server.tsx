@@ -5,7 +5,6 @@ import { fetchPersonalInformation, fetchPublicProflie } from "@/api/user/fetch";
 import Header from "@/components/header/header"
 import { PostInteraction } from "./client";
 import { PublicUser } from "@/api/user/interfaces";
-import { calcTimeSinceMillis } from "@/utils/time";
 
 const PostServer = async (props: { params: { id: string } }) => {
     const user = await fetchPersonalInformation();
@@ -17,7 +16,7 @@ const PostServer = async (props: { params: { id: string } }) => {
 
     const post = await fetchPost(Number.parseInt(props.params.id));
 
-    if (post === undefined) {
+    if (post === undefined || post === null) {
         return (
             <>
                 <Header forum={forum} user={user} perms={perms}></Header>
