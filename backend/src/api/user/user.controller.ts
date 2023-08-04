@@ -1,4 +1,4 @@
-import { Controller, Get, Req, Res, HttpStatus, Param, Query, Post, Body } from "@nestjs/common";
+import { Controller, Get, Req, Res, HttpStatus, Param, Query, Post, Body, Put } from "@nestjs/common";
 import { Response } from "express";
 import { validateUser } from "./user.utils";
 import { prisma } from "../../db/prisma";
@@ -67,7 +67,7 @@ export class UserController {
         return res.status(HttpStatus.OK).json({"message": "Fetched all users", "users": users})
     }
 
-    @Post("update")
+    @Put("update")
     async updateUserProfile(@Req() req: Request, @Res() res: Response, @Body() body: UpdateUserDTO) {
         const user = await validateUser(req);
         if (user === undefined) {

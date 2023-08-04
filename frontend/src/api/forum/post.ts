@@ -26,66 +26,6 @@ export const createNewPost = async (data: {
     }
 }
 
-export const updatePost = async (data: {
-    title: string,
-    body: string,
-    post_id: number,
-}) => {
-    try {
-        const req = await axios({
-            "url": INTERNAL_API_URL + "/post/update",
-            "method": "POST",
-            "data": data,
-            "headers": {
-                "Authorization": getCookie("token")
-            }
-        });
-
-        return req.data;
-    } catch (ex) {
-        return undefined;
-    }
-}
-
-export const pinPostWithID = async (data: {
-    post_id: string
-}) => {
-    try {
-        const req = await axios({
-            "url": INTERNAL_API_URL + "/post/pin",
-            "method": "POST",
-            "data": data,
-            "headers": {
-                "Authorization": getCookie("token")
-            }
-        });
-
-        return req.data;
-    } catch (ex) {
-        return undefined;
-    }
-}
-
-
-export const lockPostWithID = async (data: {
-    post_id: string
-}) => {
-    try {
-        const req = await axios({
-            "url": INTERNAL_API_URL + "/post/lock",
-            "method": "POST",
-            "data": data,
-            "headers": {
-                "Authorization": getCookie("token")
-            }
-        });
-
-        return req.data;
-    } catch (ex) {
-        return undefined;
-    }
-}
-
 export const postCommentUnderPost = async (data: {
     post_id: string,
     user_id: string,
@@ -94,26 +34,6 @@ export const postCommentUnderPost = async (data: {
     try {
         const req: AxiosResponse<NewCommentResponse> = await axios({
             "url": INTERNAL_API_URL + "/post/comment",
-            "method": "POST",
-            "data": data,
-            "headers": {
-                "Authorization": getCookie("token")
-            }
-        });
-
-        return req.data;
-    } catch (ex) {
-        return undefined;
-    }
-}
-
-export const updateComment = async (data: {
-    content: string,
-    comment_id: number
-}) => {
-    try {
-        const req = await axios({
-            "url": INTERNAL_API_URL + "/post/updateComment",
             "method": "POST",
             "data": data,
             "headers": {

@@ -7,7 +7,7 @@ import { INTERNAL_CDN_URL } from "@/api/resources";
 import { BaseSyntheticEvent, useState } from "react";
 import { postNotification } from "@/components/notifications/notification";
 import { uploadFile } from "@/api/cdn/post";
-import { updateUserProfile } from "@/api/user/post";
+import { updateUserProfile } from "@/api/user/put";
 
 export const UpdateForm = (props: {user: User}) => {
     const [name, setName] = useState<string>(props.user.username);

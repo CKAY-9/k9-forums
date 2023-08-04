@@ -1,12 +1,9 @@
 import { fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { UsergroupFlags } from "@/api/admin/usergroup/interface";
-import { fetchCategoryTopics, fetchForumInfo, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
+import { fetchCategoryTopics, fetchForumInfo } from "@/api/forum/fetch";
 import { Category, Forum, Topic } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "./index.module.scss";
-import Link from "next/link";
-import Image from "next/image";
 import HomeTopicsClient from "./client";
 
 const Index = async () => {

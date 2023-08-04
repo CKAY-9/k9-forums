@@ -5,8 +5,8 @@ import { INTERNAL_CDN_URL } from "@/api/resources";
 import { useState, BaseSyntheticEvent } from "react";
 import { postNotification } from "@/components/notifications/notification";
 import { uploadFile } from "@/api/cdn/post";
-import { updateForumInformation } from "@/api/admin/config/post";
 import dynamic from "next/dynamic";
+import { updateForumInformation } from "@/api/admin/config/put";
 
 
 const MDEditor = dynamic(
@@ -84,9 +84,9 @@ const Information = (props: {forum: Forum}) => {
 
             <label htmlFor="name">Community Name</label>
             <input onChange={(e: BaseSyntheticEvent) => setName(e.target.value)} style={{"fontSize": "1rem"}} type="text" placeholder="Community Name" defaultValue={props.forum.community_name || ""} />
-            <label htmlFor="about">Community Bio (supports markdown)</label>
+            <label htmlFor="about">Community Bio</label>
             <form>
-                <MDEditor height="25rem" style={{"width": "50rem"}} onChange={(value: string | undefined) => setAbout(value || "")} value={props.forum.about}></MDEditor>
+                <MDEditor height="25rem" style={{"width": "50rem"}} onChange={(value: string | undefined) => setAbout(value || "")} value={about}></MDEditor>
             </form>
 
             <button onClick={updateInformation}>Update</button>

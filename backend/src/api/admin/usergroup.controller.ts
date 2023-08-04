@@ -1,4 +1,4 @@
-import { Req, Controller, Get, Param, Res, HttpStatus, Query, Body, Post } from "@nestjs/common";
+import { Req, Controller, Get, Param, Res, HttpStatus, Query, Body, Post, Put } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 import { Response } from "express";
 import { UserController } from "../user/user.controller";
@@ -65,7 +65,7 @@ export class UsergroupController {
         return res.status(HttpStatus.OK).json({"message": "Fetched all groups!", "groups": usergroups});
     }
 
-    @Post("updateGroup")
+    @Put("updateGroup")
     async updateUsergroup(@Req() req: Request, @Res() res: Response, @Body() updateDTO: UpdateGroupDTO) {
         const user = await validateUser(req);
         if (user === undefined) {

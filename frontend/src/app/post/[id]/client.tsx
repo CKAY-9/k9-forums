@@ -8,13 +8,15 @@ import { INTERNAL_CDN_URL } from "@/api/resources";
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import Link from "next/link";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
-import { lockPostWithID, pinPostWithID, postCommentUnderPost, updateComment, updatePost, voteOnPost } from "@/api/forum/post";
+import { postCommentUnderPost, voteOnPost } from "@/api/forum/post";
 import { postNotification } from "@/components/notifications/notification";
 import { calcRunningTotalVotes, generateEmptyProflie } from "@/api/user/utils.client";
 import { calcTimeSinceMillis } from "@/utils/time";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import MDEditor from "@uiw/react-md-editor";
 import { fetchTopicPostsAndActivity } from "@/api/forum/fetch";
+import { deletePost } from "@/api/forum/delete";
+import { lockPostWithID, pinPostWithID, updateComment, updatePost } from "@/api/forum/put";
 
 export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined, first: string, update: string }) => {
     const [showNewComment, setShowNewComment] = useState<boolean>(false);
@@ -92,6 +94,21 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
         if (res !== undefined) {
             postNotification("Updated post!");
             window.location.reload();
+        }
+    }
+
+    const _deletePost = async (e: BaseSyntheticEvent) => {
+        e.preventDefault();
+
+        if (props.user?.public_id !== props.author?.public_id) return;
+
+        const res = await deletePost({
+            "post_id": props.post?.post_id || 0
+        });
+
+        if (res !== undefined) {
+            postNotification("Deleted post!");
+            window.location.href = `/topic/${props.post?.topic_id || 1}`
         }
     }
 
@@ -226,6 +243,15 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                             "filter": "invert(1)"
                                         }}></Image>  
                                     </button>
+                                }
+                                {(props.user.public_id === props.author?.public_id || (props.perms & UsergroupFlags.DELETE_POSTS) === UsergroupFlags.DELETE_POSTS) &&
+                                    <button onClick={_deletePost}>
+                                        <Image src="/svgs/delete.svg" alt="Edit" sizes="100%" width={0} height={0} style={{
+                                            "width": "1rem",
+                                            "height": "1rem",
+                                            "filter": "invert(1)"
+                                        }}></Image>  
+                                    </button>                          
                                 }
                             </>
                         }

@@ -1,6 +1,6 @@
-import { Body, Controller, Req, Res, Post, HttpStatus, Get, Query } from "@nestjs/common";
+import { Body, Controller, Req, Res, Post, HttpStatus, Get, Query, Delete, Put } from "@nestjs/common";
 import { Response } from "express";
-import { CreatePostDTO, NewCommentDTO, PostDTO, UpdateCommentDTO, UpdatePostDTO } from "./forum.dto";
+import { CreatePostDTO, DeletePostDTO, NewCommentDTO, PostDTO, UpdateCommentDTO, UpdatePostDTO } from "./forum.dto";
 import { validateUser } from "../user/user.utils";
 import { UsergroupFlags, doesUserHavePermissionLevel } from "../admin/permissions";
 import { prisma } from "src/db/prisma";
@@ -61,14 +61,14 @@ export class PostController {
         return res.status(HttpStatus.OK).json({"message": "Created new post", "post_id": postCreate.post_id});
     }
 
-    @Post("update")
+    @Put("update")
     async updatePost(@Res() res: Response, @Req() req: Request, @Body() body: UpdatePostDTO) {
         const user = await validateUser(req);
         if (user === undefined) {
             return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
         }
 
-        const post = await prisma.post.findMany({
+        const post = await prisma.post.findUnique({
             where: {
                 post_id: Number.parseInt(body.post_id),
                 user_id: user.public_id
@@ -92,6 +92,60 @@ export class PostController {
         });
 
         return res.status(HttpStatus.OK).json({"message": "Updated post"});
+    }
+
+    @Delete("delete")
+    async deletePost(@Res() res: Response, @Req() req: Request, @Body() body: DeletePostDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        const post = await prisma.post.findUnique({
+            where: {
+                post_id: body.post_id,
+                user_id: user.public_id
+            }
+        });
+
+        if (post === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find post"});
+        }
+
+        const comments = await prisma.comment.findMany({
+            where: {
+                post_id: post.post_id
+            }
+        });
+
+        for (let i = 0; i < comments.length; i++) {
+            const deleteCommentVotes = await prisma.comment.deleteMany({
+                where: {
+                    comment_id: comments[i].comment_id
+                }
+            });
+        }
+
+        const deleteComments = await prisma.comment.deleteMany({
+            where: {
+                post_id: post.post_id
+            }
+        });
+
+        const deleteVotes = await prisma.vote.deleteMany({
+            where: {
+                post_id: post.post_id
+            }
+        });
+
+        const deletePost = await prisma.post.delete({
+            where: {
+                post_id: body.post_id,
+                user_id: user.public_id
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Deleted post"});
     }
 
     @Get("get")
@@ -142,7 +196,7 @@ export class PostController {
         return res.status(HttpStatus.OK).json({"message": "Got post", "post": post});
     }
 
-    @Post("lock")
+    @Put("lock")
     async lockPost(@Req() req: Request, @Res() res: Response, @Body() lockPostDTO: PostDTO) {
         const user = await validateUser(req);
         if (user === undefined) {
@@ -175,7 +229,7 @@ export class PostController {
         return res.status(HttpStatus.OK).json({"message": "Locked post"});
     }
 
-    @Post("pin")
+    @Put("pin")
     async pinPost(@Req() req: Request, @Res() res: Response, @Body() pinPostDTO: PostDTO) {
         const user = await validateUser(req);
         if (user === undefined) {
@@ -259,7 +313,7 @@ export class PostController {
         return res.status(HttpStatus.OK).json({"message": "Comment posted", "comment_id": commentInsert.comment_id})
     }
 
-    @Post("updateComment")
+    @Put("updateComment")
     async updateComment(@Res() res: Response, @Req() req: Request, @Body() body: UpdateCommentDTO) {
         const user = await validateUser(req);
         if (user === undefined) {

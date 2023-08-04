@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Res, HttpStatus, Post, Req } from "@nestjs/common";
+import { Body, Controller, Get, Param, Res, HttpStatus, Post, Req, Put } from "@nestjs/common";
 import { Response } from "express";
 import { prisma } from "../../db/prisma";
 import { UpdateForumDTO } from "./forum.dto";
@@ -54,7 +54,7 @@ export class ForumController {
         return res.status(HttpStatus.OK).json(updateForum);
     }
 
-    @Post("update")
+    @Put("update")
     async updateForumInfo(@Req() req: Request, @Res() res: Response, @Body() updateForumDTO: UpdateForumDTO) {
         const user = await validateUser(req);
         

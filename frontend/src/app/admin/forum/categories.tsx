@@ -3,8 +3,9 @@ import { Category, Forum } from "@/api/forum/interfaces";
 import categories from "./categories.module.scss";
 import Image from "next/image";
 import { BaseSyntheticEvent, useState } from "react";
-import { createNewForumCategory, updateForumCategory } from "@/api/admin/config/post";
+import { createNewForumCategory } from "@/api/admin/config/post";
 import { postNotification } from "@/components/notifications/notification";
+import { updateForumCategory } from "@/api/admin/config/put";
 
 const Categories = (props: {forum: Forum}) => {
     const [fCategories, fSetCategories] = useState<Category[]>(props.forum.categories || []);
@@ -21,6 +22,7 @@ const Categories = (props: {forum: Forum}) => {
         fSetCategories(old => [...old, res.category]); 
 
         postNotification("Created new category with ID " + res.category.category_id);
+        props.forum.categories = fCategories;
     }
     
     const updateCategory = async (e: BaseSyntheticEvent, category: Category) => {

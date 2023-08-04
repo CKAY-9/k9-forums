@@ -1,4 +1,4 @@
-import { Body, Controller, HttpStatus, Req, Res, Post } from "@nestjs/common";
+import { Body, Controller, HttpStatus, Req, Res, Post, Put } from "@nestjs/common";
 import { validateUser } from "../user/user.utils";
 import { UsergroupFlags, doesUserHavePermissionLevel } from "./permissions";
 import { CreateCategoryDTO, UpdateCategoryDTO } from "./admin.dto";
@@ -52,7 +52,7 @@ export class CategoryController {
         return res.status(HttpStatus.OK).json({"message": "Created new forum category", "category": categoryCreate});
     }
 
-    @Post("update")
+    @Put("update")
     async updateCategory(@Req() req: Request, @Res() res: Response, @Body() updateCategoryDTO: UpdateCategoryDTO) {
         const user = await validateUser(req);
         if (user === undefined) {

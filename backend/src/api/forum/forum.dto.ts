@@ -12,6 +12,10 @@ export class UpdatePostDTO {
     post_id: string;
 }
 
+export class DeletePostDTO {
+    post_id: number
+}
+
 export class PostDTO {
     post_id: string;
 }
