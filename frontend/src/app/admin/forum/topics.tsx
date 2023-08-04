@@ -45,7 +45,8 @@ const Topics = (props: {forum: Forum, topics: Topic[]}) => {
                         "name": "New Topic",
                         "about": "No information provided...",
                         "topic_id": runningTotal,
-                        "category_id": runningTotal
+                        "category_id": runningTotal,
+                        "posts": []
                     }
 
                     setRunningTotal(runningTotal - 1);

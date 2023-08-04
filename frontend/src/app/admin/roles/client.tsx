@@ -3,10 +3,11 @@
 import { Usergroup, UsergroupFlagPretty, usergroupFlagsPretty } from "@/api/admin/usergroup/interface";
 import style from "../admin.module.scss";
 import { BaseSyntheticEvent, useState } from "react";
-import { createUsergroup, updateUsergroup } from "@/api/admin/usergroup/post";
+import { createUsergroup } from "@/api/admin/usergroup/post";
 import { postNotification } from "@/components/notifications/notification";
 import Image from "next/image";
 import { calcPermissionLevelWithArray, permissionLevelToArray } from "@/api/user/utils.client";
+import { updateUsergroup } from "@/api/admin/usergroup/put";
 
 const RolesClient = (props: {groups: Usergroup[]}) => {
     const [currentRole, setCurrentRole] = useState<Usergroup>(props.groups[0]);
