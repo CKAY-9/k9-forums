@@ -13,7 +13,7 @@
 
 ## About
 
-K9 Forums is a free and open-source forum software built with NestJS and NextJS, using TypeScript. K9 Forums is meant to be simple solution to forums while offer ease-of-use and configurability.
+K9 Forums is a free and open-source forum software built with NestJS and NextJS, using TypeScript. K9 Forums is meant to be a simple solution to forums while offering ease-of-use and configurability.
 
 ## Credits
 - Thank you to <a href="https://github.com/uiwjs">uiwjs</a> for react-markdown preview and editor
@@ -25,9 +25,8 @@ This project is WIP and not finished. Run at your own risk.
 *Docker support is being worked on*
 
 ```bash
+# Clone the project
 git clone https://github.com/CKAY-9/k9-forums.git
-
-
 
 ### Backend setup ###
 cd backend
@@ -71,7 +70,16 @@ pip install -U flask-cors
 flask --app main run
 
 ### WebSocket Server ###
-# not avaliable
+cd ws-server
+npm install
+
+# env setup
+export INTERNAL_API_URL=http://localhost:3001
+export INTERNAL_CDN_URL=http://localhost:5000
+
+# running
+npm run build
+npm run start
 
 ```
     
