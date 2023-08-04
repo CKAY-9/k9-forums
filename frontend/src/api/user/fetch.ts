@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
-import { AllUsersResponse, LoginResponse, PersonalInformationResponse, PublicUserResponse, User } from "./interfaces";
+import { AllUsersResponse, LoginResponse, PersonalInformationResponse, PublicUserResponse, User, UserCommentsResponse, UserPostsResponse } from "./interfaces";
 import { getUserToken } from "./utils.server";
 
 export const fetchPersonalInformation = async (manualToken: string = ""): Promise<User | undefined> => {
@@ -47,6 +47,38 @@ export const fetchPublicProflie = async (public_id: string) => {
         });
 
         return req.data.userData;
+    } catch (ex) {
+        return undefined;
+    }
+}
+
+export const fetchUserPosts = async (public_id: number) => {
+    try {
+        const req: AxiosResponse<UserPostsResponse> = await axios({
+            "url": INTERNAL_API_URL + "/user/posts",
+            "method": "GET",
+            "params": {
+                "public_id": public_id
+            }
+        });
+
+        return req.data;
+    } catch (ex) {
+        return undefined;
+    }
+}
+
+export const fetchUserComments = async (public_id: number) => {
+    try {
+        const req: AxiosResponse<UserCommentsResponse> = await axios({
+            "url": INTERNAL_API_URL + "/user/comments",
+            "method": "GET",
+            "params": {
+                "public_id": public_id
+            }
+        });
+
+        return req.data;
     } catch (ex) {
         return undefined;
     }

@@ -19,7 +19,7 @@ const PostPreview = async (props: {post: Post}) => {
                 <h1>{props.post.title === "" ? "no title available" : props.post.title}</h1>
                 <section style={{"display": "flex", "gap": "1rem"}}>
                     <div>
-                        <Image src={"/svgs/pin.svg"} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                        <Image src={"/svgs/pin.svg"} alt="Pinned" sizes="100%" width={0} height={0} style={{
                             "width": "2rem",
                             "height": "2rem",
                             "filter": "invert(1)",
@@ -27,7 +27,7 @@ const PostPreview = async (props: {post: Post}) => {
                         }}></Image>
                     </div>
                     <div>
-                        <Image src={"/svgs/closed.svg"} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                        <Image src={"/svgs/closed.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
                             "width": "2rem",
                             "height": "2rem",
                             "filter": "invert(1)",

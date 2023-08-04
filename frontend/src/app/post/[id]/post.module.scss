@@ -35,6 +35,15 @@
     }
 }
 
+.content {
+    display: flex;
+    flex-direction: column;
+
+    footer {
+        flex: 0
+    }
+}
+
 .footer {
     margin-top: 1rem;
     display: flex;

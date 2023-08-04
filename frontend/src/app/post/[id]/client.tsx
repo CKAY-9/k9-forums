@@ -317,7 +317,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                             </Link>
                             <div className={style.content} id={"mainBody" + index}>
                                 {cIsEditing ? 
-                                    <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
+                                    <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem", "flex": "1"}}>
                                         <label htmlFor="title">Comment</label>
                                         <MDEditor height="25rem" style={{"width": "100%", "fontSize": "1rem !important"}} value={cEdit} onChange={(value: string | undefined) => cSetEdit(value || "")} />
                                         <section style={{"display": "flex", "gap": "1rem"}}>
@@ -327,7 +327,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                             }}>Cancel</button>
                                         </section>
                                     </div> : 
-                                    <MarkdownPreview className={style.content} style={{"backgroundColor": "transparent"}} source={comment.content || ""} />
+                                    <MarkdownPreview style={{"backgroundColor": "transparent", "flex": "1"}} source={comment.content || ""} />
                                 }
                                 <footer className={style.footer}>
                                     {props.user !== undefined &&

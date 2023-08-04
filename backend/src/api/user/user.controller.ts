@@ -88,4 +88,46 @@ export class UserController {
 
         return res.status(HttpStatus.OK).json({"message": "Updated profile"});
     }
+
+    @Get("posts")
+    async getUserPosts(@Query() query: {public_id: string}, @Res() res: Response) {
+        const user = await prisma.user.findUnique({
+            where: {
+                public_id: Number.parseInt(query.public_id)
+            }
+        });
+
+        if (user === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "User couldn't be found"});
+        }
+
+        const posts = await prisma.post.findMany({
+            where: {
+                user_id: user.public_id
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Fetched user posts", "posts": posts});
+    }
+
+    @Get("comments")
+    async getUserComments(@Query() query: {public_id: string}, @Res() res: Response) {
+        const user = await prisma.user.findUnique({
+            where: {
+                public_id: Number.parseInt(query.public_id)
+            }
+        });
+
+        if (user === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "User couldn't be found"});
+        }
+
+        const comments = await prisma.comment.findMany({
+            where: {
+                user_id: user.public_id
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Fetched user posts", "comments": comments});
+    }
 }

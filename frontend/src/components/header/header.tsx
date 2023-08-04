@@ -29,8 +29,15 @@ const Header = (props: { forum: Forum, user: any | undefined, perms: number }) =
                 <div>
                     {props.user === undefined && <span><Link href="/login">Login</Link>/<Link href="/register">Register</Link></span>}
                     {props.user !== undefined &&
-                        <div style={{ "textAlign": "right" }}>
-                            <h2>Logged in as {props.user.username}</h2>
+                        <div style={{ "textAlign": "right", "display": "flex", "flexDirection": "column", "alignItems": "flex-end" }}>
+                            <div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+                                <h2>Logged in as {props.user.username}</h2>
+                                <Image src={INTERNAL_CDN_URL + props.user.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                                    "width": "2rem",
+                                    "height": "2rem",
+                                    "borderRadius": "50%"
+                                }}></Image>
+                            </div>
                             <span style={{ "display": "flex", "gap": "1rem" }}>
                                 <Link href="/users/me">
                                     <Image src={"/svgs/account.svg"} alt="View Profile" sizes="100%" width={0} height={0} style={{

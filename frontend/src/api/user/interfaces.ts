@@ -1,6 +1,16 @@
 import { Usergroup } from "../admin/usergroup/interface"
 import { Post } from "../forum/interfaces"
 
+export interface UserPostsResponse {
+    message: string,
+    posts: Post[] | undefined
+}
+
+export interface UserCommentsResponse {
+    message: string,
+    comments: Comment[] | undefined
+}
+
 export interface PersonalInformationResponse {
     message: string,
     user: User | undefined

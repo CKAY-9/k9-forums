@@ -11,7 +11,7 @@ export const updateForumCategory = async (data: {
 }) => {
     const req: AxiosResponse<NewCategoryResponse> = await axios({
         "url": INTERNAL_API_URL + "/category/update",
-        "method": "POST",
+        "method": "PUT",
         "data": data,
         "headers": {
             "Authorization": getCookie("token")
@@ -29,7 +29,7 @@ export const updateForumInformation = async (data: {
     try {
         const req: AxiosResponse<UpdateForumResponse> = await axios({
             "url": INTERNAL_API_URL + "/forum/update",
-            "method": "POST",
+            "method": "PUT",
             "data": data,
             "headers": {
                 "Authorization": getCookie("token")

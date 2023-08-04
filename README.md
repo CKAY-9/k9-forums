@@ -3,12 +3,15 @@
 ![AGPL License](https://img.shields.io/badge/License-AGPL_V3.0-blue)
 ![Language](https://img.shields.io/badge/Language-TypeScript-red)
 
-<div align="center">
-    <img src="./assets/showcase/home.png" width="500" />
-</div>
-
-<div align="center">
-    <img src="./assets/showcase/post.png" width="500" />
+<div style="display: flex; flex-direction: column; gap: 1rem;">
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+        <img src="./assets/showcase/home.png" width="50%" />
+        <img src="./assets/showcase/new-post.png" width="50%" />
+    </div>
+    <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
+        <img src="./assets/showcase/post.png" width="50%" />
+        <img src="./assets/showcase/profile.png" width="50%" />
+    </div>
 </div>
 
 ## About

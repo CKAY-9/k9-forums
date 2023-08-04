@@ -11,7 +11,7 @@ export const updateUserProfile = async (data: {
     try {
         const req: AxiosResponse<UpdateUserProfileResponse> = await axios({
             "url": INTERNAL_API_URL + "/user/update",
-            "method": "POST",
+            "method": "PUT",
             "data": data,
             "headers": {
                 "Authorization": getCookie("token")

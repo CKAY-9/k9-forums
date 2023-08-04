@@ -10,6 +10,7 @@ import style from "./profile.module.scss";
 import Link from "next/link";
 import { calcTimeSinceMillis } from "@/utils/time";
 import { Logout } from "@/components/logout/logout";
+import { ProfileInteraction } from "./client";
 
 const ProfileServer = async (props: { params: { id: string } }) => {
 	const user = await fetchPersonalInformation();
@@ -89,8 +90,8 @@ const ProfileServer = async (props: { params: { id: string } }) => {
                         </div>
                     }
                 </div>
-                <div>
-                    
+                <div style={{"marginLeft": "1rem", "width": "100%"}}>
+                    <ProfileInteraction profile={userData}></ProfileInteraction>
                 </div>
             </main>
         </>
