@@ -7,6 +7,20 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Channel {
+  user_one_id Int
+  user_two_id Int
+  channel_id  Int @id @unique @default(autoincrement())
+}
+
+model Message {
+  channel_id  Int
+  content     String
+  message_id  Int    @id @unique @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+}
+
 model Topic {
   name        String
   about       String

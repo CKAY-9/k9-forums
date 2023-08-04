@@ -1,0 +1,1 @@
+export const INTERNAL_WS_HOST = process.env.NEXT_PUBLIC_WS_SERVER || "ws://127.0.0.1:3002";

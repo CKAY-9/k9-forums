@@ -4,6 +4,7 @@ import { Forum } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import { MessagesClient } from "./client";
+import { fetchChatHistory } from "@/api/messages/fetch";
 
 const MessagesServer = async () => {
 	const user = await fetchPersonalInformation();
@@ -24,10 +25,12 @@ const MessagesServer = async () => {
         )
     }
 
+    const chatHistory = await fetchChatHistory();
+
     return (
         <>
             <Header user={user} forum={forum} perms={perms}></Header>
-            <MessagesClient user={user} forum={forum} perms={perms}></MessagesClient>
+            <MessagesClient channels={chatHistory?.channels} user={user} forum={forum} perms={perms}></MessagesClient>
         </>
     );
 }
