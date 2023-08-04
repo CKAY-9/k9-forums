@@ -1,10 +1,6 @@
+import Head from "next/head"
 import "./globals.scss"
 import type { Metadata } from "next"
-
-export const metadata: Metadata = {
-	title: "K9 Forums",
-	description: "FOSS Forum",
-}
 
 export default function RootLayout({
 	children,

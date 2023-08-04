@@ -17,6 +17,7 @@ const Index = async () => {
 	return (
 		<>
 			<Header forum={forum} user={user} perms={perms}></Header>
+
 			<main className="container">
 				<div className={style.categories}>
 					{forum.categories === undefined || forum.categories?.length <= 0 && <h1>There are no available categories</h1>}
