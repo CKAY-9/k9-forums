@@ -41,12 +41,18 @@ model Category {
 }
 
 model Forum {
-  community_name   String     @unique
-  community_logo   String
-  about            String
-  custom_redirects String[]
-  categories       Category[]
-  users            User[]
+  community_name String     @unique
+  community_logo String
+  about          String
+  categories     Category[]
+  users          User[]
+}
+
+model CustomLink {
+  url             String
+  custom_link_id  Int     @id @unique @default(autoincrement())
+  type            Int // 0 = custom, 1... = built in
+  show_on_nav_bar Boolean
 }
 
 model Usergroup {

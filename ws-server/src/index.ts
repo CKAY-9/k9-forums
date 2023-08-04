@@ -12,10 +12,18 @@ const wss = new WebSocketServer({ server: server });
 const k9SocketServer = new K9SocketServer();
 
 wss.on("connection", (ws: WebSocket) => {
-    ws.on("error", console.error);
+    ws.on("error", () => {
+        console.error
+        k9SocketServer.removeConnect(ws);
+    });
+    ws.on("close", () => {
+        k9SocketServer.removeConnect(ws);
+    })
+
+    k9SocketServer.handleConnection(ws);
 
     ws.on("message", (data) => {
-        k9SocketServer.handleMessage(data, ws);
+        k9SocketServer.handleMessage(data.toString(), ws);
     });
 });
 

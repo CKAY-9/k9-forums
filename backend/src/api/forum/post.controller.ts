@@ -345,4 +345,16 @@ export class PostController {
 
         return res.status(HttpStatus.OK).json({"message": "Updated comment"});
     }
+
+    @Get("all")
+    async getAllPosts(@Res() res: Response) {
+        const posts = await prisma.post.findMany();
+        return res.status(HttpStatus.OK).json({"message": "Fetched all posts", "posts": posts});
+    }
+
+    @Get("allComments")
+    async getAllComments(@Res() res: Response) {
+        const comments = await prisma.comment.findMany();
+        return res.status(HttpStatus.OK).json({"message": "Fetched all posts", "comments": comments});
+    }
 }

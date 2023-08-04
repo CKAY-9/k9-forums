@@ -30,11 +30,12 @@ export class User {
 }
 
 export class K9SocketServer {
-    connectUsers: User[] = [];
+    connectedUsers: User[] = [];
+    connectedSockets: WebSocket[] = [];
 
-    async handleMessage(data, ws) {
-        const parsed: Message = JSON.parse(JSON.stringify(data));
-        if (parsed.type === undefined) return;
+    async handleMessage(data, ws: WebSocket) {
+        const parsed: Message = JSON.parse(data);
+        if (parsed.type === null) return;
 
         switch (parsed.type) {
             case "connect": 
@@ -46,9 +47,9 @@ export class K9SocketServer {
                 if (user.user.public_id !== userID) return;
 
                 let flag = true;
-                for (let i = 0; i < this.connectUsers.length; i++) {
-                    if (this.connectUsers[i].userID === user.user.public_id) {
-                        this.connectUsers[i].setSocket(ws);
+                for (let i = 0; i < this.connectedUsers.length; i++) {
+                    if (this.connectedUsers[i].userID === user.user.public_id) {
+                        this.connectedUsers[i].setSocket(ws);
                         flag = false;
                         break;
                     }
@@ -56,10 +57,54 @@ export class K9SocketServer {
 
                 if (flag) {
                     const temp = new User(user.user.public_id, token, ws);
-                    this.connectUsers.push(temp);
+                    this.connectedUsers.push(temp);
                 }
 
                 break;
+            case "userCount":
+                return ws.send(JSON.stringify({
+                    "type": "userCount",
+                    "count": this.connectedSockets.length
+                }));
+                break;
+            case "disconnect":
+                this.removeConnect(ws);
+                break;
+        }
+    }
+
+    async removeConnect(ws: WebSocket) {
+        for (let i = 0; i < this.connectedSockets.length; i++) {
+            if (this.connectedSockets[i] === ws) {
+                this.connectedSockets.splice(i, 1);
+                break;
+            }
+        }
+
+        for (const socket of this.connectedSockets) {
+            socket.send(JSON.stringify({
+                "type": "userCount",
+                "count": this.connectedSockets.length
+            }))
+        }
+    }
+
+    async handleConnection(ws: WebSocket) {
+        let flag = true;
+        for (let i = 0; i < this.connectedSockets.length; i++) {
+            if (this.connectedSockets[i] === ws) 
+                flag = false;
+        }
+
+        if (flag) {
+            this.connectedSockets.push(ws);
+        }
+
+        for (const socket of this.connectedSockets) {
+            socket.send(JSON.stringify({
+                "type": "userCount",
+                "count": this.connectedSockets.length
+            }))
         }
     }
 }

@@ -88,10 +88,17 @@ export type Category = {
 }
 
 export type Forum = {
-    community_name: string,
-    community_logo: string,
-    about: string,
-    custom_redirects: string[],
-    categories?: any[],
+    community_name: string
+    community_logo: string
+    about: string
+    custom_redirects: string[]
+    categories?: any[]
     users?: any[]
+}
+
+export type CustomLink = {
+    url: string
+    custom_link_id: number
+    type: number // 0 = custom, 1... = built in
+    show_on_nav_bar: boolean
 }

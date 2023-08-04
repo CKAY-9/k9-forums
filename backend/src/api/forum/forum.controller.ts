@@ -15,7 +15,6 @@ export class ForumController {
                 "community_name": true,
                 "community_logo": true,
                 "about": true,
-                "custom_redirects": true,
             }
         });
         if (forumInfo === null) {
@@ -23,7 +22,6 @@ export class ForumController {
                 community_name: "K9 Forums",
                 community_logo: "/default/default.png",
                 about: "FOS Forum Software by CKAY9",
-                custom_redirects: [],
             }
 
             await prisma.forum.create({data: newTemp});
@@ -42,7 +40,6 @@ export class ForumController {
                 "community_name": true,
                 "community_logo": true,
                 "about": true,
-                "custom_redirects": true,
             },
             "where": {
                 "community_name": forumInfo === null ? "K9 Forums" : forumInfo.community_name

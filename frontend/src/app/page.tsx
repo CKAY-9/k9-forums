@@ -4,7 +4,7 @@ import { Category, Forum, Topic } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "./index.module.scss";
-import HomeTopicsClient from "./client";
+import HomeTopicsClient, { ActivityBar } from "./client";
 
 const Index = async () => {
 	const user = await fetchPersonalInformation();
@@ -18,14 +18,14 @@ const Index = async () => {
 		<>
 			<Header forum={forum} user={user} perms={perms}></Header>
 
-			<main className="container">
+			<main className={style.container}>
 				<div className={style.categories}>
 					{forum.categories === undefined || forum.categories?.length <= 0 && <h1>There are no available categories</h1>}
 					{forum.categories?.map(async (value: Category, index: number) => {
 						const topics = await fetchCategoryTopics(value.category_id);
 						return (
 							<>
-								<div className={style.category}>
+								<div key={index} className={style.category}>
 									<section className={style.about} style={{"borderBottom": `1px solid #${value.color}`}}>
 										<h1 style={{"color": `#${value.color}`}}>{value.name}</h1>
 										<span>{value.about}</span>
@@ -41,6 +41,7 @@ const Index = async () => {
 						);
 					})}
 				</div>
+				<ActivityBar forum={forum}></ActivityBar>
 			</main>
 		</>
 	);
