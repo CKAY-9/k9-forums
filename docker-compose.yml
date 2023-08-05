@@ -11,7 +11,9 @@ services:
       - 3001:3001
 
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      dockerfile: prod.Dockerfile
     depends_on:
       - backend
     restart: always
