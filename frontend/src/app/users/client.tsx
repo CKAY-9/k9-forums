@@ -2,7 +2,7 @@
 
 import { User } from "@/api/user/interfaces";
 import style from "./users.module.scss";
-import { useState, useEffect } from "react";
+import { useState, useEffect, BaseSyntheticEvent } from "react";
 import { Usergroup } from "@/api/admin/usergroup/interface";
 import axios from "axios";
 import { INTERNAL_API_URL, INTERNAL_CDN_URL } from "@/api/resources";
@@ -44,6 +44,7 @@ const User = (props: {user: User, me: User}) => {
                     }}></Image>
                 </div>
                 <h1>{props.user.username}</h1>
+                <span style={{"opacity": "0.5"}}>{props.user.public_id}</span>
             </section>
             {loadingGroups && <h2>Loading</h2>}
             {!loadingGroups && 
@@ -64,16 +65,25 @@ const User = (props: {user: User, me: User}) => {
 }
 
 const UsersClient = (props: {users: User[] | undefined, me: User}) => {
+    const [users, setUsers] = useState<User[]>(props.users || []);
+    const [search, setSearch] = useState<string>("");
+
     return (
-        <>
-            <div className={style.users}>
-                    {props.users?.map((value: User, index: number) => {
+        <>  
+            <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
+                <label htmlFor="search">Search</label>
+                <input onChange={(e: BaseSyntheticEvent) => setSearch(e.target.value)} type="text" placeholder="Search User by Name/ID" />
+                <div className={style.users}>
+                    {users.filter((val) => {
+                        return (val.username.includes(search) || val.public_id === Number.parseInt(search)) 
+                    }).map((value: User, index: number) => {
                         return (
                             <>
                                 <User key={index} me={props.me} user={value}></User>
                             </>
                         );
                     })}
+                </div>
             </div>
         </>
     );

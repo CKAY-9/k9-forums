@@ -177,6 +177,9 @@ export class PostController {
         const comments = await prisma.comment.findMany({
             where: {
                 post_id: post?.post_id
+            },
+            orderBy: {
+                posted_at: "asc"
             }
         });
 
@@ -348,13 +351,21 @@ export class PostController {
 
     @Get("all")
     async getAllPosts(@Res() res: Response) {
-        const posts = await prisma.post.findMany();
+        const posts = await prisma.post.findMany({
+            orderBy: {
+                last_updated: "desc"
+            }
+        });
         return res.status(HttpStatus.OK).json({"message": "Fetched all posts", "posts": posts});
     }
 
     @Get("allComments")
     async getAllComments(@Res() res: Response) {
-        const comments = await prisma.comment.findMany();
-        return res.status(HttpStatus.OK).json({"message": "Fetched all posts", "comments": comments});
+        const comments = await prisma.comment.findMany({
+            orderBy: {
+                posted_at: "desc"
+            }
+        });
+        return res.status(HttpStatus.OK).json({"message": "Fetched all comments", "comments": comments});
     }
 }

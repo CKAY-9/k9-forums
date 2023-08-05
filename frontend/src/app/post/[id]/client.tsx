@@ -161,9 +161,9 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                             }}></Image>
                         </div>
                     }
-                    <div style={{ "display": "flex", "alignItems": "center", "gap": "0.5rem" }}>
+                    <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
                         <h2>{props.author?.username}</h2>
-                        <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}> / Author</span>
+                        <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}>Author</span>
                     </div>
                 </Link>
                 <div className={style.content} id="mainBody">
@@ -310,7 +310,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                         }}></Image>
                                     </div>
                                 }
-                                <div style={{ "display": "flex", "alignItems": "center", "gap": "0.5rem" }}>
+                                <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
                                     <h2>{commentor?.username}</h2>
                                     {commentor?.public_id === props.author?.public_id && <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}> / Author</span>}
                                 </div>

@@ -11,6 +11,15 @@ export const fetchForumInfo = async () => {
     return req.data;
 }
 
+export const fetchAllPosts = async () => {
+    const req = await axios({
+        "url": INTERNAL_API_URL + "/post/all",
+        "method": "GET"
+    });
+
+    return req.data.posts;
+}
+
 export const fetchCategoryTopics = async (categoryID: number) => {
     const req: AxiosResponse<FetchCategoryTopicsResponse> = await axios({
         "url": INTERNAL_API_URL + "/topic/category",
