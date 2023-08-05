@@ -59,7 +59,7 @@ const ProfileServer = async (props: { params: { id: string } }) => {
                 <div className={style.userInfo}>
                     {user?.profile_picture !== "" && 
                         <div>
-                            <Image src={INTERNAL_CDN_URL + user?.profile_picture} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
+                            <Image src={INTERNAL_CDN_URL + userData?.profile_picture} alt="New Usergroup" sizes="100%" width={0} height={0} style={{
                                 "width": "10rem",
                                 "height": "10rem",
                                 "borderRadius": "50%"

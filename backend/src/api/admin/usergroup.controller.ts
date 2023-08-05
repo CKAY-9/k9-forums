@@ -50,8 +50,6 @@ export class UsergroupController {
             }
         });
 
-        console.log(usergroup);
-
         if (usergroup === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "This usergroup couldn't be found"});
         }

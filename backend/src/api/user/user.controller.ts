@@ -63,7 +63,20 @@ export class UserController {
 
     @Get("all")
     async getAllUsers(@Res() res: Response) {
-        const users = await prisma.user.findMany();
+        const users = await prisma.user.findMany({
+            select: {
+                username: true,
+                posts: true,
+                comments: true,
+                time_created: true,
+                reputation: true,
+                profile_bio: true,
+                last_online: true,
+                usergroups: true,
+                profile_picture: true,
+                public_id: true
+            }
+        });
         return res.status(HttpStatus.OK).json({"message": "Fetched all users", "users": users})
     }
 

@@ -12,7 +12,7 @@ export const updateUsergroup = async (data: {
 }) => {
     const req: AxiosResponse<UpdateGroupResponse> = await axios({
         "url": INTERNAL_API_URL + "/usergroup/updateGroup",
-        "method": "POST",
+        "method": "PUT",
         "data": data,
         "headers": {
             "Authorization": getCookie("token")

@@ -35,6 +35,7 @@ const Admin = async () => {
                     <nav style={{"display": "flex", "flexDirection": "column"}}>
                         <Link href="/admin/forum">Forum Config</Link> 
                         <Link href="/admin/roles">Usergroups</Link>
+                        <Link href="/admin/users">Users</Link>
                     </nav>
                 </div>
             </main>

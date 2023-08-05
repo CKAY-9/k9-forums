@@ -85,6 +85,8 @@ const RolesClient = (props: {groups: Usergroup[]}) => {
                         <div className={style.roleManagement}>
                             <label htmlFor="name">Usergroup Name</label>
                             <input onChange={(e: BaseSyntheticEvent) => currentRole.name = e.target.value} className={style.groupName} type="text" name="usergroupName" placeholder="Usergroup name" defaultValue={currentRole.name} style={{"color": `#${currentRole.color}`}} />
+                            <label htmlFor="color">Color</label>
+                            <input type="color" onChange={(e: BaseSyntheticEvent) => currentRole.color = e.target.value.replace("#", "")} defaultValue={"#" + currentRole.color}></input>
                             <label htmlFor="permLevel">Permission Level</label>
                             <span>{calcPermissionLevelWithArray(currentPermissions)}</span>
                             <label htmlFor="id">Usergroup ID</label>
