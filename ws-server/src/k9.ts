@@ -1,5 +1,6 @@
 import { WebSocket } from "ws";
 import { fetchPersonalUser } from "./api/fetch";
+import CryptoJS from "crypto-js";
 
 interface Message {
     type: string | undefined,
@@ -60,6 +61,34 @@ export class K9SocketServer {
                     this.connectedUsers.push(temp);
                 }
 
+                break;
+            case "dm":
+                for (let i = 0; i < this.connectedUsers.length; i++) {
+                    if (this.connectedUsers[i].userID === parsed.data.target_id) {
+                        this.connectedUsers[i].socket.send(JSON.stringify({
+                            "type": "dm",
+                            "data": {
+                                "from": parsed.data.user_id,
+                                "to": this.connectedUsers[i].userID,
+                                "content": parsed.data.message,
+                                "sent_at": new Date(),
+                                "channel_id": CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(parsed.data.user_id + this.connectedUsers[i].userID)).toString()
+                            }
+                        }));
+                        break;
+                    }
+                }
+
+                ws.send(JSON.stringify({
+                    "type": "dm",
+                    "data": {
+                        "from": parsed.data.user_id,
+                        "to": parsed.data.target_id,
+                        "content": parsed.data.message,
+                        "sent_at": new Date(),
+                        "channel_id": CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(parsed.data.user_id + parsed.data.target_id)).toString()
+                    }
+                }));
                 break;
             case "userCount":
                 return ws.send(JSON.stringify({

@@ -5,11 +5,14 @@ import { PublicUser, PublicUserResponse, User } from "@/api/user/interfaces";
 import style from "./messages.module.scss";
 import Image from "next/image";
 import { BaseSyntheticEvent, Component, useEffect, useState } from "react";
-import { ForumSocket } from "@/websockets/forum-socket";
 import { Channel } from "@/api/messages/interfaces";
 import { INTERNAL_API_URL, INTERNAL_CDN_URL } from "@/api/resources";
 import MDEditor from "@uiw/react-md-editor";
 import axios, { AxiosResponse } from "axios";
+import { w3cwebsocket } from "websocket";
+import { INTERNAL_WS_HOST } from "@/websockets/resources";
+import { getCookie } from "@/utils/cookie";
+import { postNotification } from "@/components/notifications/notification";
 
 export class MessagesClient extends Component<{
     forum: Forum,
@@ -17,10 +20,11 @@ export class MessagesClient extends Component<{
     perms: number,
     channels: Channel[] | undefined
 }, {
-    socket: ForumSocket | undefined,
+    ws: w3cwebsocket,
+    wsData: any,
     showingNewMessage: boolean,
     newMessageToUser: number,
-    newMessageContent: string
+    newMessageContent: string,
 }> {
     constructor(props: {
         forum: Forum,
@@ -30,20 +34,76 @@ export class MessagesClient extends Component<{
     }) {
         super(props);
         this.state = {
-            socket: undefined,
+            ws: new w3cwebsocket(INTERNAL_WS_HOST),
+            wsData: "",
             showingNewMessage: false,
             newMessageToUser: -1,
             newMessageContent: ""
         }
+
+        this._sendDM = this._sendDM.bind(this);
     }
 
     componentDidMount(): void {
-        this.setState({
-            socket: new ForumSocket()
-        });
+        const server = new w3cwebsocket(INTERNAL_WS_HOST);
 
-        if (this.state.socket === undefined) return;
-        this.state.socket.connect(this.props.user.public_id.toString());
+        server.onerror = (err) => console.error(err);
+
+        server.onopen = () => {
+            this.setState({"ws": server});
+            server.send(JSON.stringify({
+                "type": "connect",
+                "data": {
+                    "user_id": this.props.user.public_id,
+                    "token": getCookie("token")
+                }
+            }));
+        }
+
+        server.onmessage = (msg) => {
+            const data = JSON.parse(msg.data.toString());
+            console.log(data);
+            if (data.type === "dm") {
+                if (data.data.from !== this.props.user.public_id)
+                    return;
+            
+                if (this.props.channels === undefined) 
+                    return;
+
+                let flag = true;
+
+                for (let i = 0; i < (this.props.channels?.length || 0); i++) {
+                    if (this.props.channels[i].channel_id === data.channel_id) {
+                        flag = false;
+                    }
+                }
+
+                if (flag) {
+                    
+                }
+            }
+            this.setState({"wsData": data});
+        }
+
+        server.onclose = () => {
+            server.send(JSON.stringify({
+                "type": "disconnect",
+                "data": {}
+            }));
+        }
+    }
+
+    async _sendDM(e: BaseSyntheticEvent) {
+        e.preventDefault();
+
+        this.state.ws.send(JSON.stringify({
+            "type": "dm",
+            "data": {
+                "user_id": this.props.user.public_id,
+                "message": this.state.newMessageContent,
+                "target_id": this.state.newMessageToUser
+            }
+        }));
     }
 
     render() {
@@ -51,6 +111,7 @@ export class MessagesClient extends Component<{
             <>
                 <div className={style.container}>
                     <nav className={style.nav}>
+                        {this.state.ws?.OPEN && <span>Connected to WS</span>}
                         <h2>Messages</h2>
                         <button onClick={() => this.setState({showingNewMessage: !this.state.showingNewMessage})}>
                             <Image src="/svgs/plus.svg" alt="New Usergroup" sizes="100%" width={0} height={0} style={{
@@ -135,7 +196,7 @@ export class MessagesClient extends Component<{
                                 <input placeholder="User ID" onChange={(e: BaseSyntheticEvent) => this.setState({newMessageToUser: e.target.value})} type="text" name="toUser" />
                                 <label htmlFor="message">Message</label>
                                 <MDEditor height="25rem" style={{"width": "100%"}} onChange={(value: string | undefined) => this.setState({newMessageContent: value || ""})} value={this.state.newMessageContent}></MDEditor>
-                                <button>Send</button>
+                                <button onClick={this._sendDM}>Send</button>
                             </div>
                         }
                         {!this.state.showingNewMessage &&
