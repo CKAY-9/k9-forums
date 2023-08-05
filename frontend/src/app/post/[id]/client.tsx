@@ -63,6 +63,20 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
         commentor = generateEmptyProflie();
     }
 
+    console.log(commentor);
+
+    // System
+    if (props.author === undefined || commentor.public_id <= 0) {
+
+        return (
+            <div style={{"padding": "1rem 2rem", "backgroundColor": "rgb(var(--800))", "borderRadius": "1rem", "textAlign": "center", "pointerEvents": "none"}}> 
+                <span style={{"pointerEvents": "none"}}>{new Date(comment.posted_at).toDateString()}</span>
+                <br />
+                <span style={{"pointerEvents": "none"}}>{comment.content}</span>
+            </div>
+        )
+    }
+
     return (
         <div className={style.body}>
             <Link href={`/users/${commentor?.public_id}`} className={style.user}>
@@ -283,8 +297,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                 <section>
                     <h1>{props.post?.title}</h1>
                     <section style={{ "display": "flex", "flexDirection": "row", "gap": "1rem", "opacity": "0.5" }}>
-                        <span>Posted {props.first} ago</span>
-                        {(props.first !== props.update) && <span>(Updated {props.update} ago)</span>}
+                        <span>Posted {first} ago</span>
+                        {(first !== second) && <span>(Updated {second} ago)</span>}
                         <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
                         {originalTopic !== undefined && <div>Posted to <Link href={`/topic/${props.post?.topic_id}`}>{originalTopic?.name}</Link></div>}
                     </section>

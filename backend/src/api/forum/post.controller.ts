@@ -220,7 +220,7 @@ export class PostController {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Post with specified ID couldn't be found"}); 
         }
 
-        await prisma.post.update({
+        const update = await prisma.post.update({
             where: {
                 post_id: Number.parseInt(lockPostDTO.post_id)
             },
@@ -228,6 +228,22 @@ export class PostController {
                 closed: !post.closed
             }
         });
+
+        if (update.closed) {
+            await prisma.comment.create({
+                data: {
+                    content: "Post was closed at " + new Date().toLocaleTimeString(),
+                    post_id: Number.parseInt(lockPostDTO.post_id),
+                }
+            });
+        } else {
+            await prisma.comment.create({
+                data: {
+                    content: "Post was opened at " + new Date().toLocaleTimeString(),
+                    post_id: Number.parseInt(lockPostDTO.post_id),
+                }
+            });
+        }
 
         return res.status(HttpStatus.OK).json({"message": "Locked post"});
     }
@@ -253,7 +269,7 @@ export class PostController {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Post with specified ID couldn't be found"}); 
         }
 
-        await prisma.post.update({
+        const update = await prisma.post.update({
             where: {
                 post_id: Number.parseInt(pinPostDTO.post_id)
             },
@@ -261,6 +277,22 @@ export class PostController {
                 pinned: !post.pinned
             }
         });
+        
+        if (update.pinned) {
+            await prisma.comment.create({
+                data: {
+                    content: "Post was pinned at " + new Date().toLocaleTimeString(),
+                    post_id: Number.parseInt(pinPostDTO.post_id),
+                }
+            });
+        } else {
+            await prisma.comment.create({
+                data: {
+                    content: "Post was unpinned at " + new Date().toLocaleTimeString(),
+                    post_id: Number.parseInt(pinPostDTO.post_id),
+                }
+            });
+        }
 
         return res.status(HttpStatus.OK).json({"message": "Pinned post"});
     }

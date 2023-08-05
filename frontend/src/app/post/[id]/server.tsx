@@ -42,6 +42,8 @@ const PostServer = async (props: { params: { id: string } }) => {
     }
 
     for (const comment of (post.post?.comments || [])) {
+        if (comment.user_id === undefined || comment.user_id <= 0) 
+            continue;
         const tempUser = await fetchPublicProflie((comment.user_id.toString() || "0"));
         if (tempUser === undefined) continue;
 
