@@ -31,6 +31,10 @@ export class UpdateCommentDTO {
     content: string;
 }
 
+export class DeleteCommentDTO {
+    comment_id: number;
+}
+
 export class UpdateForumDTO {
     name: string;
     about: string;

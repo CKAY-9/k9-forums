@@ -15,10 +15,10 @@ import { calcTimeSinceMillis } from "@/utils/time";
 import MarkdownPreview from "@uiw/react-markdown-preview";
 import MDEditor from "@uiw/react-md-editor";
 import { fetchTopicPostsAndActivity } from "@/api/forum/fetch";
-import { deletePost } from "@/api/forum/delete";
+import { deleteComment, deletePost } from "@/api/forum/delete";
 import { lockPostWithID, pinPostWithID, updateComment, updatePost } from "@/api/forum/put";
 
-const Comment = (props: {comment: Comment, user: User | undefined, author: PublicUser | undefined, index: number, post: Post | undefined}) => {
+const Comment = (props: {comment: Comment, user: User | undefined, author: PublicUser | undefined, index: number, post: Post | undefined, perms: number}) => {
     const comment = props.comment;
     const index = props.index;
     const [votesOnThis, setVotesOnThis] = useState<Vote[]>(comment.votes || []);
@@ -39,6 +39,23 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
             postNotification("Updated comment!");
             window.location.reload();
         }
+    }
+
+    // used for comments
+    const _deletePost = async (e: BaseSyntheticEvent) => {
+        e.preventDefault();
+        
+        if (props.user?.public_id !== comment.user_id) return;
+
+        const res = await deleteComment({
+            "comment_id": props.comment.comment_id|| 0
+        });
+
+        if (res !== undefined) {
+            postNotification("Deleted comment!");
+            window.location.reload();
+        }
+
     }
 
     let commentor = comment.user;
@@ -141,6 +158,15 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
                             }}></Image>
                         </button>
                     }
+                    {(props.user.public_id === commentor?.public_id || (props.perms & UsergroupFlags.DELETE_POSTS) === UsergroupFlags.DELETE_POSTS) &&
+                        <button onClick={_deletePost}>
+                            <Image src="/svgs/delete.svg" alt="Edit" sizes="100%" width={0} height={0} style={{
+                                "width": "1rem",
+                                "height": "1rem",
+                                "filter": "invert(1)"
+                            }}></Image>
+                        </button>
+                    }
                     <span style={{ "opacity": "0.5", "pointerEvents": "none" }}>Posted {calcTimeSinceMillis(new Date(comment.posted_at).getTime(), new Date().getTime())} ago</span>
                 </footer>
             </div>
@@ -148,7 +174,7 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
     );
 }
 
-export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined, first: string, update: string }) => {
+export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined }) => {
     const [showNewComment, setShowNewComment] = useState<boolean>(false);
     const [commentContent, setCommentContent] = useState<string>("");
     const [primaryPostVotes, setPrimaryPostVotes] = useState<Vote[]>(props.post?.votes || []);
@@ -156,8 +182,17 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
     const [editingPost, setEditingPost] = useState<boolean>(false);
     const [edit, setEdit] = useState<string>(props.post?.body || "");
     const [editTitle, setEditTitle] = useState<string>(props.post?.title || "");
+    const [first, setFirst] = useState<string>("");
+    const [second, setSecond] = useState<string>("");
 
     useEffect(() => {
+        const date = new Date();
+        const _first = calcTimeSinceMillis(new Date(props.post?.first_posted.toString() || "").getTime(), date.getTime());
+        const _second = calcTimeSinceMillis(new Date(props.post?.last_updated.toString() || "").getTime(), date.getTime());
+
+        setFirst(first);
+        setSecond(second);
+
         (async () => {
             const topic = await fetchTopicPostsAndActivity(props.post?.topic_id || 0);
             setOriginalTopic(topic?.topic);
@@ -248,8 +283,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                 <section>
                     <h1>{props.post?.title}</h1>
                     <section style={{ "display": "flex", "flexDirection": "row", "gap": "1rem", "opacity": "0.5" }}>
-                        <span>Posted {calcTimeSinceMillis(new Date(props?.post?.first_posted || "").getTime(), new Date().getTime())} ago</span>
-                        {(props?.post?.last_updated !== props?.post?.first_posted) && <span>(Updated {calcTimeSinceMillis(new Date(props?.post?.last_updated || "").getTime(), new Date().getTime())} ago)</span>}
+                        <span>Posted {props.first} ago</span>
+                        {(props.first !== props.update) && <span>(Updated {props.update} ago)</span>}
                         <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
                         {originalTopic !== undefined && <div>Posted to <Link href={`/topic/${props.post?.topic_id}`}>{originalTopic?.name}</Link></div>}
                     </section>
@@ -404,7 +439,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             <div className={style.comments} style={{ "margin": "1rem 0 0 0" }}>
                 {props.post?.comments.map((comment: Comment, index: number) => {
                     return (
-                        <Comment author={props.author} post={props.post} comment={comment} index={index} key={index} user={props.user}></Comment>
+                        <Comment perms={props.perms} author={props.author} post={props.post} comment={comment} index={index} key={index} user={props.user}></Comment>
                     );
                 })}
             </div>

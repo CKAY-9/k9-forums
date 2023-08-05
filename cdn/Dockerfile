@@ -12,4 +12,4 @@ RUN pip install markupsafe
 RUN pip install werkzeug
 RUN pip install -U flask-cors
 
-CMD ["python", "./main.py"]
+CMD ["flask", "--app", "main", "run"]

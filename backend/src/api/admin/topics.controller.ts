@@ -46,6 +46,9 @@ export class TopicController {
         const topicPosts = await prisma.post.findMany({
             where: {
                 topic_id: topic.topic_id
+            },
+            orderBy: {
+                last_updated: "desc"
             }
         });
 
@@ -94,7 +97,8 @@ export class TopicController {
         const topicCreate = await prisma.topic.create({data: {
             "name": body.name,
             "about": body.about,
-            "category_id": body.category_id
+            "category_id": body.category_id,
+            "topic_picture": ""
         }});
 
         parentCategory.topics.push(topicCreate);

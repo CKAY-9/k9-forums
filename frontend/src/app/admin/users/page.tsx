@@ -9,6 +9,7 @@ import axios from "axios";
 import Link from "next/link";
 import style from "./users.module.scss";
 import Image from "next/image";
+import { AdminUser } from "./client";
 
 const User = async (props: {user: User}) => {
     const usergroups: Usergroup[] = []
@@ -35,34 +36,7 @@ const User = async (props: {user: User}) => {
     }
     
     return (
-        <div className={style.user}>
-            <Link href={`/users/${props.user.public_id}`} style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
-                <div>
-                    <Image src={INTERNAL_CDN_URL + props.user.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                        "width": "2rem",
-                        "height": "2rem",
-                        "borderRadius": "50%"
-                    }}></Image>
-                </div>
-                <h2>{props.user.username}</h2>
-            </Link>
-            {usergroups.map((usergroup: Usergroup, index: number) => {
-                return (
-                    <select className={style.usergroup}>
-                        <option value={`remove${index}`}></option>
-                        <option selected={true} style={{"color": `#${usergroup.color}`}} value={`keep${index}`}>{usergroup.name}</option>
-                    </select>
-                );
-            })}
-            <select className={style.usergroup}>
-                <option value={``}></option>
-                {allUsergroups.map((usergroup: Usergroup, index: number) => {
-                    return (
-                        <option value={usergroup.usergroup_id}>{usergroup.name}</option>
-                    );
-                })}
-            </select>
-        </div>
+        <AdminUser user={props.user} allUsergroups={allUsergroups} usergroups={usergroups}></AdminUser>
     )
 }
 

@@ -1,6 +1,6 @@
 import { Body, Controller, Req, Res, Post, HttpStatus, Get, Query, Delete, Put } from "@nestjs/common";
 import { Response } from "express";
-import { CreatePostDTO, DeletePostDTO, NewCommentDTO, PostDTO, UpdateCommentDTO, UpdatePostDTO } from "./forum.dto";
+import { CreatePostDTO, DeleteCommentDTO, DeletePostDTO, NewCommentDTO, PostDTO, UpdateCommentDTO, UpdatePostDTO } from "./forum.dto";
 import { validateUser } from "../user/user.utils";
 import { UsergroupFlags, doesUserHavePermissionLevel } from "../admin/permissions";
 import { prisma } from "src/db/prisma";
@@ -348,6 +348,41 @@ export class PostController {
 
         return res.status(HttpStatus.OK).json({"message": "Updated comment"});
     }
+
+    @Delete("deleteComment")
+    async deleteComment(@Res() res: Response, @Req() req: Request, @Body() body: DeleteCommentDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        const comment = await prisma.comment.findUnique({
+            where: {
+                comment_id: body.comment_id,
+                user_id: user.public_id
+            }
+        });
+
+        if (comment === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find comment"});
+        }
+
+        const deleteVotes = await prisma.vote.deleteMany({
+            where: {
+                comment_id: comment.comment_id 
+            }
+        });
+
+        const deleteComment = await prisma.comment.delete({
+            where: {
+                comment_id: body.comment_id,
+                user_id: user.public_id
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Deleted comment"});
+    }
+
 
     @Get("all")
     async getAllPosts(@Res() res: Response) {

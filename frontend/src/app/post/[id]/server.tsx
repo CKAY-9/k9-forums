@@ -5,6 +5,7 @@ import { fetchPersonalInformation, fetchPublicProflie } from "@/api/user/fetch";
 import Header from "@/components/header/header"
 import { PostInteraction } from "./client";
 import { PublicUser } from "@/api/user/interfaces";
+import { calcTimeSinceMillis } from "@/utils/time";
 
 const PostServer = async (props: { params: { id: string } }) => {
     const user = await fetchPersonalInformation();
@@ -40,9 +41,6 @@ const PostServer = async (props: { params: { id: string } }) => {
         )
     }
 
-    const first = new Date(post.post?.first_posted || "").toLocaleDateString();
-    const update = new Date(post.post?.last_updated || "").toLocaleDateString();
-
     for (const comment of (post.post?.comments || [])) {
         const tempUser = await fetchPublicProflie((comment.user_id.toString() || "0"));
         if (tempUser === undefined) continue;
@@ -55,7 +53,7 @@ const PostServer = async (props: { params: { id: string } }) => {
         <>
             <Header forum={forum} user={user} perms={perms}></Header>
             <main className="container">
-                <PostInteraction first={first} update={update} perms={perms} author={author} post={post.post} user={user}></PostInteraction>
+                <PostInteraction perms={perms} author={author} post={post.post} user={user}></PostInteraction>
             </main>
         </>
     )

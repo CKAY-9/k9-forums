@@ -20,3 +20,22 @@ export const deletePost = async (data: {
         return undefined;
     }
 }
+
+export const deleteComment = async (data: {
+    comment_id: number
+}) => {
+    try {
+        const req = await axios({
+            "url": INTERNAL_API_URL + "/post/deleteComment",
+            "method": "DELETE",
+            "data": data,
+            "headers": {
+                "Authorization": getCookie("token")
+            }
+        });
+
+        return req.data;
+    } catch (ex) {
+        return undefined;
+    }
+}

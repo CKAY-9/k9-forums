@@ -37,7 +37,7 @@ const RolesClient = (props: {groups: Usergroup[]}) => {
         const res = await createUsergroup({
             color: currentRole.color,
             name: currentRole.name,
-            permissions: currentRole.permissions,
+            permissions: calcPermissionLevelWithArray(currentPermissions),
         });
 
         if (res.group !== undefined) {

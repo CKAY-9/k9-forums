@@ -22,12 +22,13 @@ model Message {
 }
 
 model Topic {
-  name        String
-  about       String
-  topic_id    Int       @id @unique @default(autoincrement())
-  posts       Post[]
-  Category    Category? @relation(fields: [category_id], references: [category_id])
-  category_id Int?
+  name          String
+  about         String
+  topic_id      Int       @id @unique @default(autoincrement())
+  topic_picture String
+  posts         Post[]
+  Category      Category? @relation(fields: [category_id], references: [category_id])
+  category_id   Int?
 }
 
 model Category {
