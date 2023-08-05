@@ -21,7 +21,7 @@ const PostServer = async (props: { params: { id: string } }) => {
             <>
                 <Header forum={forum} user={user} perms={perms}></Header>
                 <main className="container">
-                    <h1>This post doesn't exist!</h1>
+                    <h1>This post doesn&apos;t exist!</h1>
                 </main>
             </>
         )
@@ -34,7 +34,7 @@ const PostServer = async (props: { params: { id: string } }) => {
             <>
                 <Header forum={forum} user={user} perms={perms}></Header>
                 <main className="container">
-                    <h1>This post doesn't exist!</h1>
+                    <h1>This post doesn&apos;t exist!</h1>
                 </main>
             </>
         )

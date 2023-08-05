@@ -22,7 +22,7 @@ const TopicServer = async (props: { params: { id: string } }) => {
             <>
                 <Header forum={forum} user={user} perms={perms}></Header>
                 <main className="container">
-                    <h1>This topic doesn't exist!</h1>
+                    <h1>This topic doesn&apos;t exist!</h1>
                 </main>
             </>
         )

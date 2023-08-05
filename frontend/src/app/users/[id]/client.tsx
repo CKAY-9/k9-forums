@@ -10,78 +10,86 @@ import Link from "next/link";
 import { calcTimeSinceMillis } from "@/utils/time";
 import { fetchPost, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import Image from "next/image";
+import { profile } from "console";
+
+const Post = (props: {post: Post, profile: PublicUser}) => {
+    const post = props.post
+    const [originalTopic, setOriginalTopic] = useState<Topic>();
+    const [postFull, setPostFull] = useState<Post>();
+
+    useEffect(() => {
+        (async () => {
+            const topic = await fetchTopicPostsAndActivity(post.topic_id || 0);
+            setOriginalTopic(topic?.topic);
+
+            const pF = await fetchPost(post.post_id);
+            if (pF?.post !== undefined) {
+                setPostFull(pF.post);
+            }
+        })();
+    }, [post.post_id, post.topic_id]);
+
+    return (
+        <Link href={"/post/" + post.post_id} className={style.post}>
+            <section style={{ "display": "flex", "alignItems": "center", "justifyContent": "space-between", "gap": "1rem" }}>
+                <h1>{post.title === "" ? "no title available" : post.title}</h1>
+                <section style={{ "display": "flex", "gap": "1rem" }}>
+                    <div>
+                        <Image src={"/svgs/pin.svg"} alt="Pinned" sizes="100%" width={0} height={0} style={{
+                            "width": "2rem",
+                            "height": "2rem",
+                            "filter": "invert(1)",
+                            "opacity": post.pinned ? "1" : "0.5"
+                        }}></Image>
+                    </div>
+                    <div>
+                        <Image src={"/svgs/closed.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
+                            "width": "2rem",
+                            "height": "2rem",
+                            "filter": "invert(1)",
+                            "opacity": post.closed ? "1" : "0.5"
+                        }}></Image>
+                    </div>
+                </section>
+            </section>
+            <section style={{ "display": "flex", "alignItems": "center", "gap": "1rem" }}>
+                <div>
+                    <Image src={INTERNAL_CDN_URL + props.profile.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                        "width": "3rem",
+                        "height": "3rem",
+                        "borderRadius": "50%"
+                    }}></Image>
+                </div>
+                <h3>{props.profile.username}</h3>
+            </section>
+            <section style={{ "display": "flex", "marginTop": "0.5rem", "alignItems": "center", "gap": "1rem", "opacity": "0.5" }}>
+                <span>Posted {calcTimeSinceMillis(new Date(post.first_posted).getTime(), new Date().getTime())} ago</span>
+                {post.first_posted !== post.last_updated && <span>Activity {calcTimeSinceMillis(new Date(post.last_updated).getTime(), new Date().getTime())} ago</span>}
+                <section style={{ "display": "flex", "justifyContent": "center", "gap": "0.5rem" }}>
+                    <span>{postFull === undefined ? 0 : postFull.comments.length}</span>
+                    <div>
+                        <Image src={"/svgs/comment.svg"} alt="Comments" sizes="100%" width={0} height={0} style={{
+                            "width": "1rem",
+                            "height": "1rem",
+                            "filter": "invert(1)"
+                        }}></Image>
+                    </div>
+                </section>
+                {originalTopic !== undefined && <span>Posted to <Link href={`/topic/${originalTopic.topic_id}`}>{originalTopic.name}</Link></span>}
+            </section>
+        </Link>
+    )
+}
 
 const Posts = (props: { posts: Post[], profile: PublicUser }) => {
     return (
         <>
-            {(props.posts.length <= 0 || props.posts === undefined) && <h1>This user hasn't posted yet!</h1>}
+            {(props.posts.length <= 0 || props.posts === undefined) && <h1>This user hasn&apos;t posted yet!</h1>}
             {props.posts.length >= 1 &&
                 <div className={style.posts}>
                     {props.posts.map((post: Post, index: number) => {
-                        const [originalTopic, setOriginalTopic] = useState<Topic>();
-                        const [postFull, setPostFull] = useState<Post>();
-
-                        useEffect(() => {
-                            (async () => {
-                                const topic = await fetchTopicPostsAndActivity(post.topic_id || 0);
-                                setOriginalTopic(topic?.topic);
-
-                                const pF = await fetchPost(post.post_id);
-                                if (pF?.post !== undefined) {
-                                    setPostFull(pF.post);
-                                }
-                            })();
-                        });
-
                         return (
-                            <Link href={"/post/" + post.post_id} className={style.post}>
-                                <section style={{ "display": "flex", "alignItems": "center", "justifyContent": "space-between", "gap": "1rem" }}>
-                                    <h1>{post.title === "" ? "no title available" : post.title}</h1>
-                                    <section style={{ "display": "flex", "gap": "1rem" }}>
-                                        <div>
-                                            <Image src={"/svgs/pin.svg"} alt="Pinned" sizes="100%" width={0} height={0} style={{
-                                                "width": "2rem",
-                                                "height": "2rem",
-                                                "filter": "invert(1)",
-                                                "opacity": post.pinned ? "1" : "0.5"
-                                            }}></Image>
-                                        </div>
-                                        <div>
-                                            <Image src={"/svgs/closed.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
-                                                "width": "2rem",
-                                                "height": "2rem",
-                                                "filter": "invert(1)",
-                                                "opacity": post.closed ? "1" : "0.5"
-                                            }}></Image>
-                                        </div>
-                                    </section>
-                                </section>
-                                <section style={{ "display": "flex", "alignItems": "center", "gap": "1rem" }}>
-                                    <div>
-                                        <Image src={INTERNAL_CDN_URL + props.profile.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                                            "width": "3rem",
-                                            "height": "3rem",
-                                            "borderRadius": "50%"
-                                        }}></Image>
-                                    </div>
-                                    <h3>{props.profile.username}</h3>
-                                </section>
-                                <section style={{ "display": "flex", "marginTop": "0.5rem", "alignItems": "center", "gap": "1rem", "opacity": "0.5" }}>
-                                    <span>Posted {calcTimeSinceMillis(new Date(post.first_posted).getTime(), new Date().getTime())} ago</span>
-                                    {post.first_posted !== post.last_updated && <span>Activity {calcTimeSinceMillis(new Date(post.last_updated).getTime(), new Date().getTime())} ago</span>}
-                                    <section style={{ "display": "flex", "justifyContent": "center", "gap": "0.5rem" }}>
-                                        <span>{postFull === undefined ? 0 : postFull.comments.length}</span>
-                                        <div>
-                                            <Image src={"/svgs/comment.svg"} alt="Comments" sizes="100%" width={0} height={0} style={{
-                                                "width": "1rem",
-                                                "height": "1rem",
-                                                "filter": "invert(1)"
-                                            }}></Image>
-                                        </div>
-                                    </section>
-                                    {originalTopic !== undefined && <span>Posted to <Link href={`/topic/${originalTopic.topic_id}`}>{originalTopic.name}</Link></span>}
-                                </section>
-                            </Link>
+                            <Post key={index} post={post} profile={props.profile}></Post>
                         )
                     })}
                 </div>
@@ -93,7 +101,7 @@ const Posts = (props: { posts: Post[], profile: PublicUser }) => {
 const Comments = (props: { comments: Comment[], profile: PublicUser }) => {
     return (
         <>
-            {props.comments.length <= 0 && <h1>This user hasn't commented yet!</h1>}
+            {props.comments.length <= 0 && <h1>This user hasn&apos;t commented yet!</h1>}
         </>
     );
 }
@@ -130,7 +138,7 @@ export const ProfileInteraction = (props: { profile: PublicUser }) => {
                 setComments(c.data.comments);
             }
         })();
-    }, []);
+    }, [props.profile.public_id]);
 
     return (
         <div className={style.container}>

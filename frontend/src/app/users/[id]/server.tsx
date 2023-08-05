@@ -32,7 +32,7 @@ const ProfileServer = async (props: { params: { id: string } }) => {
             <>
                 <Header forum={forum} user={user} perms={perms}></Header>
                 <main className="container">
-                    <h1>This user doesn't exist!</h1>
+                    <h1>This user doesn&apos;t exist!</h1>
                 </main>
             </>
         )
@@ -71,7 +71,7 @@ const ProfileServer = async (props: { params: { id: string } }) => {
                     <div style={{"display": "flex", "gap": "1rem"}}>
                         {groupsFinished.map((value: any, index: number) => {
                             return (
-                                <div style={{"color": `#${value.color}`, "padding": "1rem 0"}}>
+                                <div key={index} style={{"color": `#${value.color}`, "padding": "1rem 0"}}>
                                     {value.name}
                                 </div>
                             )

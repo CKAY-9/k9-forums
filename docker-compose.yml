@@ -1,0 +1,54 @@
+networks:
+  back:
+
+services:
+  backend:
+    build: ./backend
+    restart: always
+    networks:
+      - back
+    ports:
+      - 3001:3001
+
+  frontend:
+    build: ./frontend
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - back
+    ports:
+      - 3000:3000
+
+  ws-server:
+    build: ./ws-server
+    depends_on:
+      - backend
+    restart: always
+    networks:
+      - back
+    ports:
+      - 3002:3002
+
+  cdn: 
+    build: ./cdn
+    restart: always
+    networks:
+      - back
+    ports:
+      - 5000:5000
+
+  prisma:
+    image: postgres:latest
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      POSTGRES_DB: "K9"
+      POSTGRES_HOST_AUTH_METHOD: "trust"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

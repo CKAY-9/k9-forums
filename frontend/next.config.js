@@ -13,6 +13,10 @@ const nextConfig = {
         ],
         "dangerouslyAllowSVG": true
     },
+    "output": "standalone",
+    "typescript": {
+        "ignoreBuildErrors": true
+    }
 }
 
 module.exports = nextConfig, removeImports

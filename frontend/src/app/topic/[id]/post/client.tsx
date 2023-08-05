@@ -66,7 +66,7 @@ export const NewPostCreation = (props: {
             setBody(templateRequest.post.body);
             setTitle(templateRequest.post.title);
         })();
-    }, [])
+    }, [body, templateID, title])
 
     return (
         <>

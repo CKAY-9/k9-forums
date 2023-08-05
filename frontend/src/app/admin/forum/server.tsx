@@ -26,8 +26,8 @@ const ForumServer = async () => {
         )
     }
 
-    const groups = await fetchAllGroups();
-    const topics = await fetchAllTopics();
+    const groups = await fetchAllGroups() || [];
+    const topics = await fetchAllTopics() || [];
 
     return (
         <>

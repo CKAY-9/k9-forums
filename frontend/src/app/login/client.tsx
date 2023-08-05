@@ -68,7 +68,7 @@ const LoginClient = (props: {forum: Forum}) => {
                         <label>Password</label>
                         <input onChange={(e: BaseSyntheticEvent) => setPassword(e.target.value)} type="password" name="password" id="password" placeholder="Password" />
                         <input type="submit" value="Login" />
-                        <Link href="/register">Don't have an account?</Link>
+                        <Link href="/register">Don&apos;t have an account?</Link>
                     </form>
                 </div>
             </main>

@@ -23,7 +23,7 @@ const HomeTopic = (props: { topic: Topic }) => {
                 setTopic(req.topic);
             }
         })();
-    }, []);
+    }, [props.topic.topic_id]);
 
     return (
         <Link href={`/topic/${props.topic.topic_id}`} className={style.topic}>

@@ -96,10 +96,10 @@ export class MessagesClient extends Component<{
                                     }
 
                                     return (
-                                        <div>
+                                        <div key={index}>
                                             <button>
                                                 {userOne.public_id === this.props.user.public_id ?
-                                                    <div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+                                                    <div key={index} style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
                                                         <div>
                                                             <Image src={INTERNAL_CDN_URL + userTwo.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
                                                                 "width": "2rem",

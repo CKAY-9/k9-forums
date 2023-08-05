@@ -20,7 +20,7 @@ const K9About = async () => {
                 <h1>About K9 Forums</h1>
                 <p>
                     K9 Forums is a free and open-source forum software built on NextJS and NestJS.
-                    It's original repository can be found on <Link href="https://github.com/CKAY-9/k9-forums">Github</Link>.
+                    It&apos;s original repository can be found on <Link href="https://github.com/CKAY-9/k9-forums">Github</Link>.
                     K9 Forums uses the <Link href="https://www.gnu.org/licenses/agpl-3.0.txt">AGPL-V3.0 License</Link>.  
                 </p>
 

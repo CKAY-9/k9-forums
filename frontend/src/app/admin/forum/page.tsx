@@ -1,8 +1,8 @@
-import RolesClient from "../roles/client"
+import { NextPage } from "next";
 import { ForumHolder } from "./client"
 import ForumServer from "./server"
 
-export const ForumPage = () => {
+export const ForumPage: NextPage = () => {
     return (
         <>
             <ForumHolder>
