@@ -11,6 +11,7 @@ import { useSearchParams } from "next/navigation";
 import { fetchPost } from "@/api/forum/fetch";
 import MDEditor from "@uiw/react-md-editor";
 import { UsergroupFlags } from "@/api/admin/usergroup/interface";
+import Checkbox from "@/components/checkbox/checkbox";
 
 export const NewPostCreation = (props: {
     topic: Topic | undefined, 
@@ -78,20 +79,20 @@ export const NewPostCreation = (props: {
                 <label htmlFor="body">Body</label>
                 <MDEditor height="25rem" style={{"width": "100%", "fontSize": "1rem !important"}} onChange={(value: string | undefined) => setBody(value || "")} value={body}></MDEditor>
                 <label htmlFor="otherOptions">Extra Options</label>
-                <section style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+                <section style={{"display": "flex", "alignItems": "center", "gap": "3rem"}}>
                     <section style={{"display": "flex", "alignItems": "center", "gap": "0.5rem"}}>
                         <label htmlFor="templateUsage">Allow Template Usage</label>
-                        <input onChange={(e: BaseSyntheticEvent) => setTemplateAllowed(e.target.checked)} type="checkbox" name="templateUsage" defaultChecked={false} />
+                        <Checkbox defaultValue={false} onClick={(checked: boolean) => setTemplateAllowed(checked)}></Checkbox>
                     </section>
                     {(props.perms & UsergroupFlags.POST_MANAGEMENT) === UsergroupFlags.POST_MANAGEMENT &&
                         <>
                             <section style={{"display": "flex", "alignItems": "center", "gap": "0.5rem"}}>
                                 <label htmlFor="lockPost">Lock Post</label>
-                                <input type="checkbox" name="lockPost" defaultChecked={false} />
+                                <Checkbox defaultValue={false} onClick={(checked: boolean) => console.log(checked)}></Checkbox>
                             </section>
                             <section style={{"display": "flex", "alignItems": "center", "gap": "0.5rem"}}>
                                 <label htmlFor="pinPost">Pin Post</label>
-                                <input type="checkbox" name="pinPost" defaultChecked={false} />
+                                <Checkbox defaultValue={false} onClick={(checked: boolean) => console.log(checked)}></Checkbox>
                             </section>
                         </>
                     }

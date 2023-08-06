@@ -1,0 +1,25 @@
+.checkbox {
+    background-color: rgb(var(--800));
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+
+    .container {
+        background-color: rgb(0, 0, 0, 0.5);
+        width: 2rem;
+        height: 1rem;
+        border-radius: 0.5rem;
+        position: relative;
+        transition: 0.5s ease all;
+
+        .tick {
+            background-color: rgb(255, 255, 255, 0.5);
+            width: 1rem;
+            height: 1rem;
+            border-radius: 50%;
+            top: 0;
+            left: 0;
+            position: absolute;
+            transition: 0.5s ease all;
+        }
+    }
+}

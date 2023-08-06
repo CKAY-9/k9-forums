@@ -303,31 +303,36 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                         {originalTopic !== undefined && <div>Posted to <Link href={`/topic/${props.post?.topic_id}`}>{originalTopic?.name}</Link></div>}
                     </section>
                 </section>
-                <section style={{ "display": "flex", "flexDirection": "row" }}>
-                    <section className={style.controls}>
-                        <section>
-                            <button style={{ "padding": "1rem" }} onClick={pinPost}>
-                                <Image src={"/svgs/pin.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
-                                    "width": "2rem",
-                                    "height": "2rem",
-                                    "filter": "invert(1)",
-                                    "opacity": props.post?.pinned ? "1" : "0.5"
-                                }}></Image>
-                            </button>
-                            <button style={{ "padding": "1rem" }} onClick={lockPost}>
-                                <Image src={"/svgs/closed.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
-                                    "width": "2rem",
-                                    "height": "2rem",
-                                    "filter": "invert(1)",
-                                    "opacity": props.post?.closed ? "1" : "0.5"
-                                }}></Image>
-                            </button>
-                        </section>
-                        <section>
-                            {props.post?.template_allowed && <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`} className={style.control} style={{ "padding": "1rem" }}>Use post as template</Link>}
+                <div style={{"display": "flex", "flexDirection": "column", "alignItems": "flex-end"}}>
+                    <section style={{ "display": "flex", "flexDirection": "row" }}>
+                        <section className={style.controls}>
+                            <section>
+                                <button style={{ "padding": "1rem" }} onClick={pinPost}>
+                                    <Image src={"/svgs/pin.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
+                                        "width": "2rem",
+                                        "height": "2rem",
+                                        "filter": "invert(1)",
+                                        "opacity": props.post?.pinned ? "1" : "0.5"
+                                    }}></Image>
+                                </button>
+                                <button style={{ "padding": "1rem" }} onClick={lockPost}>
+                                    <Image src={"/svgs/closed.svg"} alt="Pin Post" sizes="100%" width={0} height={0} style={{
+                                        "width": "2rem",
+                                        "height": "2rem",
+                                        "filter": "invert(1)",
+                                        "opacity": props.post?.closed ? "1" : "0.5"
+                                    }}></Image>
+                                </button>
+                            </section>
+                            <section>
+                                {props.post?.template_allowed && <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`} className={style.control} style={{ "padding": "1rem" }}>Use post as template</Link>}
+                            </section>
                         </section>
                     </section>
-                </section>
+                    <section>
+                        <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`}>Use Post as Template</Link>
+                    </section>
+                </div>
             </header>
             <main className={style.body}>
                 <Link href={`/users/${props.author?.public_id}`} className={style.user}>

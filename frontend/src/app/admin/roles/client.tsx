@@ -8,6 +8,7 @@ import { postNotification } from "@/components/notifications/notification";
 import Image from "next/image";
 import { calcPermissionLevelWithArray, permissionLevelToArray } from "@/api/user/utils.client";
 import { updateUsergroup } from "@/api/admin/usergroup/put";
+import Checkbox from "@/components/checkbox/checkbox";
 
 const RolesClient = (props: {groups: Usergroup[]}) => {
     const [currentRole, setCurrentRole] = useState<Usergroup>(props.groups[0]);
@@ -97,13 +98,13 @@ const RolesClient = (props: {groups: Usergroup[]}) => {
                                     return (
                                         <div key={index} className={style.permission}>
                                             <h4>{usergroup.permission}</h4>
-                                            <input onChange={(e: BaseSyntheticEvent) => {
-                                                if (e.target.checked) {
+                                            <Checkbox defaultValue={(currentRole.permissions & usergroup.flag) === usergroup.flag} onClick={(checked: boolean) => {
+                                                if (checked) {
                                                     setCurrentPermissions(old => [...old, usergroup.flag]);
                                                 } else {
                                                     setCurrentPermissions(perms => perms.filter((val) => val !== usergroup.flag));
                                                 } 
-                                            }} type="checkbox" name="enabled" defaultChecked={(currentRole.permissions & usergroup.flag) === usergroup.flag} />
+                                            }} />
                                         </div>
                                     )
                                 })}
