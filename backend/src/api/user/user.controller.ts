@@ -2,7 +2,8 @@ import { Controller, Get, Req, Res, HttpStatus, Param, Query, Post, Body, Put } 
 import { Response } from "express";
 import { validateUser } from "./user.utils";
 import { prisma } from "../../db/prisma";
-import { UpdateUserDTO } from "./user.dto";
+import { AddUsergroupDTO, RemoveUsergroupDTO, UpdateUserDTO } from "./user.dto";
+import {doesUserHavePermissionLevel, UsergroupFlags} from "../admin/permissions";
 
 @Controller("user")
 export class UserController {
@@ -100,6 +101,77 @@ export class UserController {
         });
 
         return res.status(HttpStatus.OK).json({"message": "Updated profile"});
+    }
+
+    @Put("addUsergroup")
+    async addUsergroup(@Req() req: Request, @Res() res: Response, @Body() body: AddUsergroupDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        const u = await prisma.user.findUnique({
+            where: {
+                public_id: body.user_id
+            }
+        });
+
+        if (u === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Coudln't find user"});
+        }
+
+        u.usergroups.push(body.usergroup_id.toString());
+
+        const uUpdate = await prisma.user.update({
+            where: {
+                public_id: u.public_id
+            },
+            data: {
+                usergroups: u.usergroups
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Added usergroup to user"});
+    }
+
+    @Put("removeUsergroup")
+    async removeUsergroup(@Req() req: Request, @Res() res: Response, @Body() body: RemoveUsergroupDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        const u = await prisma.user.findUnique({
+            where: {
+                public_id: body.user_id
+            }
+        });
+
+        if (u === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find user"});
+        }
+
+        const i = u.usergroups.indexOf(body.usergroup_id.toString());
+        u.usergroups.splice(i, 1);
+
+        const uRemoval = await prisma.user.update({
+            where: {
+                public_id: body.user_id
+            },
+            data: {
+                usergroups: u.usergroups
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Removed usergroup"});
     }
 
     @Get("posts")

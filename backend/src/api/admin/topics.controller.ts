@@ -1,7 +1,7 @@
-import { Controller, HttpStatus, Req, Res, Get, Post, Body, Query } from "@nestjs/common";
+import { Controller, HttpStatus, Req, Res, Get, Post, Body, Query, Put, Delete } from "@nestjs/common";
 import { Response } from "express";
 import { prisma } from "../../db/prisma";
-import { CreateTopicDTO } from "./admin.dto";
+import { CreateTopicDTO, DeleteTopicDTO, UpdateTopicDTO } from "./admin.dto";
 import { validateUser } from "../user/user.utils";
 import { UsergroupFlags, doesUserHavePermissionLevel } from "./permissions";
 
@@ -98,7 +98,7 @@ export class TopicController {
             "name": body.name,
             "about": body.about,
             "category_id": body.category_id,
-            "topic_picture": ""
+            "topic_picture": body.picture 
         }});
 
         parentCategory.topics.push(topicCreate);
@@ -115,5 +115,76 @@ export class TopicController {
         });
 
         return res.status(HttpStatus.OK).json({"message": "Successful creation of new topic", topic: topicCreate});
+    }
+
+    @Put("update") 
+    async updateTopic(@Res() res: Response, @Req() req: Request, @Body() body: UpdateTopicDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        body.category_id = Number.parseInt(body.category_id.toString());
+
+        const parentCategory = await prisma.category.findUnique({
+            where: {
+                category_id: body.category_id
+            },
+            select: {
+                topics: true
+            }
+        });
+
+        if (parentCategory === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Parent category couldn't be found"}); 
+        }
+
+        const topicUpdate = await prisma.topic.update({
+            data: {
+                "name": body.name,
+                "about": body.about,
+                "category_id": body.category_id,
+                "topic_picture": body.picture 
+            },
+            where: {
+                "topic_id": body.category_id
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Successful creation of new topic", topic: topicUpdate});
+    }
+
+    @Delete("delete")
+    async deleteTopic(@Res() res: Response, @Req() req: Request, @Body() body: DeleteTopicDTO) {
+        const user = await validateUser(req);
+        if (user === undefined) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
+        }
+
+        if (!doesUserHavePermissionLevel(user, UsergroupFlags.FORUM_MANAGEMENT)) {
+            return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Permission level not met"}); 
+        }
+
+        const topic = await prisma.topic.findUnique({
+            where: {
+                topic_id: body.topic_id
+            }
+        });
+
+        if (topic === null) {
+            return res.status(HttpStatus.NOT_FOUND).json({"message": "Topic not found"});
+        }
+
+        const topicDelete = await prisma.topic.delete({
+            where: {
+                topic_id: body.topic_id
+            }
+        });
+
+        return res.status(HttpStatus.OK).json({"message": "Deleted topic"});
     }
 }

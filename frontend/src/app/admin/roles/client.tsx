@@ -5,10 +5,10 @@ import style from "../admin.module.scss";
 import { BaseSyntheticEvent, useState } from "react";
 import { createUsergroup } from "@/api/admin/usergroup/post";
 import { postNotification } from "@/components/notifications/notification";
-import Image from "next/image";
 import { calcPermissionLevelWithArray, permissionLevelToArray } from "@/api/user/utils.client";
 import { updateUsergroup } from "@/api/admin/usergroup/put";
 import Checkbox from "@/components/checkbox/checkbox";
+import Image from "../../../../node_modules/next/image";
 
 const RolesClient = (props: {groups: Usergroup[]}) => {
     const [currentRole, setCurrentRole] = useState<Usergroup>(props.groups[0]);

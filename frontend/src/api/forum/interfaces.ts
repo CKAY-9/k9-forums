@@ -72,6 +72,7 @@ export type Topic = {
     name: string
     about: string
     topic_id: number
+    topic_picture: string
     Category?: Category
     category_id?: number
     posts: Post[]

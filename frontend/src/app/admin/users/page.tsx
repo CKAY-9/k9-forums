@@ -22,8 +22,6 @@ const User = async (props: {user: User}) => {
     const allUsergroups: Usergroup[] = _req.data.groups || [];
 
     for (let i = 0; i < props.user.usergroups.length; i++) {
-        console.log(props.user.usergroups[i]);
-
         const req = await axios({
             "url": INTERNAL_API_URL + "/usergroup/info",
             "method": "GET",

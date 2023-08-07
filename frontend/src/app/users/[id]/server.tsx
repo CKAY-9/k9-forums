@@ -13,7 +13,8 @@ import { Logout } from "@/components/logout/logout";
 import { ProfileInteraction } from "./client";
 
 const ProfileServer = async (props: { params: { id: string } }) => {
-	const user = await fetchPersonalInformation();
+    const user = await fetchPersonalInformation();
+
 	const forum: Forum = await fetchForumInfo();
 	let perms: number = 0;
 	if (user !== undefined) {
@@ -41,15 +42,19 @@ const ProfileServer = async (props: { params: { id: string } }) => {
     const groupsFinished = [];
 
     for (const group in userData.usergroups) {
-        const req = await axios({
-            "url": INTERNAL_API_URL + "/usergroup/info",
-            "method": "GET",
-            "params": {
-                "usergroup_id": group
-            }
-        });
+        try {
+            const req = await axios({
+                "url": INTERNAL_API_URL + "/usergroup/info",
+                "method": "GET",
+                "params": {
+                    "usergroup_id": Number.parseInt(group) - 1
+                }
+            });
 
-        groupsFinished.push(req.data.usergroup);
+            groupsFinished.push(req.data.usergroup);
+        } catch (ex) {
+            console.error()
+        }
     }
 
 	return (
@@ -68,7 +73,7 @@ const ProfileServer = async (props: { params: { id: string } }) => {
                     }
                     <h1>{userData.username}</h1>
                     <span>{userData.profile_bio}</span>
-                    <div style={{"display": "flex", "gap": "1rem"}}>
+                    <div style={{"display": "flex", "gap": "1rem", "flexWrap": "wrap"}}>
                         {groupsFinished.map((value: any, index: number) => {
                             return (
                                 <div key={index} style={{"color": `#${value.color}`, "padding": "1rem 0"}}>

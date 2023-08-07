@@ -27,7 +27,17 @@ const HomeTopic = (props: { topic: Topic }) => {
 
     return (
         <Link href={`/topic/${props.topic.topic_id}`} className={style.topic}>
-            <h2>{props.topic.name}</h2>
+            <section style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+                {props.topic.topic_picture !== "" &&
+                    <Image src={INTERNAL_CDN_URL + props.topic.topic_picture} alt="" sizes="100%" width={0} height={0} style={{
+                        "width": "3rem",
+                        "height": "3rem",
+                        "borderRadius": "50%",
+                        "objectFit": "cover"
+                    }}></Image>
+                }
+                <h2>{props.topic.name}</h2>
+            </section>
             <p>{props.topic.about}</p>
             <div style={{ "display": "flex", "alignItems": "center", "gap": "1rem" }}>
                 {topic?.posts !== undefined &&

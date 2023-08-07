@@ -29,4 +29,16 @@ export class CreateTopicDTO {
     name: string;
     category_id: number;
     about: string;
+    picture: string;
+}
+
+export class UpdateTopicDTO {
+    name: string;
+    category_id: number;
+    about: string;
+    picture: string;
+}
+
+export class DeleteTopicDTO { 
+    topic_id: number;
 }

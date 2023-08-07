@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import style from "./client.module.scss";
-import { Post, Topic } from "@/api/forum/interfaces";
+import { Comment, FetchPostResponse, Post, Topic } from "@/api/forum/interfaces";
 import { PublicUser, UserCommentsResponse, UserPostsResponse } from "@/api/user/interfaces";
 import axios, { AxiosResponse } from "axios";
 import { INTERNAL_API_URL, INTERNAL_CDN_URL } from "@/api/resources";
@@ -11,6 +11,7 @@ import { calcTimeSinceMillis } from "@/utils/time";
 import { fetchPost, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import Image from "next/image";
 import { profile } from "console";
+import {fetchPublicProflie} from "@/api/user/fetch";
 
 const Post = (props: {post: Post, profile: PublicUser}) => {
     const post = props.post
@@ -98,10 +99,66 @@ const Posts = (props: { posts: Post[], profile: PublicUser }) => {
     );
 }
 
+const Comment = (props: {comment: Comment}) => {
+    const [post, setPost] = useState<Post | undefined>(undefined);
+    const [postAuthor, setPostAuthor] = useState<PublicUser | undefined>(undefined);
+
+    useEffect(() => {
+        (async() => {
+            const p: AxiosResponse<FetchPostResponse> = await axios({
+                "url": INTERNAL_API_URL + "/post/get",
+                "method": "GET",
+                "params": {
+                    "post_id": props.comment.post_id
+                }
+            }); 
+
+            if (p.data.post === undefined) return;
+
+            setPost(p.data.post);
+
+            const a = await axios({
+                "url": INTERNAL_API_URL + "/user/public",
+                "method": "GET",
+                "params": {
+                    "public_id": p.data.post.user_id
+                }
+            }); 
+
+            if (a.data.userData === undefined) return;
+
+            setPostAuthor(a.data.userData);
+        })();
+    }, [props.comment.post_id]);
+
+    if (post === undefined || postAuthor === undefined) {
+        return (
+            <div className={style.comment}>
+                <span>Loading...</span>
+            </div>
+        );
+    }
+
+    return (
+        <div className={style.comment}>
+            <h1>On {postAuthor.username}&apos; Post</h1>     
+        </div>     
+    );
+}
+
 const Comments = (props: { comments: Comment[], profile: PublicUser }) => {
     return (
         <>
             {props.comments.length <= 0 && <h1>This user hasn&apos;t commented yet!</h1>}
+            {props.comments.length >= 1 && 
+                <>
+                    {props.comments.map((comment: Comment, index: number) => {
+                        return (
+                            <Comment comment={comment} key={index}></Comment>
+                        )
+                    })}
+                </>
+            }
         </>
     );
 }
