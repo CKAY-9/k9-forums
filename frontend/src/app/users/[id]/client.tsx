@@ -12,6 +12,7 @@ import { fetchPost, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import Image from "next/image";
 import { profile } from "console";
 import {fetchPublicProflie} from "@/api/user/fetch";
+import MarkdownPreview from "@uiw/react-markdown-preview";
 
 const Post = (props: {post: Post, profile: PublicUser}) => {
     const post = props.post
@@ -140,9 +141,10 @@ const Comment = (props: {comment: Comment}) => {
     }
 
     return (
-        <div className={style.comment}>
-            <h1>On {postAuthor.username}&apos; Post</h1>     
-        </div>     
+        <Link href={`/post/${props.comment.post_id}`} className={style.comment}>
+            <h1>On {postAuthor.username}&apos;s Post</h1>
+            <MarkdownPreview source={props.comment.content} style={{"backgroundColor": "transparent"}}></MarkdownPreview>
+        </Link>     
     );
 }
 
@@ -151,13 +153,13 @@ const Comments = (props: { comments: Comment[], profile: PublicUser }) => {
         <>
             {props.comments.length <= 0 && <h1>This user hasn&apos;t commented yet!</h1>}
             {props.comments.length >= 1 && 
-                <>
+                <div className={style.comments}>
                     {props.comments.map((comment: Comment, index: number) => {
                         return (
                             <Comment comment={comment} key={index}></Comment>
                         )
                     })}
-                </>
+                </div>
             }
         </>
     );

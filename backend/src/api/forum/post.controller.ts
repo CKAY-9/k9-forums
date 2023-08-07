@@ -167,6 +167,7 @@ export class PostController {
                 first_posted: true,
                 last_updated: true,
                 topic_id: true,
+                template_allowed: true
             }
         });
 
