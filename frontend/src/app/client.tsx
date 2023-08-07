@@ -2,7 +2,7 @@
 
 import { fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import style from "./index.module.scss";
-import { FetchTopicPostsResponse, Forum, Post, Topic } from "@/api/forum/interfaces";
+import { CustomLink, FetchTopicPostsResponse, Forum, Post, Topic } from "@/api/forum/interfaces";
 import Link from "next/link";
 import Image from "next/image";
 import MarkdownPreview from "@uiw/react-markdown-preview";
@@ -55,6 +55,16 @@ const HomeTopic = (props: { topic: Topic }) => {
     );
 }
 
+
+export const MOTD = (props: {forum: Forum}) => {
+    return (
+        <div className={style.motd}>
+            <h2>Message of the day</h2>
+            <MarkdownPreview style={{"backgroundColor": "transparent"}} source={props.forum.motd}></MarkdownPreview>
+        </div>
+    );
+}
+
 const HomeTopicsClient = (props: { topics: Topic[] }) => {
     return (
         <>
@@ -77,7 +87,8 @@ export class ActivityBar extends Component<{
     users: User[],
     ws: w3cwebsocket | undefined,
     wsData: any,
-    activeUserCount: number
+    activeUserCount: number,
+    links: CustomLink[]
 }> {
 
     constructor(props: { forum: Forum }) {
@@ -88,7 +99,8 @@ export class ActivityBar extends Component<{
             "users": [],
             "ws": undefined,
             "wsData": "",
-            "activeUserCount": 1
+            "activeUserCount": 1,
+            "links": []
         }
     }
 
@@ -105,6 +117,11 @@ export class ActivityBar extends Component<{
 
         const uReq = await axios({
             "url": INTERNAL_API_URL + "/user/all",
+            "method": "GET"
+        });
+        
+        const clReq = await axios({
+            "url": INTERNAL_API_URL + "/forum/links",
             "method": "GET"
         });
 
@@ -138,7 +155,8 @@ export class ActivityBar extends Component<{
         this.setState({
             "comments": cReq.data.comments,
             "posts": pReq.data.posts,
-            "users": uReq.data.users
+            "users": uReq.data.users,
+            "links": clReq.data.links
         });
     }
 
@@ -155,6 +173,34 @@ export class ActivityBar extends Component<{
                             }}></Image>
                         </div>
                         <span className={style.name}>{this.props.forum.community_name}</span>
+                        <div className={style.links}>
+                            {(this.state.links[0] !== undefined && this.state.links[0].url !== "") &&
+                                <Link href={this.state.links[0].url} className={style.link}>
+                                    <Image src={"/links/steam.png"} alt="Steam" sizes="100%" width={0} height={0} style={{
+                                        "width": "1.5rem",
+                                        "height": "1.5rem",
+                                    }}></Image>
+                                </Link>
+                            }
+                            {(this.state.links[1] !== undefined && this.state.links[1].url !== "") &&
+                                <Link href={this.state.links[1].url} className={style.link}>
+                                    <Image src={"/links/store.svg"} alt="Store" sizes="100%" width={0} height={0} style={{
+                                        "width": "1.5rem",
+                                        "height": "1.5rem",
+                                        "filter": "invert(1)"
+                                    }}></Image>
+                                </Link>
+                            }
+                            {(this.state.links[2] !== undefined && this.state.links[2].url !== "") &&
+                                <Link href={this.state.links[2].url} className={style.link}>
+                                    <Image src={"/links/discord.svg"} alt="Discord" sizes="100%" width={0} height={0} style={{
+                                        "width": "1.5rem",
+                                        "height": "1.5rem",
+                                    }}></Image>
+                                </Link>
+                            }
+
+                        </div>
                     </section>
 
                     <section className={style.section}>

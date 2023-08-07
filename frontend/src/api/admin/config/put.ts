@@ -24,7 +24,8 @@ export const updateForumCategory = async (data: {
 export const updateForumInformation = async (data: {
     name: string,
     about: string,
-    logo: string
+    logo: string,
+    motd: string
 }) => {
     try {
         const req: AxiosResponse<UpdateForumResponse> = await axios({

@@ -61,7 +61,8 @@ const Topic = (props: {topic: Topic, forum: Forum, createTopic: Function, update
                             <Image src={INTERNAL_CDN_URL + pic} alt="Topic Picture" sizes="100%" width={0} height={0} style={{
                                 "width": "3rem",
                                 "height": "3rem",
-                                "borderRadius": "50%"
+                                "borderRadius": "50%",
+                                "objectFit": "cover"
                             }}></Image>
                         }
                     </div>

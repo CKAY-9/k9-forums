@@ -1,0 +1,21 @@
+.links {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .link {
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+
+        box-shadow: var(--shdw1);
+
+        input {
+            width: 100%;
+        }
+    }
+}

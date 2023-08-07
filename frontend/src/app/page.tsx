@@ -4,7 +4,7 @@ import { Category, Forum, Topic } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "./index.module.scss";
-import HomeTopicsClient, { ActivityBar } from "./client";
+import HomeTopicsClient, { ActivityBar, MOTD } from "./client";
 
 const Index = async () => {
 	const user = await fetchPersonalInformation();
@@ -20,6 +20,9 @@ const Index = async () => {
 
 			<main className={style.container}>
 				<div className={style.categories}>
+                    {(forum.motd !== undefined && forum.motd !== "") &&
+                        <MOTD forum={forum}></MOTD>
+                    } 
 					{forum.categories === undefined || forum.categories?.length <= 0 && <h1>There are no available categories</h1>}
 					{forum.categories?.map(async (value: Category, index: number) => {
 						const topics = await fetchCategoryTopics(value.category_id);

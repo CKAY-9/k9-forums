@@ -211,7 +211,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
             const topic = await fetchTopicPostsAndActivity(props.post?.topic_id || 0);
             setOriginalTopic(topic?.topic);
         })();
-    }, [props.post?.topic_id]);
+    }, [props.post?.topic_id, first, props.post?.first_posted, props.post?.last_updated, second]);
 
     const lockPost = async (e: BaseSyntheticEvent) => {
         e.preventDefault();

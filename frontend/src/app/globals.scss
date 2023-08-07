@@ -71,6 +71,14 @@ button, input[type="submit"] {
 	}
 }
 
+select {
+    background-color: rgb(var(--700));
+    color: rgb(var(--text));
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.5rem;
+}
+
 h1, h2, h3, h4, h5, h6 {
 	margin: 1rem 0;
 }

@@ -68,6 +68,12 @@ export type Post = {
     votes: Vote[]
 }
 
+export type CustomLink = {
+    url: string             
+    custom_link_id: number
+    type: number
+}
+
 export type Topic = {
     name: string
     about: string
@@ -95,11 +101,5 @@ export type Forum = {
     custom_redirects: string[]
     categories?: any[]
     users?: any[]
-}
-
-export type CustomLink = {
-    url: string
-    custom_link_id: number
-    type: number // 0 = custom, 1... = built in
-    show_on_nav_bar: boolean
+    motd: string
 }

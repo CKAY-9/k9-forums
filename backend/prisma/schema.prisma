@@ -45,6 +45,7 @@ model Forum {
   community_name String     @unique
   community_logo String
   about          String
+  motd           String
   categories     Category[]
   users          User[]
 }
@@ -52,8 +53,7 @@ model Forum {
 model CustomLink {
   url             String
   custom_link_id  Int     @id @unique @default(autoincrement())
-  type            Int // 0 = custom, 1... = built in
-  show_on_nav_bar Boolean
+  type            Int // steam = 0, store = 1, discord = 2
 }
 
 model Usergroup {

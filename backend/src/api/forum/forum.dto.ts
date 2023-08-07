@@ -39,10 +39,17 @@ export class UpdateForumDTO {
     name: string;
     about: string;
     logo: string;
+    motd: string;
 }
 
 export class VoteOnDTO {
     type: -1 | 0 | 1;
     user_id: string;
     target_id: string;
+}
+
+export class UpdateLinksDTO {
+    steam: string;
+    discord: string;
+    store: string;
 }

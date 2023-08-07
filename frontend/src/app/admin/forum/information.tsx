@@ -18,6 +18,7 @@ const MDEditor = dynamic(
 const Information = (props: {forum: Forum}) => {
     const [logo, setLogo] = useState<string>(props.forum.community_logo || "");
     const [name, setName] = useState<string>(props.forum.community_name || "");
+    const [motd, setMOTD] = useState<string>(props.forum.motd || "");
     const [about, setAbout] = useState<string>(props.forum.about || "");
     const [logoFile, setLogoFile] = useState<File | undefined>(undefined);
 
@@ -26,7 +27,8 @@ const Information = (props: {forum: Forum}) => {
         const res = await updateForumInformation({
             "name": name,
             "about": about,
-            "logo": logo
+            "logo": logo,
+            "motd": motd
         });
 
         if (res !== undefined) {
@@ -84,10 +86,12 @@ const Information = (props: {forum: Forum}) => {
 
             <label htmlFor="name">Community Name</label>
             <input onChange={(e: BaseSyntheticEvent) => setName(e.target.value)} style={{"fontSize": "1rem"}} type="text" placeholder="Community Name" defaultValue={props.forum.community_name || ""} />
+
             <label htmlFor="about">Community Bio</label>
-            <form>
-                <MDEditor height="25rem" style={{"width": "50rem"}} onChange={(value: string | undefined) => setAbout(value || "")} value={about}></MDEditor>
-            </form>
+            <MDEditor height="25rem" style={{"width": "100%"}} onChange={(value: string | undefined) => setAbout(value || "")} value={about}></MDEditor>
+    
+            <label>MOTD</label>
+            <MDEditor height="25rem" style={{"width": "100%"}} onChange={(value: string | undefined) => setMOTD(value || "")} value={motd}></MDEditor>
 
             <button onClick={updateInformation}>Update</button>
         </div>

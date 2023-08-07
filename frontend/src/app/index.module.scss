@@ -28,12 +28,44 @@
         align-items: center;
         justify-content: center;
     }
+
+    .links {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+}
+
+@keyframes motdBorder {
+    0% {
+        border-color: rgb(var(--accent));
+    }
+    50% {
+        border-color: rgb(0, 0, 0, 0);
+    }
+    100% {
+        border-color: rgb(var(--accent));
+    }
+}
+
+.motd {
+    border-radius: 2rem;
+    padding: 1rem 2rem 2rem;
+    border: 2px solid rgb(var(--accent));
+    animation: motdBorder 2s ease infinite;
+
+    h2 {
+        margin: 1rem 0;
+        text-transform: uppercase;
+    }
 }
 
 .categories {
     display: flex;
     flex-direction: column;
-    gap: 3rem;
+    gap: 1rem;
 
     .category {
         padding: 2rem 3rem;

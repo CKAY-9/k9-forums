@@ -69,7 +69,7 @@ export const AdminUser = (props: {user: User, usergroups: Usergroup[], allUsergr
             <div className={style.usergroups}>
                 {groups.map((usergroup: Usergroup, index: number) => {
                     return (
-                        <div className={style.usergroup}>
+                        <div key={index} className={style.usergroup}>
                             <div style={{"width": "1rem", "height": "1rem", "borderRadius": "50%", "backgroundColor": `#${usergroup.color}`}}></div>
                             <span className={style.name}>{usergroup.name}</span>
                             <button className={style.remove} onClick={(e: BaseSyntheticEvent) => removeGroup(e, usergroup.usergroup_id)}>X</button>
@@ -82,7 +82,7 @@ export const AdminUser = (props: {user: User, usergroups: Usergroup[], allUsergr
                 <option value={""}></option>
                 {props.allUsergroups.map((usergroup: Usergroup, index: number) => {
                     return (
-                        <option value={usergroup.usergroup_id}>{usergroup.name}</option>
+                        <option key={index} value={usergroup.usergroup_id}>{usergroup.name}</option>
                     );
                 })}
             </select>

@@ -13,6 +13,15 @@ import axios, { AxiosResponse } from "axios";
 import { LoginResponse } from "@/api/user/interfaces";
 
 const LoginClient = (props: {forum: Forum}) => {
+    if (props.forum === undefined || props.forum === null) {
+        props.forum = {
+            "about": "...",
+            "community_logo": "/default/default.png",
+            "community_name": "K9 Forums",
+            "custom_redirects": [],
+        }
+    }
+
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
