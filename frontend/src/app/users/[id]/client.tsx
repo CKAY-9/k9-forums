@@ -17,75 +17,7 @@ import {usePathname, useSearchParams, useRouter} from "next/navigation";
 import Loading from "@/components/loading/loading";
 import {postNotification} from "@/components/notifications/notification";
 import {logout} from "@/components/logout/logout";
-
-const Post = (props: {post: Post, profile: PublicUser}) => {
-    const post = props.post
-    const [originalTopic, setOriginalTopic] = useState<Topic>();
-    const [postFull, setPostFull] = useState<Post>();
-
-    useEffect(() => {
-        (async () => {
-            const topic = await fetchTopicPostsAndActivity(post.topic_id || 0);
-            setOriginalTopic(topic?.topic);
-
-            const pF = await fetchPost(post.post_id);
-            if (pF?.post !== undefined) {
-                setPostFull(pF.post);
-            }
-        })();
-    }, [post.post_id, post.topic_id]);
-
-    return (
-        <Link href={"/post/" + post.post_id} className={style.post}>
-            <section style={{ "display": "flex", "alignItems": "center", "justifyContent": "space-between", "gap": "1rem" }}>
-                <h1>{post.title === "" ? "no title available" : post.title}</h1>
-                <section style={{ "display": "flex", "gap": "1rem" }}>
-                    <div>
-                        <Image src={"/svgs/pin.svg"} alt="Pinned" sizes="100%" width={0} height={0} style={{
-                            "width": "2rem",
-                            "height": "2rem",
-                            "filter": "invert(1)",
-                            "opacity": post.pinned ? "1" : "0.5"
-                        }}></Image>
-                    </div>
-                    <div>
-                        <Image src={"/svgs/closed.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
-                            "width": "2rem",
-                            "height": "2rem",
-                            "filter": "invert(1)",
-                            "opacity": post.closed ? "1" : "0.5"
-                        }}></Image>
-                    </div>
-                </section>
-            </section>
-            <section style={{ "display": "flex", "alignItems": "center", "gap": "1rem" }}>
-                <div>
-                    <Image src={INTERNAL_CDN_URL + props.profile.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                        "width": "3rem",
-                        "height": "3rem",
-                        "borderRadius": "50%"
-                    }}></Image>
-                </div>
-                <h3>{props.profile.username}</h3>
-            </section>
-            <section style={{ "display": "flex", "marginTop": "0.5rem", "alignItems": "center", "gap": "1rem", "opacity": "0.5" }}>
-                <span>Posted {calcTimeSinceMillis(new Date(post.first_posted).getTime(), new Date().getTime())} ago</span>
-                {post.first_posted !== post.last_updated && <span>Activity {calcTimeSinceMillis(new Date(post.last_updated).getTime(), new Date().getTime())} ago</span>}
-                <section style={{ "display": "flex", "justifyContent": "center", "gap": "0.5rem" }}>
-                    <span>{postFull === undefined ? 0 : postFull.comments.length}</span>
-                    <div>
-                        <Image src={"/svgs/comment.svg"} alt="Comments" sizes="100%" width={0} height={0} style={{
-                            "width": "1rem",
-                            "height": "1rem",
-                            "filter": "invert(1)"
-                        }}></Image>
-                    </div>
-                </section>
-                {originalTopic !== undefined && <span>Posted to <Link href={`/topic/${originalTopic.topic_id}`}>{originalTopic.name}</Link></span>}
-            </section>
-        </Link>
-    )
-}
+import PostPreview from "@/components/post/post";
 
 const Posts = (props: { posts: Post[], profile: PublicUser }) => {
     return (
@@ -95,7 +27,7 @@ const Posts = (props: { posts: Post[], profile: PublicUser }) => {
                 <div className={style.posts}>
                     {props.posts.map((post: Post, index: number) => {
                         return (
-                            <Post key={index} post={post} profile={props.profile}></Post>
+                            <PostPreview key={index} post={post}></PostPreview>
                         )
                     })}
                 </div>

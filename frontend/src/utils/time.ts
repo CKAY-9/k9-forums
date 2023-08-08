@@ -19,5 +19,5 @@ export const calcTimeSinceMillis = (millisThen: number, millisNow: number): stri
         return m + "m";
     if (s >= 1)
         return s + "s";
-    return millis + "ms"
+    return "1s"
 }
