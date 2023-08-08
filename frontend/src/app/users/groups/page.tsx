@@ -5,6 +5,16 @@ import { Forum } from "@/api/forum/interfaces";
 import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "./groups.module.scss";
+import type { Metadata } from "next";
+
+export const generateMetadata = async ({params}: any): Promise<Metadata> => {
+    const forum: Forum = await fetchForumInfo();
+
+    return {
+        title: `Usergroups - ${forum.community_name}`,
+        description: `${forum.community_name}'s Usergroups`
+    } 
+}
 
 const UsergroupsPage = async () => {
 	const user = await fetchPersonalInformation();

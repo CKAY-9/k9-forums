@@ -7,6 +7,16 @@ import Header from "@/components/header/header";
 import DOMPurify from "dompurify";
 import { marked } from "marked";
 import AboutClient from "./client";
+import type { Metadata } from "next";
+
+export const generateMetadata = async ({params}: any): Promise<Metadata> => {
+    const forum: Forum = await fetchForumInfo();
+
+    return {
+        title: `${forum.community_name} - About`,
+        description: `About ${forum.community_name}: ${forum.about}`
+    } 
+}
 
 const AboutCommunity = async () => {
 	const user = await fetchPersonalInformation();

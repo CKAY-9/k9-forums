@@ -26,18 +26,23 @@ const ForumClient = (props: {user: User | undefined, topics: Topic[], forum: For
         switch (tab) {
             case "info":
                 setCurrentView(0);
+                document.title = `Information - ${props.forum.community_name}`;
                 break;
             case "links":
                 setCurrentView(1);
+                document.title = `Custom Links - ${props.forum.community_name}`;
                 break;
             case "categories":
                 setCurrentView(2);
+                document.title = `Categories - ${props.forum.community_name}`;
                 break;
             case "topics":
                 setCurrentView(3);
+                document.title = `Topics - ${props.forum.community_name}`;
                 break;
             default: 
                 setCurrentView(0);
+                document.title = `Forum Information - ${props.forum.community_name}`;
                 break;   
         }
     }, [tab]);

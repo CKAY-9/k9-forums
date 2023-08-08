@@ -17,6 +17,9 @@ const User = (props: {user: User, me: User}) => {
         (async() => {
             if (!loadingGroups) return;
             for (let i = 0; i < props.user.usergroups.length; i++) {
+                if (isNaN(Number.parseInt(props.user.usergroups[i]) - 1))
+                    continue;
+
                 const req = await axios({
                     "url": INTERNAL_API_URL + "/usergroup/info",
                     "method": "GET",
@@ -78,9 +81,7 @@ const UsersClient = (props: {users: User[] | undefined, me: User}) => {
                         return (val.username.includes(search) || val.public_id === Number.parseInt(search)) 
                     }).map((value: User, index: number) => {
                         return (
-                            <>
-                                <User key={index} me={props.me} user={value}></User>
-                            </>
+                            <User key={index} me={props.me} user={value}></User>
                         );
                     })}
                 </div>

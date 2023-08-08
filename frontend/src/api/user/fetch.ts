@@ -1,4 +1,5 @@
 import axios, { AxiosResponse } from "axios"
+import {Usergroup, UsergroupFlags} from "../admin/usergroup/interface";
 import { INTERNAL_API_URL } from "../resources"
 import { AllUsersResponse, LoginResponse, PersonalInformationResponse, PublicUserResponse, User, UserCommentsResponse, UserPostsResponse } from "./interfaces";
 import { getUserToken } from "./utils.server";
@@ -82,4 +83,22 @@ export const fetchUserComments = async (public_id: number) => {
     } catch (ex) {
         return undefined;
     }
+}
+
+export const doesUserHavePermission = async (usergroups: number[], permission: UsergroupFlags): Promise<boolean> => {
+    for (let i = 0; i < usergroups.length; i++) {
+        const req = await axios({
+            "url": INTERNAL_API_URL + "/usergroup/info",
+            "method": "GET",
+            "params": {
+                "usergroup_id": usergroups[i]
+            }
+        });
+
+        if ((req.data.usergroup.permissions & permission) === permission) {
+            return true;
+        }
+    }
+
+    return false;
 }

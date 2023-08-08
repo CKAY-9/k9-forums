@@ -329,9 +329,6 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                             </section>
                         </section>
                     </section>
-                    <section>
-                        <Link href={`/topic/${props.post?.topic_id}/post?template_id=${props.post?.post_id}`}>Use Post as Template</Link>
-                    </section>
                 </div>
             </header>
             <main className={style.body}>

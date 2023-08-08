@@ -5,6 +5,16 @@ import { fetchPersonalInformation } from "@/api/user/fetch";
 import Header from "@/components/header/header";
 import style from "./index.module.scss";
 import HomeTopicsClient, { ActivityBar, MOTD } from "./client";
+import type { Metadata } from "next"
+
+export const generateMetadata = async (): Promise<Metadata> => {
+    const forum: Forum = await fetchForumInfo();
+
+    return {
+        title: `Home - ${forum.community_name}`,
+        description: `${forum.community_name}'s Home`
+    } 
+}
 
 const Index = async () => {
 	const user = await fetchPersonalInformation();
@@ -15,9 +25,8 @@ const Index = async () => {
 	}
 
 	return (
-		<>
+		<>  
 			<Header forum={forum} user={user} perms={perms}></Header>
-
 			<main className={style.container}>
 				<div className={style.categories}>
                     {(forum.motd !== undefined && forum.motd !== "") &&

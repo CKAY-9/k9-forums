@@ -25,6 +25,7 @@ export class MessagesClient extends Component<{
     showingNewMessage: boolean,
     newMessageToUser: number,
     newMessageContent: string,
+    dms: Channel[]
 }> {
     constructor(props: {
         forum: Forum,
@@ -38,7 +39,8 @@ export class MessagesClient extends Component<{
             wsData: "",
             showingNewMessage: false,
             newMessageToUser: -1,
-            newMessageContent: ""
+            newMessageContent: "",
+            dms: this.props.channels || []
         }
 
         this._sendDM = this._sendDM.bind(this);
@@ -62,7 +64,6 @@ export class MessagesClient extends Component<{
 
         server.onmessage = (msg) => {
             const data = JSON.parse(msg.data.toString());
-            console.log(data);
             if (data.type === "dm") {
                 if (data.data.from !== this.props.user.public_id)
                     return;
@@ -79,7 +80,10 @@ export class MessagesClient extends Component<{
                 }
 
                 if (flag) {
-                    
+                    console.log(data);
+                    this.setState(old => {
+                        dms: [...old.dms, ];
+                    });                
                 }
             }
             this.setState({"wsData": data});

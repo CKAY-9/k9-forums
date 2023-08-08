@@ -70,9 +70,7 @@ const HomeTopicsClient = (props: { topics: Topic[] }) => {
         <>
             {props.topics.map((topic: Topic, index: number) => {
                 return (
-                    <>
-                        <HomeTopic key={index} topic={topic}></HomeTopic>
-                    </>
+                    <HomeTopic key={index} topic={topic}></HomeTopic>
                 );
             })}
         </>

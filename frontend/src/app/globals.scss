@@ -101,6 +101,7 @@ h1, h2, h3, h4, h5, h6 {
 	flex-direction: column-reverse;
 	gap: 0.5rem;
 	position: fixed;
+    z-index: 999;
 	bottom: 1rem;
 	right: 1rem;
 
@@ -109,6 +110,8 @@ h1, h2, h3, h4, h5, h6 {
 		animation-fill-mode: forwards;
 		transition: 0.5s ease all;
 		padding: 1rem 2rem;
+        border-radius: 1rem;
+        box-shadow: var(--shdw1);
 		background-color: rgb(var(--800));
 	}
 }

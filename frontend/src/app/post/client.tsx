@@ -104,7 +104,7 @@ export const Posts = (props: {posts: Post[]}) => {
     return (
         <div style={{"display": "flex", "flexDirection": "column", "gap": "1rem"}}>
             <label htmlFor="search">Search</label>
-            <input onChange={(e: BaseSyntheticEvent) => setSearch(e.target.value)} type="text" placeholder="Search User by Name/ID" />
+            <input onChange={(e: BaseSyntheticEvent) => setSearch(e.target.value)} type="text" placeholder="Search Post by Name/ID" />
             <div className={style.posts}>
                 {posts.map((post: Post, index: number) => {
                     return (

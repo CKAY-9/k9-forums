@@ -10,6 +10,17 @@ import Link from "next/link";
 import style from "./users.module.scss";
 import Image from "next/image";
 import { AdminUser } from "./client";
+import {Metadata} from "next";
+import {Forum} from "@/api/forum/interfaces";
+
+export const generateMetadata = async (): Promise<Metadata> => {
+    const forum: Forum = await fetchForumInfo();
+
+    return {
+        title: `Manage Users - ${forum.community_name}`,
+        description: `Manage all users of ${forum.community_name}`
+    } 
+}
 
 const User = async (props: {user: User}) => {
     const usergroups: Usergroup[] = []
@@ -22,6 +33,9 @@ const User = async (props: {user: User}) => {
     const allUsergroups: Usergroup[] = _req.data.groups || [];
 
     for (let i = 0; i < props.user.usergroups.length; i++) {
+        if (isNaN(Number.parseInt(props.user.usergroups[i]) - 1))
+            continue;
+
         const req = await axios({
             "url": INTERNAL_API_URL + "/usergroup/info",
             "method": "GET",

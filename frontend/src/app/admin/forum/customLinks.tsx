@@ -54,21 +54,21 @@ const CustomLinks = (props: {forum: Forum}) => {
             <span style={{"opacity": "0.5"}}>Leave blank to disable</span>
             <div className={style.links} style={{"marginTop": "1rem"}}>
                 <div className={style.link} style={{"backgroundColor": "#5865F2"}}>
-                    <Image src={"/links/discord.svg"} sizes="100%" width={0} height={0} style={{
+                    <Image src={"/links/discord.svg"} alt="Discord" sizes="100%" width={0} height={0} style={{
                         "width": "3rem",
                         "height": "3rem"
                     }}></Image>
                     <input defaultValue={discord} onChange={(e: BaseSyntheticEvent) => setDiscord(e.target.value)} type="text" placeholder="Discord Invite"></input> 
                 </div>
                 <div className={style.link} style={{"backgroundColor": "white"}}>
-                    <Image src={"/links/store.svg"} sizes="100%" width={0} height={0} style={{
+                    <Image src={"/links/store.svg"} alt="Store" sizes="100%" width={0} height={0} style={{
                         "width": "3rem",
                         "height": "3rem"
                     }}></Image>
                     <input defaultValue={store} onChange={(e: BaseSyntheticEvent) => setStore(e.target.value)} type="text" placeholder="Store Page"></input> 
                 </div>
                 <div className={style.link} style={{"backgroundColor": "rgb(40, 30, 60)"}}>
-                    <Image src={"/links/steam.png"} sizes="100%" width={0} height={0} style={{
+                    <Image src={"/links/steam.png"} alt="Steam" sizes="100%" width={0} height={0} style={{
                         "width": "3rem",
                         "height": "3rem"
                     }}></Image>

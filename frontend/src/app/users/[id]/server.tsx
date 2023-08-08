@@ -9,8 +9,35 @@ import Image from "next/image";
 import style from "./profile.module.scss";
 import Link from "next/link";
 import { calcTimeSinceMillis } from "@/utils/time";
-import { Logout } from "@/components/logout/logout";
-import { ProfileInteraction } from "./client";
+import { logout, Logout } from "@/components/logout/logout";
+import { ProfileInteraction, UserControls } from "./client";
+import {BaseSyntheticEvent} from "react";
+import {postNotification} from "@/components/notifications/notification";
+import {PublicUser} from "@/api/user/interfaces";
+import type { Metadata } from "next";
+
+type Props = {
+    params: { id: string }
+}
+
+export const generateMetadata = async ({params}: Props): Promise<Metadata> => {
+    const forum: Forum = await fetchForumInfo();
+
+    if (params.id === "me") {
+        return {
+           title: `${forum.community_name} - My Profile`,
+           description: `Your Personal Profile`
+        } 
+    }
+
+    const user = await fetchPublicProflie(params.id);
+
+    return {
+        title: `${forum.community_name} - ${user?.username || "unknown"}'s Profile`,
+        description: `${user?.profile_bio || ""}`
+    } 
+}
+
 
 const ProfileServer = async (props: { params: { id: string } }) => {
     const user = await fetchPersonalInformation();
@@ -90,13 +117,12 @@ const ProfileServer = async (props: { params: { id: string } }) => {
 
                     {(user !== undefined && user.public_id === userData.public_id) && 
                         <div className={style.controls}>
-                            <Link href="/users/settings">Edit Account</Link>
-                            <Logout></Logout>
+                            <UserControls userID={userData.public_id}></UserControls>
                         </div>
                     }
                 </div>
                 <div style={{"marginLeft": "1rem", "width": "100%"}}>
-                    <ProfileInteraction profile={userData}></ProfileInteraction>
+                    <ProfileInteraction profile={(userData as PublicUser)} forum={forum}></ProfileInteraction>
                 </div>
             </main>
         </>
