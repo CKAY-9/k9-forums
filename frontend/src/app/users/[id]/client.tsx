@@ -2,22 +2,18 @@
 
 import { BaseSyntheticEvent, useEffect, useState } from "react";
 import style from "./client.module.scss";
-import { Comment, FetchPostResponse, Forum, Post, Topic } from "@/api/forum/interfaces";
+import { Comment, Forum, Post } from "@/api/forum/interfaces";
 import { PublicUser, UserCommentsResponse, UserPostsResponse } from "@/api/user/interfaces";
 import axios, { AxiosResponse } from "axios";
-import { INTERNAL_API_URL, INTERNAL_CDN_URL } from "@/api/resources";
+import { INTERNAL_API_URL } from "@/api/resources";
 import Link from "next/link";
-import { calcTimeSinceMillis } from "@/utils/time";
-import { fetchPost, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import Image from "next/image";
-import { profile } from "console";
-import {fetchPublicProflie} from "@/api/user/fetch";
-import MarkdownPreview from "@uiw/react-markdown-preview";
 import {usePathname, useSearchParams, useRouter} from "next/navigation";
 import Loading from "@/components/loading/loading";
 import {postNotification} from "@/components/notifications/notification";
 import {logout} from "@/components/logout/logout";
 import PostPreview from "@/components/post/post";
+import CommentPreview from "@/components/comment/comment";
 
 const Posts = (props: { posts: Post[], profile: PublicUser }) => {
     return (
@@ -36,62 +32,6 @@ const Posts = (props: { posts: Post[], profile: PublicUser }) => {
     );
 }
 
-const Comment = (props: {comment: Comment}) => {
-    const [post, setPost] = useState<Post | undefined>(undefined);
-    const [postAuthor, setPostAuthor] = useState<PublicUser | undefined>(undefined);
-
-    useEffect(() => {
-        (async() => {
-            const p: AxiosResponse<FetchPostResponse> = await axios({
-                "url": INTERNAL_API_URL + "/post/get",
-                "method": "GET",
-                "params": {
-                    "post_id": props.comment.post_id
-                }
-            }); 
-
-            if (p.data.post === undefined) return;
-
-            setPost(p.data.post);
-
-            const a = await axios({
-                "url": INTERNAL_API_URL + "/user/public",
-                "method": "GET",
-                "params": {
-                    "public_id": p.data.post.user_id
-                }
-            }); 
-
-            if (a.data.userData === undefined) return;
-
-            setPostAuthor(a.data.userData);
-        })();
-    }, [props.comment.post_id]);
-
-    if (post === undefined || postAuthor === undefined) {
-        return (
-            <div className={style.comment}>
-                <span>Loading...</span>
-            </div>
-        );
-    }
-
-    return (
-        <Link href={`/post/${props.comment.post_id}`} className={style.comment}>
-            <div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
-                <h1>{post.title}</h1>
-                <span>Posted by <Link href={`/users/${postAuthor.public_id}`}>{postAuthor.username}</Link></span>
-                <Image alt="PFP" src={INTERNAL_CDN_URL + postAuthor.profile_picture} sizes="100%" width={0} height={0} style={{
-                    "width": "2rem",
-                    "height": "2rem",
-                    "borderRadius": "50%"
-                }}></Image>
-            </div>
-            <MarkdownPreview source={props.comment.content} style={{"backgroundColor": "transparent"}}></MarkdownPreview>
-        </Link>     
-    );
-}
-
 const Comments = (props: { comments: Comment[], profile: PublicUser }) => {
     return (
         <>
@@ -100,7 +40,7 @@ const Comments = (props: { comments: Comment[], profile: PublicUser }) => {
                 <div className={style.comments}>
                     {props.comments.map((comment: Comment, index: number) => {
                         return (
-                            <Comment comment={comment} key={index}></Comment>
+                            <CommentPreview comment={comment} key={index}></CommentPreview>
                         )
                     })}
                 </div>

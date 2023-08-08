@@ -105,7 +105,8 @@ const Header = (props: { forum: Forum, user: any | undefined, perms: number }) =
                         "borderBottomRightRadius": currentHover == 2 ? "0" : "1rem"
                     }}>Posts</h3>
                     <div id="postNav" className={style.menu} style={{ "opacity": currentHover == 2 ? "1" : "0" }}>
-                        <Link href="/post">All Posts</Link>
+                        <Link href="/posts">All Posts</Link>
+                        <Link href="/comments">All Comments</Link>
                     </div>
                 </div>
                 <div className={style.navElement} onMouseLeave={() => setCurrentHover(-1)}>

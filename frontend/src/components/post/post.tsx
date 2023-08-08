@@ -39,7 +39,7 @@ const PostPreview = (props: {post: Post}) => {
     }
 
     return (
-        <Link href={"/post/" + post.post_id} className={style.post}>
+        <Link href={"/posts/" + post.post_id} className={style.post}>
             <section style={{ "display": "flex", "alignItems": "center", "justifyContent": "space-between", "gap": "1rem" }}>
                 <h1>{post.title === "" ? "no title available" : post.title}</h1>
                 <section style={{ "display": "flex", "gap": "1rem" }}>

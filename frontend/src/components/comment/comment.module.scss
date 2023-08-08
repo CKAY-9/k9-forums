@@ -1,0 +1,16 @@
+.comment {
+    color: rgb(var(--text));
+    padding: 1rem 2rem;
+    border-radius: 1rem;
+    transition: 0.5s ease all;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+
+    &:hover {
+        transform: translateY(-0.5rem);
+        box-shadow: var(--shdw1);
+    }
+
+}
+
