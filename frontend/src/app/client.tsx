@@ -11,7 +11,7 @@ import { w3cwebsocket } from "websocket";
 import { INTERNAL_WS_HOST } from "@/websockets/resources";
 import axios from "axios";
 import { INTERNAL_API_URL, INTERNAL_CDN_URL } from "@/api/resources";
-import { PublicUser, User } from "@/api/user/interfaces";
+import { User } from "@/api/user/interfaces";
 
 const HomeTopic = (props: { topic: Topic }) => {
     const [topic, setTopic] = useState<Topic | undefined>(undefined);
@@ -27,7 +27,7 @@ const HomeTopic = (props: { topic: Topic }) => {
 
     return (
         <Link href={`/topic/${props.topic.topic_id}`} className={style.topic}>
-            <section style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+            <section className={style.info}> 
                 {props.topic.topic_picture !== "" &&
                     <Image src={INTERNAL_CDN_URL + props.topic.topic_picture} alt="" sizes="100%" width={0} height={0} style={{
                         "width": "3rem",
@@ -39,7 +39,7 @@ const HomeTopic = (props: { topic: Topic }) => {
                 <h2>{props.topic.name}</h2>
             </section>
             <p>{props.topic.about}</p>
-            <div style={{ "display": "flex", "alignItems": "center", "gap": "1rem" }}>
+            <div className={style.stats}> 
                 {topic?.posts !== undefined &&
                     <div style={{ "display": "flex", "alignItems": "center", "gap": "0.5rem", "opacity": "0.5" }}>
                         <Image src={"/svgs/comment.svg"} alt="Locked" sizes="100%" width={0} height={0} style={{
@@ -54,7 +54,6 @@ const HomeTopic = (props: { topic: Topic }) => {
         </Link>
     );
 }
-
 
 export const MOTD = (props: {forum: Forum}) => {
     return (

@@ -115,3 +115,10 @@ h1, h2, h3, h4, h5, h6 {
 		background-color: rgb(var(--800));
 	}
 }
+
+@media screen and (max-width: 500px) {
+    .container {
+        margin: 5rem 1rem;
+        padding: 0rem;
+    }
+}

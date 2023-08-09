@@ -108,3 +108,46 @@
         }
     }
 }
+
+@media screen and (max-width: 500px) {
+    .container {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin: 5rem 1rem;
+        padding: 0rem;
+    }
+   
+    .categories {
+        .category {
+            padding: 1rem;
+            font-size: 1rem;
+
+            .about {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        .topics {
+            .topic {
+                padding: 0.5rem;
+                text-align: center;
+
+                .info {
+                    display: flex;
+                    align-items: center;
+                    flex-direction: column;
+                }
+
+                .stats {
+                    display: flex;
+                    flex-direction: row;
+                    gap: 1rem;
+                    justify-content: center;
+                    align-items: center;
+                }
+            }
+        }
+    }
+}

@@ -16,6 +16,12 @@
     gap: 1rem;
     color: rgb(var(--text));
     border-right: 1px solid rgb(var(--text));
+
+    img {
+        width: 10rem;
+        height: 10rem;
+        border-radius: 50%;
+    }
 }
 
 .header {
@@ -67,6 +73,39 @@
 
         &:hover {
             opacity: 1;
+        }
+    }
+}
+
+@media screen and (max-width: 500px) {
+    .header {
+         
+    }
+
+    .body {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .user {
+        padding: 1rem;
+        margin-bottom: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: row;
+        color: rgb(var(--text));
+        border-right: none;
+        border-bottom: 1px solid rgb(var(--text));
+
+        h1, h2 {
+            margin: 0.33rem 0;
+        }
+        
+        img {
+            width: 5rem;
+            height: 5rem;
+            border-radius: 50%;
         }
     }
 }

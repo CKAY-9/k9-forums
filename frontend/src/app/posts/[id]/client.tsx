@@ -335,11 +335,7 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                 <Link href={`/users/${props.author?.public_id}`} className={style.user}>
                     {props.author?.profile_picture !== "" &&
                         <div>
-                            <Image src={INTERNAL_CDN_URL + props.author?.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                                "width": "10rem",
-                                "height": "10rem",
-                                "borderRadius": "50%"
-                            }}></Image>
+                            <Image src={INTERNAL_CDN_URL + props.author?.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0}></Image>
                         </div>
                     }
                     <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
