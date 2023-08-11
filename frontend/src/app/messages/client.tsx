@@ -13,6 +13,7 @@ import { w3cwebsocket } from "websocket";
 import { INTERNAL_WS_HOST } from "@/websockets/resources";
 import { getCookie } from "@/utils/cookie";
 import { postNotification } from "@/components/notifications/notification";
+import {createNewDM} from "@/api/messages/post";
 
 export class MessagesClient extends Component<{
     forum: Forum,
@@ -20,8 +21,6 @@ export class MessagesClient extends Component<{
     perms: number,
     channels: Channel[] | undefined
 }, {
-    ws: w3cwebsocket,
-    wsData: any,
     showingNewMessage: boolean,
     newMessageToUser: number,
     newMessageContent: string,
@@ -35,8 +34,6 @@ export class MessagesClient extends Component<{
     }) {
         super(props);
         this.state = {
-            ws: new w3cwebsocket(INTERNAL_WS_HOST),
-            wsData: "",
             showingNewMessage: false,
             newMessageToUser: -1,
             newMessageContent: "",
@@ -46,68 +43,13 @@ export class MessagesClient extends Component<{
         this._sendDM = this._sendDM.bind(this);
     }
 
-    componentDidMount(): void {
-        const server = new w3cwebsocket(INTERNAL_WS_HOST);
-
-        server.onerror = (err) => console.error(err);
-
-        server.onopen = () => {
-            this.setState({"ws": server});
-            server.send(JSON.stringify({
-                "type": "connect",
-                "data": {
-                    "user_id": this.props.user.public_id,
-                    "token": getCookie("token")
-                }
-            }));
-        }
-
-        server.onmessage = (msg) => {
-            const data = JSON.parse(msg.data.toString());
-            if (data.type === "dm") {
-                if (data.data.from !== this.props.user.public_id)
-                    return;
-            
-                if (this.props.channels === undefined) 
-                    return;
-
-                let flag = true;
-
-                for (let i = 0; i < (this.props.channels?.length || 0); i++) {
-                    if (this.props.channels[i].channel_id === data.channel_id) {
-                        flag = false;
-                    }
-                }
-
-                if (flag) {
-                    console.log(data);
-                    this.setState(old => {
-                        dms: [...old.dms, ];
-                    });                
-                }
-            }
-            this.setState({"wsData": data});
-        }
-
-        server.onclose = () => {
-            server.send(JSON.stringify({
-                "type": "disconnect",
-                "data": {}
-            }));
-        }
-    }
-
     async _sendDM(e: BaseSyntheticEvent) {
         e.preventDefault();
-
-        this.state.ws.send(JSON.stringify({
-            "type": "dm",
-            "data": {
-                "user_id": this.props.user.public_id,
-                "message": this.state.newMessageContent,
-                "target_id": this.state.newMessageToUser
-            }
-        }));
+        const res = await createNewDM({
+            content: this.state.newMessageContent,
+            receiver_id: this.state.newMessageToUser,
+            sender_id: this.props.user.public_id
+        });
     }
 
     render() {
@@ -115,7 +57,6 @@ export class MessagesClient extends Component<{
             <>
                 <div className={style.container}>
                     <nav className={style.nav}>
-                        {this.state.ws?.OPEN && <span>Connected to WS</span>}
                         <h2>Messages</h2>
                         <button onClick={() => this.setState({showingNewMessage: !this.state.showingNewMessage})}>
                             <Image src="/svgs/plus.svg" alt="New Usergroup" sizes="100%" width={0} height={0} style={{

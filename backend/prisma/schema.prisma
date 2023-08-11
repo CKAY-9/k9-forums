@@ -8,17 +8,18 @@ datasource db {
 }
 
 model Channel {
-  user_one_id Int
-  user_two_id Int
-  channel_id  Int @id @unique @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+  channel_id  String @id @unique 
 }
 
 model Message {
-  channel_id  Int
+  channel_id  String 
   content     String
-  message_id  Int    @id @unique @default(autoincrement())
+  message_id  Int      @id @unique @default(autoincrement())
   sender_id   Int
   receiver_id Int
+  sent_at     DateTime @default(now())
 }
 
 model Topic {
@@ -51,9 +52,9 @@ model Forum {
 }
 
 model CustomLink {
-  url             String
-  custom_link_id  Int     @id @unique @default(autoincrement())
-  type            Int // steam = 0, store = 1, discord = 2
+  url            String
+  custom_link_id Int    @id @unique @default(autoincrement())
+  type           Int // steam = 0, store = 1, discord = 2
 }
 
 model Usergroup {

@@ -63,8 +63,6 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
         commentor = generateEmptyProflie();
     }
 
-    console.log(commentor);
-
     // System
     if (props.author === undefined || commentor.public_id <= 0) {
 
@@ -79,21 +77,27 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
 
     return (
         <div className={style.body}>
-            <Link href={`/users/${commentor?.public_id}`} className={style.user}>
-                {commentor?.profile_picture !== "" &&
-                    <div>
-                        <Image src={INTERNAL_CDN_URL + commentor?.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                            "width": "10rem",
-                            "height": "10rem",
-                            "borderRadius": "50%"
-                        }}></Image>
+            <div className={style.userContainer}>
+                <Link href={`/users/${commentor?.public_id}`} className={style.user}>
+                    {commentor?.profile_picture !== "" &&
+                        <div>
+                            <Image src={INTERNAL_CDN_URL + commentor?.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                                "width": "10rem",
+                                "height": "10rem",
+                                "borderRadius": "50%"
+                            }}></Image>
+                        </div>
+                    }
+                    <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
+                        <h2>{commentor?.username}</h2>
+                        {commentor?.public_id === props.author?.public_id && <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}>Author</span>}
                     </div>
-                }
-                <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
-                    <h2>{commentor?.username}</h2>
-                    {commentor?.public_id === props.author?.public_id && <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}> / Author</span>}
-                </div>
-            </Link>
+                </Link>
+                <section className={style.info}>
+                    <p>{props.author?.profile_bio}</p>
+                    <span style={{"opacity": "0.5"}}>Joined {new Date(props.author?.time_created).toLocaleDateString()}</span>
+                </section>
+            </div>
             <div className={style.content} id={"mainBody" + index}>
                 {cIsEditing ?
                     <div style={{ "display": "flex", "flexDirection": "column", "gap": "1rem", "flex": "1" }}>
@@ -204,8 +208,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
         const _first = calcTimeSinceMillis(new Date(props.post?.first_posted.toString() || "").getTime(), date.getTime());
         const _second = calcTimeSinceMillis(new Date(props.post?.last_updated.toString() || "").getTime(), date.getTime());
 
-        setFirst(first);
-        setSecond(second);
+        setFirst(_first);
+        setSecond(_second);
 
         (async () => {
             const topic = await fetchTopicPostsAndActivity(props.post?.topic_id || 0);
@@ -332,17 +336,23 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                 </div>
             </header>
             <main className={style.body}>
-                <Link href={`/users/${props.author?.public_id}`} className={style.user}>
-                    {props.author?.profile_picture !== "" &&
-                        <div>
-                            <Image src={INTERNAL_CDN_URL + props.author?.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0}></Image>
+                <div className={style.userContainer}>
+                    <Link href={`/users/${props.author?.public_id}`} className={style.user}>
+                        {props.author?.profile_picture !== "" &&
+                            <div>
+                                <Image src={INTERNAL_CDN_URL + props.author?.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0}></Image>
+                            </div>
+                        }
+                        <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
+                            <h2>{props.author?.username}</h2>
+                            <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}>Author</span>
                         </div>
-                    }
-                    <div style={{ "display": "flex", "flexDirection": "column", "alignItems": "center", "gap": "0.5rem" }}>
-                        <h2>{props.author?.username}</h2>
-                        <span style={{ "color": "rgb(var(--accent))", "pointerEvents": "none" }}>Author</span>
-                    </div>
-                </Link>
+                    </Link>
+                    <section className={style.info}>
+                        <p>{props.author?.profile_bio}</p>
+                        <span style={{"opacity": "0.5"}}>Joined {new Date(props.author?.time_created).toLocaleDateString()}</span>
+                    </section>
+                </div>
                 <div className={style.content} id="mainBody">
                     {editingPost ?
                         <div style={{ "display": "flex", "flexDirection": "column", "gap": "1rem" }}>

@@ -14,8 +14,6 @@ export type Message = {
 
 export type Channel = {
     channel_id: number,
-    user_one_id: number,
-    last_activity: Date,
-    user_two_id: number,
-    messages: Message[]
+    sender_id: number,
+    receiver_id: number
 }

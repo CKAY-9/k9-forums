@@ -67,7 +67,12 @@
 
 @media screen and (max-width: 500px) {
     .header {
-        display: grid;
-        grid-template-columns: 100%;
+        margin: 3rem 1rem;
+
+        section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        } 
     }
 }

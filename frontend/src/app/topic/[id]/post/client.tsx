@@ -42,7 +42,7 @@ export const NewPostCreation = (props: {
 
         if (res !== undefined) {
             postNotification("Posted new post with title " + title);
-            window.location.href = `/post/${res.post_id}`;
+            window.location.href = `/posts/${res.post_id}`;
             return;
         }
 

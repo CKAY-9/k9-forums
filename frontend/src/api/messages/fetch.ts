@@ -6,7 +6,7 @@ import { ChatHistoryResponse } from "./interfaces";
 export const fetchChatHistory = async () => {
     try {
         const req: AxiosResponse<ChatHistoryResponse> = await axios({
-            "url": INTERNAL_API_URL + "/messages/history",
+            "url": INTERNAL_API_URL + "/messages/me",
             "method": "GET",
             "headers": {
                 "Authorization": getCookie("token")
