@@ -13,7 +13,7 @@
         <img src="./assets/showcase/profile.png" width="400" />
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
-        <img src="./assets/showcase/new-comment.png.png" width="400" />
+        <img src="./assets/showcase/new-comment.png" width="400" />
         <img src="./assets/showcase/new-post.png" width="400" />
     </div>
     <div style="display: flex; align-items: center; justify-content: center; gap: 1rem;">
