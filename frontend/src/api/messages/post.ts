@@ -15,7 +15,9 @@ export const createNewDM = async (data: {
                 "Authorization": getCookie("token")
             },
             "data": data
-        })
+        });
+
+        return req.data;
     } catch (ex) {
         return undefined;
     }

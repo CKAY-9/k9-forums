@@ -15,7 +15,7 @@ export class MessagesController {
 
         const sender = await prisma.user.findUnique({
             where: {
-                public_id: sender_id
+                public_id: Number.parseInt(body.sender_id)
             }
         });
 
@@ -25,7 +25,7 @@ export class MessagesController {
 
         const receiver = await prisma.user.findUnique({
             where: {
-                public_id: receiver_id
+                public_id: Number.parseInt(body.receiver_id)
             } 
         });
 
@@ -77,7 +77,7 @@ export class MessagesController {
         if (channel === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find channel"});
         }
-        if (channel.sender_id !== user.public_id) {
+        if (channel.sender_id !== user.public_id && channel.receiver_id !== user.public_id) {
             return res.status(HttpStatus.UNAUTHORIZED).json({"message": "You cannot view these messages"});
         }
 
@@ -103,10 +103,12 @@ export class MessagesController {
             }
         });
 
-        if (channels === null) {
-            return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find channels"});
-        }
+        const receieverChannels = await prisma.channel.findMany({
+            where: {
+                receiver_id: user.public_id
+            }
+        });
 
-        return res.status(HttpStatus.OK).json({"message": "Fetched users messages", "channels": channels});
+        return res.status(HttpStatus.OK).json({"message": "Fetched users messages", "channels": channels, "receiverChannels": receieverChannels});
     }
 }

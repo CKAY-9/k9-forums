@@ -30,7 +30,7 @@ const MessagesServer = async () => {
     return (
         <>
             <Header user={user} forum={forum} perms={perms}></Header>
-            <MessagesClient channels={chatHistory?.channels} user={user} forum={forum} perms={perms}></MessagesClient>
+            <MessagesClient channels={chatHistory?.channels} rChannels={chatHistory?.receiverChannels} user={user} forum={forum} perms={perms}></MessagesClient>
         </>
     );
 }

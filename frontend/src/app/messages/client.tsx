@@ -15,29 +15,198 @@ import { getCookie } from "@/utils/cookie";
 import { postNotification } from "@/components/notifications/notification";
 import {createNewDM} from "@/api/messages/post";
 
+const Channel = (props: {channel: Channel, user: User, onClick: Function}) => {
+    const [userOne, setUserOne] = useState<PublicUser | undefined>(undefined);
+    const [userTwo, setUserTwo] = useState<PublicUser | undefined>(undefined);
+
+    useEffect(() => {
+        if (userOne === undefined) {
+            (async () => {
+                const uotemp: AxiosResponse<PublicUserResponse> = await axios({
+                    "url": INTERNAL_API_URL + "/user/public",
+                    "method": "GET",
+                    "params": {
+                        "public_id": props.channel.sender_id
+                    }
+                });
+                setUserOne(uotemp.data.userData);
+            })();
+        }
+        if (userTwo === undefined) {
+            (async () => {
+                const uttemp: AxiosResponse<PublicUserResponse> = await axios({
+                    "url": INTERNAL_API_URL + "/user/public",
+                    "method": "GET",
+                    "params": {
+                        "public_id": props.channel.receiver_id
+                    }
+                });
+                setUserTwo(uttemp.data.userData);
+            })();
+        }
+    })
+
+    if (userOne === undefined || userTwo === undefined) {
+        return (
+            <></>
+        );
+    }
+
+    return (
+        <div>
+            <button onClick={() => props.onClick()}>
+                {userOne.public_id === props.user.public_id ?
+                    <div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+                        <div>
+                            <Image src={INTERNAL_CDN_URL + userTwo.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                                "width": "2rem",
+                                "height": "2rem",
+                                "borderRadius": "50%"
+                            }}></Image>
+                        </div>
+                        <span>{userTwo.username}</span>
+                    </div> :
+                    <div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
+                        <div>
+                            <Image src={INTERNAL_CDN_URL + userOne.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
+                                "width": "2rem",
+                                "height": "2rem",
+                                "borderRadius": "50%"
+                            }}></Image>
+                        </div>
+                        <span>{userOne.username}</span>
+                    </div>
+                }
+            </button>
+        </div>
+    );
+}
+
+const ChannelChat = (props: {channel: Channel, user: User}) => {
+    const [messages, setMessages] = useState<any[]>([]);
+    const [sender, setSender] = useState<PublicUser>();
+    const [receiver, setReceiever] = useState<PublicUser>();
+    const [newMessage, setNewMessage] = useState<string>("");
+
+    useEffect(() => {
+        (async() => {
+            const reqSender = await axios({
+                "url": INTERNAL_API_URL + "/user/public",
+                "method": "GET",
+                "params": {
+                    "public_id": props.channel.sender_id.toString()
+                }
+            });
+
+            setSender(reqSender.data.userData);
+
+            const reqReceiver = await axios({
+                "url": INTERNAL_API_URL + "/user/public",
+                "method": "GET",
+                "params": {
+                    "public_id": props.channel.receiver_id.toString()
+                }
+            });
+
+            setReceiever(reqReceiver.data.userData);
+
+            const reqMessages = await axios({
+                "url": INTERNAL_API_URL + "/messages/channelMessages",
+                "method": "GET",
+                "params": {
+                    "channel_id": props.channel.channel_id
+                },
+                "headers": {
+                    "Authorization": getCookie("token")
+                }
+            });
+
+            setMessages(reqMessages.data.messages);
+         })();
+    }, [props.channel.channel_id]);
+
+    if (receiver === undefined || sender === undefined) {
+        return (
+           <>
+
+           </>
+        );
+    }
+
+    const sendMessage = async (e: BaseSyntheticEvent) => {
+        e.preventDefault();
+        const res = await createNewDM({
+            "content": newMessage,
+            "sender_id": props.user.public_id,
+            "receiver_id": props.channel.sender_id
+        });
+
+        setMessages(old => [...old, res.message]);
+    }
+
+    return (
+        <div className={style.chat}>
+            <header className={style.header}>
+                <Image src={INTERNAL_CDN_URL + receiver.profile_picture} alt="PFP" sizes="100%" width={0} height={0} style={{
+                    "width": "2rem",
+                    "height": "2rem",
+                    "borderRadius": "50%"
+                }} />
+                <h2>{receiver.username}</h2>
+            </header>
+            <section className={style.messages}>
+                {messages?.map((message, index) => {
+                    if (message.sender_id === props.user.public_id) {
+                        return (
+                            <div key={index} className={`${style.message} ${style.sender}`}>
+                                {message.content}
+                            </div>
+                        )
+                    }
+
+                    return (
+                        <div key={index} className={`${style.message} ${style.receiver}`}>
+                            {message.content}
+                        </div>       
+                    );
+                })}
+            </section>
+            <section className={style.controls}>
+                <textarea onChange={(e: BaseSyntheticEvent) => setNewMessage(e.target.value)} placeholder="Your Message" cols={60} rows={10}></textarea>
+                <button onClick={sendMessage}>Send</button>
+            </section>
+        </div>     
+    );
+}
+
 export class MessagesClient extends Component<{
     forum: Forum,
     user: User,
     perms: number,
     channels: Channel[] | undefined
+    rChannels: Channel[] | undefined
 }, {
     showingNewMessage: boolean,
     newMessageToUser: number,
     newMessageContent: string,
-    dms: Channel[]
+    dms: Channel[],
+    activeChat: Channel | undefined
 }> {
     constructor(props: {
         forum: Forum,
         user: User,
         perms: number,
-        channels: Channel[] | undefined
+        channels: Channel[] | undefined,
+        rChannels: Channel[] | undefined
     }) {
         super(props);
+        console.log(props);
         this.state = {
             showingNewMessage: false,
             newMessageToUser: -1,
             newMessageContent: "",
-            dms: this.props.channels || []
+            dms: this.props.channels || [],
+            activeChat: undefined
         }
 
         this._sendDM = this._sendDM.bind(this);
@@ -50,6 +219,10 @@ export class MessagesClient extends Component<{
             receiver_id: this.state.newMessageToUser,
             sender_id: this.props.user.public_id
         });
+    }
+
+    setActiveChat(channel: Channel) {
+        this.setState({activeChat: channel, showingNewMessage: false});
     }
 
     render() {
@@ -65,72 +238,29 @@ export class MessagesClient extends Component<{
                                 "filter": "invert(1)"
                             }}></Image>
                         </button>
-                        {(this.props.channels === undefined || this.props.channels.length <= 0) &&
-                            <span>Chat history not found</span>
-                        }
                         {(this.props.channels !== undefined && this.props.channels.length >= 1) &&
                             <>
-                                {this.props.channels.map(async (channel: Channel, index: number) => {
-                                    const [userOne, setUserOne] = useState<PublicUser | undefined>(undefined);
-                                    const [userTwo, setUserTwo] = useState<PublicUser | undefined>(undefined);
-
-                                    useEffect(() => {
-                                        if (userOne === undefined) {
-                                            (async () => {
-                                                const uotemp: AxiosResponse<PublicUserResponse> = await axios({
-                                                    "url": INTERNAL_API_URL + "/user/public",
-                                                    "method": "GET"
-                                                });
-                                                setUserOne(uotemp.data.userData);
-                                            })();
+                                {this.props.channels.map((channel: Channel, index: number) => {
+                                    for (let i = 0; i < this.props.rChannels?.length; i++) {
+                                        if (this.props.rChannels[i].sender_id === channel.receiver_id) {
+                                            break;
                                         }
-                                        if (userTwo === undefined) {
-                                            (async () => {
-                                                const uttemp: AxiosResponse<PublicUserResponse> = await axios({
-                                                    "url": INTERNAL_API_URL + "/user/public",
-                                                    "method": "GET"
-                                                });
-                                                setUserTwo(uttemp.data.userData);
-                                            })();
-                                        }
-                                    })
-
-                                    if (userOne === undefined || userTwo === undefined || this.props.channels === undefined) {
-                                        return (
-                                            <></>
-                                        );
                                     }
 
                                     return (
-                                        <div key={index}>
-                                            <button>
-                                                {userOne.public_id === this.props.user.public_id ?
-                                                    <div key={index} style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
-                                                        <div>
-                                                            <Image src={INTERNAL_CDN_URL + userTwo.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                                                                "width": "2rem",
-                                                                "height": "2rem",
-                                                                "borderRadius": "50%"
-                                                            }}></Image>
-                                                        </div>
-                                                        <span>{userTwo.username}</span>
-                                                    </div> :
-                                                    <div style={{"display": "flex", "alignItems": "center", "gap": "1rem"}}>
-                                                        <div>
-                                                            <Image src={INTERNAL_CDN_URL + userOne.profile_picture} alt="Profile Picture" sizes="100%" width={0} height={0} style={{
-                                                                "width": "2rem",
-                                                                "height": "2rem",
-                                                                "borderRadius": "50%"
-                                                            }}></Image>
-                                                        </div>
-                                                        <span>{userOne.username}</span>
-                                                    </div>
-                                                }
-                                                {this.props.channels[index].messages[this.props.channels[index].messages.length - 1].content}
-                                            </button>
-                                        </div>
+                                        <Channel key={index} onClick={() => this.setActiveChat(channel)} channel={channel} user={this.props.user}></Channel>     
                                     );
                                 })}
+                            </>
+                        }
+                        {(this.props.rChannels !== undefined && this.props.rChannels.length >= 1) &&
+                            <>
+                                {this.props.rChannels.map((channel: Channel, index: number) => {
+                                    return (
+                                        <Channel key={index} onClick={() => this.setActiveChat(channel)} channel={channel} user={this.props.user}></Channel>     
+                                    );
+                                })}
+
                             </>
                         }
                     </nav>
@@ -144,8 +274,9 @@ export class MessagesClient extends Component<{
                                 <button onClick={this._sendDM}>Send</button>
                             </div>
                         }
-                        {!this.state.showingNewMessage &&
+                        {(!this.state.showingNewMessage && this.state.activeChat !== undefined) &&
                             <>
+                                <ChannelChat user={this.props.user} channel={this.state.activeChat}></ChannelChat>
                             </>
                         }
                     </div>

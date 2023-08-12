@@ -1,6 +1,7 @@
 export interface ChatHistoryResponse {
     message: string,
-    channels: Channel[]
+    channels: Channel[],
+    receiverChannels: Channel[]
 }
 
 export type Message = {

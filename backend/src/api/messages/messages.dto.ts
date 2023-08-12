@@ -1,5 +1,5 @@
 export class NewMessageDTO {
-    sender_id: number;
-    receiver_id: number;
+    sender_id: string;
+    receiver_id: string;
     content: string;
 }

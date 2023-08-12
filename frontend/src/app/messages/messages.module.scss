@@ -29,3 +29,53 @@
     padding: 1rem 2rem;
     border-radius: 1rem;
 }
+
+.chat {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+
+    .header {
+        border-bottom: 1px solid rgb(var(--text));
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .messages {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        
+        .message {
+            padding: 1rem;
+            border-radius: 1rem;
+
+            &.sender {
+                background-color: rgb(var(--700));
+            }
+
+            &.receiver {
+                background-color: rgb(100, 100, 200);
+            }
+        }
+    }
+
+    .controls {
+        display: flex;
+        flex-direction: row;
+        gap: 1rem;
+        align-items: flex-start;
+
+        textarea {
+            flex: 1;
+            background-color: transparent;
+
+            &:hover, &:active, &:focus {
+                background-color: rgb(var(--700));
+            }
+        }
+    }
+}
