@@ -28,6 +28,45 @@ export class VoteController {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find target"});
         }
 
+        const allUserVotes = await prisma.vote.findMany({
+            where: {
+                user_id: user.public_id
+            }
+        });
+    
+        for (let i = 0; i < allUserVotes.length; i++) {
+            let existingVote = await prisma.vote.findUnique({
+                where: {
+                    vote_id: allUserVotes[i].vote_id,
+                    comment_id: comment.comment_id
+                }
+            });
+
+            if (existingVote !== null) {
+                const updateExisting = await prisma.vote.update({
+                    where: {
+                        vote_id: existingVote.vote_id
+                    },
+                    data: {
+                        type: body.type 
+                    }
+                });
+
+                const repUpdate = await prisma.user.update({
+                    where: {
+                        public_id: comment.user_id || 0
+                    },
+                    data: {
+                        reputation: {
+                            "increment": body.type 
+                        }
+                    }
+                });
+
+                return res.status(HttpStatus.OK).json({"message": "Updated vote status"});
+            }
+        }
+
         const voteInsert = await prisma.vote.create({
             data: {
                 comment_id: comment.comment_id,
@@ -83,6 +122,45 @@ export class VoteController {
 
         if (post === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find target"});
+        }
+
+        const allUserVotes = await prisma.vote.findMany({
+            where: {
+                user_id: user.public_id
+            }
+        });
+
+        for (let i = 0; i < allUserVotes.length; i++) {
+            let existingVote = await prisma.vote.findUnique({
+                where: {
+                    vote_id: allUserVotes[i].vote_id,
+                    post_id: allUserVotes[i].post_id
+                }
+            });
+
+            if (existingVote !== null) {
+                const voteUpdate = await prisma.vote.update({
+                    where: {
+                        vote_id: existingVote.vote_id
+                    },
+                    data: {
+                        type: body.type === 0 ? 0 : existingVote.type * -1 
+                    }
+                });
+
+                const repUpdate = await prisma.user.update({
+                    where: {
+                        public_id: post.user_id || 0
+                    },
+                    data: {
+                        reputation: {
+                            "increment": body.type === 0 ? -1 : 1 
+                        }
+                    }
+                });
+
+                return res.status(HttpStatus.OK).json({"message": "Updated vote status"});
+            }
         }
 
         const voteInsert = await prisma.vote.create({
