@@ -20,6 +20,7 @@ const Categories = (props: {forum: Forum}) => {
 
         fSetCategories(fCategories.filter((value, index) => value.category_id !== newCategory.category_id));       
         fSetCategories(old => [...old, res.category]); 
+        props.forum.categories?.push(res.category);
 
         postNotification("Created new category with ID " + res.category.category_id);
         props.forum.categories = fCategories;

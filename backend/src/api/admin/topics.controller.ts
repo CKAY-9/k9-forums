@@ -54,17 +54,6 @@ export class TopicController {
 
         topic.posts = topicPosts;
 
-        const topicUpdate = await prisma.topic.update({
-            where: {
-                topic_id: Number.parseInt(query.topic_id)
-            },
-            data: {
-                posts: {
-                    set: topicPosts
-                }
-            }
-        });
-
         return res.status(HttpStatus.OK).json({"message": "Got topic info", "topic": topic});
     }
 

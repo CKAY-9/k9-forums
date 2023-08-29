@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
 import { getCookie } from "@/utils/cookie"
-import { CreatePostResponse, NewCommentResponse, Vote } from "./interfaces"
+import { CreatePostResponse, NewCommentResponse } from "./interfaces"
 
 export const createNewPost = async (data: {
     title: string,
@@ -52,7 +52,6 @@ export const voteOnPost = async (data: {
     voteType: -1 | 0 | 1
     targetID: number,
     userID: number,
-    votes: Vote[]
 }) => {
     try {
         const req = await axios({

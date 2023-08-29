@@ -41,22 +41,13 @@ export class PostController {
                 pinned: false,
                 topic_id: topic.topic_id,
                 last_updated: new Date(),
-                template_allowed: body.template_allowed
+                template_allowed: body.template_allowed,
+                likes: [],
+                dislikes: []
             }
         });
 
         topic.posts.push(postCreate);
-
-        const topicUpdate = await prisma.topic.update({
-            where: {
-                topic_id: topic.topic_id
-            },
-            data: {
-                posts: {
-                    set: topic.posts
-                }
-            }
-        });
 
         return res.status(HttpStatus.OK).json({"message": "Created new post", "post_id": postCreate.post_id});
     }
@@ -132,12 +123,6 @@ export class PostController {
             }
         });
 
-        const deleteVotes = await prisma.vote.deleteMany({
-            where: {
-                post_id: post.post_id
-            }
-        });
-
         const deletePost = await prisma.post.delete({
             where: {
                 post_id: body.post_id,
@@ -162,7 +147,8 @@ export class PostController {
                 User: true,
                 closed: true,
                 pinned: true,
-                votes: true,
+                likes: true,
+                dislikes: true,
                 comments: true,
                 first_posted: true,
                 last_updated: true,
@@ -185,17 +171,6 @@ export class PostController {
         });
 
         post.comments = comments;
-
-        const postUpdate = await prisma.post.update({
-            where: {
-                post_id: post.post_id
-            },
-            data: {
-                comments: {
-                    set: comments
-                }
-            }
-        });
 
         return res.status(HttpStatus.OK).json({"message": "Got post", "post": post});
     }
@@ -327,6 +302,8 @@ export class PostController {
                 content: newCommentDTO.content,
                 user_id: Number.parseInt(newCommentDTO.user_id),
                 post_id: Number.parseInt(newCommentDTO.post_id),
+                likes: [],
+                dislikes: []
             }
         });
 
@@ -337,9 +314,6 @@ export class PostController {
                 post_id: Number.parseInt(newCommentDTO.post_id)
             },
             data: {
-                comments: {
-                    set: post.comments
-                },
                 last_updated: {
                     set: new Date()
                 }
@@ -399,12 +373,6 @@ export class PostController {
         if (comment === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find comment"});
         }
-
-        const deleteVotes = await prisma.vote.deleteMany({
-            where: {
-                comment_id: comment.comment_id 
-            }
-        });
 
         const deleteComment = await prisma.comment.delete({
             where: {

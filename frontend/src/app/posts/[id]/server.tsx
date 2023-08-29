@@ -1,5 +1,5 @@
 import { fetchPermissionLevel } from "@/api/admin/usergroup/fetch";
-import { fetchForumInfo, fetchPost } from "@/api/forum/fetch";
+import { fetchForumInfo, fetchPost, fetchTopicPostsAndActivity } from "@/api/forum/fetch";
 import { Forum } from "@/api/forum/interfaces";
 import { fetchPersonalInformation, fetchPublicProflie } from "@/api/user/fetch";
 import Header from "@/components/header/header"
@@ -51,11 +51,18 @@ const PostServer = async (props: { params: { id: string } }) => {
         comment.posted_at = new Date(comment.posted_at);
     }
 
+    const topic = await fetchTopicPostsAndActivity(post.post?.post_id || 0);
+    
+    // time stuff
+    const date = new Date();
+    const first = new Date(post.post?.first_posted || 0);
+    const second = new Date(post.post?.last_updated || 0);
+
     return (
         <>
             <Header forum={forum} user={user} perms={perms}></Header>
             <main className="container">
-                <PostInteraction perms={perms} author={author} post={post.post} user={user}></PostInteraction>
+                <PostInteraction topic={topic?.topic} perms={perms} author={author} post={post.post} user={user} now={date} first={first} second={second}></PostInteraction>
             </main>
         </>
     )

@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Req, Res, Body, HttpStatus } from "@nestjs/common";
+import { Controller, Post, Req, Res, Body, HttpStatus } from "@nestjs/common";
 import { validateUser } from "../user/user.utils";
 import { Response } from "express";
 import { VoteOnDTO } from "./forum.dto";
@@ -17,85 +17,112 @@ export class VoteController {
             where: {
                 comment_id: Number.parseInt(body.target_id)
             },
-            select: {
-                comment_id: true,
-                votes: true,
-                user_id: true
-            }
         });
 
         if (comment === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find target"});
         }
 
-        const allUserVotes = await prisma.vote.findMany({
-            where: {
-                user_id: user.public_id
-            }
-        });
-    
-        for (let i = 0; i < allUserVotes.length; i++) {
-            let existingVote = await prisma.vote.findUnique({
-                where: {
-                    vote_id: allUserVotes[i].vote_id,
-                    comment_id: comment.comment_id
+        switch (body.type) {
+            case 1:
+                if (comment.likes.includes(user.public_id))
+                    break;    
+
+                if (comment.dislikes.includes(user.public_id)) {
+                    comment.dislikes.splice(comment.dislikes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: comment.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                increment: 1
+                            } 
+                        }
+                    });
                 }
-            });
-
-            if (existingVote !== null) {
-                const updateExisting = await prisma.vote.update({
-                    where: {
-                        vote_id: existingVote.vote_id
-                    },
-                    data: {
-                        type: body.type 
-                    }
-                });
-
-                const repUpdate = await prisma.user.update({
+                await prisma.user.update({
                     where: {
                         public_id: comment.user_id || 0
                     },
                     data: {
                         reputation: {
-                            "increment": body.type 
-                        }
+                            increment: 1
+                        } 
                     }
                 });
 
-                return res.status(HttpStatus.OK).json({"message": "Updated vote status"});
-            }
+                comment.likes.push(user.public_id);
+                break; 
+            case -1:
+                if (comment.dislikes.includes(user.public_id))
+                    break;    
+
+                if (comment.likes.includes(user.public_id)) {
+                    comment.likes.splice(comment.likes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: comment.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                decrement: 1
+                            } 
+                        }
+                    });
+                }
+
+                await prisma.user.update({
+                    where: {
+                        public_id: comment.user_id || 0
+                    },
+                    data: {
+                        reputation: {
+                            decrement: 1
+                        }
+                    }
+                });
+            
+                comment.dislikes.push(user.public_id);
+                break;
+            default:
+                if (comment.likes.includes(user.public_id)) {
+                    comment.likes.splice(comment.likes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: comment.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                decrement: 1
+                            }
+                        }
+                    });
+                }
+                
+                if (comment.dislikes.includes(user.public_id)) {
+                    comment.dislikes.splice(comment.dislikes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: comment.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                increment: 1
+                            }
+                        }
+                    });
+                }
+
+                break;
         }
-
-        const voteInsert = await prisma.vote.create({
-            data: {
-                comment_id: comment.comment_id,
-                type: body.type,
-                user_id: user.public_id
-            }
-        });
-
-        comment.votes.push(voteInsert);
-
-        const commentUpdate = await prisma.comment.update({
+        prisma.comment.update({
             where: {
                 comment_id: Number.parseInt(body.target_id)
             },
             data: {
-                votes: {
-                    set: comment.votes
-                }
-            }
-        });
-
-        const repUpdate = await prisma.user.update({
-            where: {
-                public_id: comment.user_id || 0
-            },
-            data: {
-                reputation: {
-                    "increment": body.type
-                }
+                likes: comment.likes,
+                dislikes: comment.dislikes
             }
         });
 
@@ -108,91 +135,116 @@ export class VoteController {
         if (user === undefined) {
             return res.status(HttpStatus.UNAUTHORIZED).json({"message": "Token couldn't be verified"});
         }
-
         const post = await prisma.post.findUnique({
             where: {
                 post_id: Number.parseInt(body.target_id)
             },
-            select: {
-                post_id: true,
-                votes: true,
-                user_id: true
-            }
         });
 
         if (post === null) {
             return res.status(HttpStatus.NOT_FOUND).json({"message": "Couldn't find target"});
         }
 
-        const allUserVotes = await prisma.vote.findMany({
-            where: {
-                user_id: user.public_id
-            }
-        });
+        switch (body.type) {
+            case 1:
+                if (post.likes.includes(user.public_id))
+                    break;    
 
-        for (let i = 0; i < allUserVotes.length; i++) {
-            let existingVote = await prisma.vote.findUnique({
-                where: {
-                    vote_id: allUserVotes[i].vote_id,
-                    post_id: allUserVotes[i].post_id
+                if (post.dislikes.includes(user.public_id)) {
+                    post.dislikes.splice(post.dislikes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: post.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                increment: 1
+                            }
+                        }
+                    });
                 }
-            });
-
-            if (existingVote !== null) {
-                const voteUpdate = await prisma.vote.update({
-                    where: {
-                        vote_id: existingVote.vote_id
-                    },
-                    data: {
-                        type: body.type === 0 ? 0 : existingVote.type * -1 
-                    }
-                });
-
-                const repUpdate = await prisma.user.update({
+                await prisma.user.update({
                     where: {
                         public_id: post.user_id || 0
                     },
                     data: {
                         reputation: {
-                            "increment": body.type === 0 ? -1 : 1 
+                            increment: 1
+                        }
+                    }
+                });
+                post.likes.push(user.public_id);
+                break; 
+            case -1:
+                if (post.dislikes.includes(user.public_id))
+                    break;    
+
+                if (post.likes.includes(user.public_id)) {
+                    post.likes.splice(post.likes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: post.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                decrement: 1
+                            }
+                        }
+                    });
+                }
+
+                await prisma.user.update({
+                    where: {
+                        public_id: post.user_id || 0
+                    },
+                    data: {
+                        reputation: {
+                            decrement: 1
                         }
                     }
                 });
 
-                return res.status(HttpStatus.OK).json({"message": "Updated vote status"});
-            }
+                post.dislikes.push(user.public_id);
+                break;
+            default:
+                if (post.likes.includes(user.public_id)) {
+                    post.likes.splice(post.likes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: post.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                decrement: 1
+                            }
+                        }
+                    });
+                }
+                
+                if (post.dislikes.includes(user.public_id)) {
+                    post.dislikes.splice(post.dislikes.indexOf(user.public_id));
+                    await prisma.user.update({
+                        where: {
+                            public_id: post.user_id || 0
+                        },
+                        data: {
+                            reputation: {
+                                increment: 1
+                            }
+                        }
+                    });
+                }
+
+                break;
         }
 
-        const voteInsert = await prisma.vote.create({
-            data: {
-                post_id: post.post_id,
-                type: body.type,
-                user_id: user.public_id
-            }
-        });
-
-        post.votes.push(voteInsert);
-
-        const postUpdate = await prisma.post.update({
+        await prisma.post.update({
             where: {
-                post_id: Number.parseInt(body.target_id)
+                post_id: post.post_id
             },
             data: {
-                votes: {
-                    set: post.votes
-                },
-                last_updated: new Date()
-            }
-        });
-
-        const repUpdate = await prisma.user.update({
-            where: {
-                public_id: post.user_id || 0
-            },
-            data: {
-                reputation: {
-                    "increment": body.type
-                }
+                likes: post.likes,
+                dislikes: post.dislikes
             }
         });
 

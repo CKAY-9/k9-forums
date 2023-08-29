@@ -1,6 +1,6 @@
 "use client";
 
-import { Comment, Post, Topic, Vote } from "@/api/forum/interfaces";
+import { Comment, Post, Topic } from "@/api/forum/interfaces";
 import { PublicUser, User } from "@/api/user/interfaces";
 import style from "./post.module.scss";
 import Image from "next/image";
@@ -21,7 +21,8 @@ import { lockPostWithID, pinPostWithID, updateComment, updatePost } from "@/api/
 const Comment = (props: {comment: Comment, user: User | undefined, author: PublicUser | undefined, index: number, post: Post | undefined, perms: number}) => {
     const comment = props.comment;
     const index = props.index;
-    const [votesOnThis, setVotesOnThis] = useState<Vote[]>(comment.votes || []);
+    const [likes, setLikes] = useState<number[]>(comment.likes);
+    const [dislikes, setDislikes] = useState<number[]>(comment.dislikes);
     const [cEdit, cSetEdit] = useState<string>(comment.content);
     const [cIsEditing, cSetIsEditing] = useState<boolean>(false);
 
@@ -65,7 +66,6 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
 
     // System
     if (props.author === undefined || commentor.public_id <= 0) {
-
         return (
             <div style={{"padding": "1rem 2rem", "backgroundColor": "rgb(var(--800))", "borderRadius": "1rem", "textAlign": "center", "pointerEvents": "none"}}> 
                 <span style={{"pointerEvents": "none"}}>{new Date(comment.posted_at).toDateString()}</span>
@@ -95,6 +95,7 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
                 </Link>
                 <section className={style.info}>
                     <p>{props.author?.profile_bio}</p>
+                    <span>Reputation: {props.author.reputation}</span>
                     <span style={{"opacity": "0.5"}}>Joined {new Date(props.author?.time_created).toLocaleDateString()}</span>
                 </section>
             </div>
@@ -116,20 +117,30 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
                     {props.user !== undefined &&
                         <>
                             <button onClick={async (e: BaseSyntheticEvent) => {
+                                if (props.user === undefined || props.post === undefined) 
+                                    return;
+
+                                if (likes.includes(props.user.public_id)) {
+                                    await voteOnPost({
+                                        "postType": "comment",
+                                        "targetID": props.post.post_id,
+                                        "userID": props.user.public_id,
+                                        "voteType": 0,
+                                    });
+                                    setLikes(likes.filter((val) => val !== props.user?.public_id));
+                                    return;
+                                }
+
                                 await voteOnPost({
                                     "postType": "comment",
-                                    "targetID": props.post?.post_id || 0,
-                                    "userID": props.user?.public_id || 0,
+                                    "targetID": props.post.post_id,
+                                    "userID": props.user.public_id,
                                     "voteType": 1,
-                                    "votes": votesOnThis
                                 });
-
-                                setVotesOnThis(old => [...old, {
-                                    "post_id": props.post?.post_id || 0,
-                                    "type": 1,
-                                    "user_id": props.user?.public_id || 0
-                                }])
-                                postNotification("Upvoted post!");
+                                
+                                setDislikes(dislikes.filter((val) => val != props.user.public_id));
+                                setLikes(old => [...old, props.user.public_id]);
+                                postNotification("Upvoted comment!");
                             }}>
                                 <Image src="/svgs/up.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
                                     "width": "1rem",
@@ -137,22 +148,32 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
                                     "filter": "invert(1)"
                                 }}></Image>
                             </button>
-                            <span>{calcRunningTotalVotes(votesOnThis)}</span>
+                            <span>{likes.length - dislikes.length}</span>
                             <button onClick={async (e: BaseSyntheticEvent) => {
+                                if (props.user === undefined || props.post === undefined) 
+                                    return;
+
+                                if (dislikes.includes(props.user.public_id)) {
+                                    await voteOnPost({
+                                        "postType": "comment",
+                                        "targetID": props.post.post_id,
+                                        "userID": props.user.public_id,
+                                        "voteType": 0,
+                                    });
+                                    setDislikes(dislikes.filter((val) => val !== props.user?.public_id));
+                                    return;
+                                }
+
                                 await voteOnPost({
                                     "postType": "comment",
-                                    "targetID": props.post?.post_id || 0,
-                                    "userID": props.user?.public_id || 0,
+                                    "targetID": props.post.post_id,
+                                    "userID": props.user.public_id,
                                     "voteType": -1,
-                                    "votes": votesOnThis
                                 });
 
-                                setVotesOnThis(old => [...old, {
-                                    "post_id": props.post?.post_id || 0,
-                                    "type": -1,
-                                    "user_id": props.user?.public_id || 0
-                                }])
-                                postNotification("Downvoted post!");
+                                setLikes(likes.filter((val) => val != props.user.public_id));
+                                setDislikes(old => [...old, props.user.public_id]);
+                                postNotification("Downvoted comment!");
                             }}>
                                 <Image src="/svgs/down.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
                                     "width": "1rem",
@@ -192,30 +213,15 @@ const Comment = (props: {comment: Comment, user: User | undefined, author: Publi
     );
 }
 
-export const PostInteraction = (props: { post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined }) => {
+export const PostInteraction = (props: { topic: Topic | undefined, post: Post | undefined, user: User | undefined, perms: number, author: PublicUser | undefined, first: Date, second: Date, now: Date }) => {
     const [showNewComment, setShowNewComment] = useState<boolean>(false);
     const [commentContent, setCommentContent] = useState<string>("");
-    const [primaryPostVotes, setPrimaryPostVotes] = useState<Vote[]>(props.post?.votes || []);
-    const [originalTopic, setOriginalTopic] = useState<Topic | undefined>();
+    const [originalTopic, setOriginalTopic] = useState<Topic | undefined>(props.topic);
+    const [likes, setLikes] = useState<number[]>(props.post?.likes || []);
+    const [dislikes, setDislikes] = useState<number[]>(props.post?.dislikes || []);
     const [editingPost, setEditingPost] = useState<boolean>(false);
     const [edit, setEdit] = useState<string>(props.post?.body || "");
     const [editTitle, setEditTitle] = useState<string>(props.post?.title || "");
-    const [first, setFirst] = useState<string>("");
-    const [second, setSecond] = useState<string>("");
-
-    useEffect(() => {
-        const date = new Date();
-        const _first = calcTimeSinceMillis(new Date(props.post?.first_posted.toString() || "").getTime(), date.getTime());
-        const _second = calcTimeSinceMillis(new Date(props.post?.last_updated.toString() || "").getTime(), date.getTime());
-
-        setFirst(_first);
-        setSecond(_second);
-
-        (async () => {
-            const topic = await fetchTopicPostsAndActivity(props.post?.topic_id || 0);
-            setOriginalTopic(topic?.topic);
-        })();
-    }, [props.post?.topic_id, first, props.post?.first_posted, props.post?.last_updated, second]);
 
     const lockPost = async (e: BaseSyntheticEvent) => {
         e.preventDefault();
@@ -301,8 +307,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                 <section>
                     <h1>{props.post?.title}</h1>
                     <section style={{ "display": "flex", "flexDirection": "row", "gap": "1rem", "opacity": "0.5" }}>
-                        <span>Posted {first} ago</span>
-                        {(first !== second) && <span>(Updated {second} ago)</span>}
+                        <span>Posted {calcTimeSinceMillis(props.first.getTime(), props.now.getTime())} ago</span>
+                        {(props.first !== props.second) && <span>(Activity {calcTimeSinceMillis(props.second.getTime(), props.now.getTime())} ago)</span>}
                         <div>Posted by <Link href={`/users/${props.author?.public_id}`}>{props.author?.username}</Link></div>
                         {originalTopic !== undefined && <div>Posted to <Link href={`/topic/${props.post?.topic_id}`}>{originalTopic?.name}</Link></div>}
                     </section>
@@ -350,7 +356,8 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                     </Link>
                     <section className={style.info}>
                         <p>{props.author?.profile_bio}</p>
-                        <span style={{"opacity": "0.5"}}>Joined {new Date(props.author?.time_created).toLocaleDateString()}</span>
+                        <span>Reputation: {props.author?.reputation}</span>
+                        <span style={{"opacity": "0.5"}}>Joined {new Date(props.author?.time_created || 0).toLocaleDateString()}</span>
                     </section>
                 </div>
                 <div className={style.content} id="mainBody">
@@ -373,19 +380,29 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                         {props.user !== undefined &&
                             <>
                                 <button onClick={async (e: BaseSyntheticEvent) => {
+                                    if (props.user === undefined || props.post === undefined) 
+                                        return;
+
+                                    if (likes.includes(props.user.public_id)) {
+                                        await voteOnPost({
+                                            "postType": "post",
+                                            "targetID": props.post.post_id,
+                                            "userID": props.user.public_id,
+                                            "voteType": 0,
+                                        });
+                                        setLikes(likes.filter((val) => val != props.user?.public_id));
+                                        return;
+                                    }
+
                                     await voteOnPost({
                                         "postType": "post",
-                                        "targetID": props.post?.post_id || 0,
-                                        "userID": props.user?.public_id || 0,
+                                        "targetID": props.post.post_id,
+                                        "userID": props.user.public_id,
                                         "voteType": 1,
-                                        "votes": primaryPostVotes
                                     });
-
-                                    setPrimaryPostVotes(old => [...old, {
-                                        "post_id": props.post?.post_id || 0,
-                                        "type": 1,
-                                        "user_id": props.user?.public_id || 0
-                                    }])
+                                    
+                                    setDislikes(dislikes.filter((val) => val != props.user.public_id));
+                                    setLikes(old => [...old, props.user.public_id]);
                                     postNotification("Upvoted post!");
                                 }}>
                                     <Image src="/svgs/up.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
@@ -394,24 +411,34 @@ export const PostInteraction = (props: { post: Post | undefined, user: User | un
                                         "filter": "invert(1)"
                                     }}></Image>
                                 </button>
-                                <span>{calcRunningTotalVotes(primaryPostVotes)}</span>
+                                <span>{likes.length - dislikes.length}</span>
                                 <button onClick={async (e: BaseSyntheticEvent) => {
+                                    if (props.user === undefined || props.post === undefined) 
+                                        return;
+
+                                    if (dislikes.includes(props.user.public_id)) {
+                                        await voteOnPost({
+                                            "postType": "post",
+                                            "targetID": props.post.post_id,
+                                            "userID": props.user.public_id,
+                                            "voteType": 0,
+                                        });
+                                        setDislikes(dislikes.filter((val) => val !== props.user?.public_id));
+                                        return;
+                                    }
+
                                     await voteOnPost({
                                         "postType": "post",
-                                        "targetID": props.post?.post_id || 0,
-                                        "userID": props.user?.public_id || 0,
+                                        "targetID": props.post.post_id,
+                                        "userID": props.user.public_id,
                                         "voteType": -1,
-                                        "votes": primaryPostVotes
                                     });
-
-                                    setPrimaryPostVotes(old => [...old, {
-                                        "post_id": props.post?.post_id || 0,
-                                        "type": -1,
-                                        "user_id": props.user?.public_id || 0
-                                    }])
+                                    
+                                    setLikes(likes.filter((val) => val != props.user.public_id));
+                                    setDislikes(old => [...old, props.user.public_id]);
                                     postNotification("Downvoted post!");
                                 }}>
-                                    <Image src="/svgs/down.svg" alt="Upvote" sizes="100%" width={0} height={0} style={{
+                                    <Image src="/svgs/down.svg" alt="Downvote" sizes="100%" width={0} height={0} style={{
                                         "width": "1rem",
                                         "height": "1rem",
                                         "filter": "invert(1)"
