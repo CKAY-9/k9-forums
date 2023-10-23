@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Res, HttpStatus, Post, Req, Put } from "@nestjs/common";
+import { Body, Controller, Get, Res, HttpStatus, Req, Put } from "@nestjs/common";
 import { Response } from "express";
 import { prisma } from "../../db/prisma";
 import { UpdateForumDTO, UpdateLinksDTO } from "./forum.dto";

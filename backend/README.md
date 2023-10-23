@@ -1,6 +1,8 @@
-# K9-Forums Backend
+# Running
 
-## Example .env file
 ```
-DATABASE_URL="postgresql://postgres:password@localhost:5432/k9?schema=public"
+npm i
+npx prisma generate
+npx primsa migrate dev --name init ## Change to your enviornment
+npm run start
 ```

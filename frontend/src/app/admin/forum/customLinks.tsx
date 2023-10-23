@@ -15,15 +15,20 @@ const CustomLinks = (props: {forum: Forum}) => {
 
     useEffect(() => {
         (async() => {
-            const req = await axios({
-                "url": INTERNAL_API_URL + "/forum/links",
-                "method": "GET"
-            });
+            try {
+                const req = await axios({
+                    "url": INTERNAL_API_URL + "/forum/links",
+                    "method": "GET"
+                });
 
-            setLinks(req.data.links);
-            setSteam(req.data.links[0].url);
-            setStore(req.data.links[1].url);
-            setDiscord(req.data.links[2].url);
+                const links = req.data.links || [{url: ""}, {url: ""}, {url: ""}];
+    
+                setLinks(links);
+                setSteam(links[0].url);
+                setStore(links[1].url);
+                setDiscord(links[2].url);
+            } catch (ex) {
+            }
          })();
     }, []);
 

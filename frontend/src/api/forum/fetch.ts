@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from "axios"
 import { INTERNAL_API_URL } from "../resources"
-import { FetchCategoryTopicsResponse, FetchPostResponse, FetchTopicPostsResponse } from "./interfaces";
+import { Comment, FetchCategoryTopicsResponse, FetchPostResponse, FetchTopicPostsResponse, Forum, Post } from "./interfaces";
 
-export const fetchForumInfo = async () => {
+export const fetchForumInfo = async (): Promise<Forum> => {
     const req = await axios({
         "url": INTERNAL_API_URL + "/forum/info",
         "method": "GET"
@@ -11,7 +11,16 @@ export const fetchForumInfo = async () => {
     return req.data;
 }
 
-export const fetchAllPosts = async () => {
+export const fetchAllComments = async (): Promise<Comment[]> => {
+    const req = await axios({
+        "url": INTERNAL_API_URL + "/comment/all",
+        "method": "GET"
+    });
+
+    return req.data.comments;
+}
+
+export const fetchAllPosts = async (): Promise<Post[]> => {
     const req = await axios({
         "url": INTERNAL_API_URL + "/post/all",
         "method": "GET"

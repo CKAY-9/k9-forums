@@ -9,14 +9,10 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-
-
 # SHOWING
-
-
-
 @app.route("/<id>/<file>")
 def get_file(id, file):
+    print(f"{id}/{file}")
     id = escape(id)
     file = escape(file)
 
@@ -25,11 +21,7 @@ def get_file(id, file):
     except Exception as e:
         return str(e)
     
-
-
 # UPLOADING
-
-
 @app.route('/upload', methods=['GET', 'POST'])
 def upload_file():
     if (request.method == 'POST'):

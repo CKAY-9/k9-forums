@@ -1,0 +1,23 @@
+.comments {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-top: 1rem;
+
+    .comment {
+        color: rgb(var(--text));
+        padding: 1rem 2rem;
+        border-radius: 1rem;
+        background-color: rgb(var(--800));
+        transition: 0.5s ease all;
+
+        &:hover {
+            box-shadow: var(--shdw1);
+            transform: translateY(-0.5rem);
+        }
+
+        button {
+            background-color: transparent;
+        }
+    }
+}
